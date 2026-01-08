@@ -6,7 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class AssetManagementApplication {
 
-    static void main() {
-        SpringApplication.run(AssetManagementApplication.class);
+    public static void main(String[] args) {
+        SpringApplication.run(AssetManagementApplication.class, args);
     }
 }
+
