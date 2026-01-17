@@ -10,4 +10,7 @@ public class ApprovalStatus {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
     public String name;
+
+
+
 }
