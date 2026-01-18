@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Product Detail</title>
+</head>
+<body>
+
+<h2>Chi tiết tài sản</h2>
+
+<div>
+    <p>
+        <strong>Mã tài sản:</strong>
+        <span th:text="${product.assetCode}">ASSET_CODE</span>
+    </p>
+
+    <p>
+        <strong>Mô tả:</strong>
+        <span th:text="${product.description}">DESCRIPTION</span>
+    </p>
+</div>
+
+</body>
+</html>

@@ -1,6 +1,6 @@
 package com.example.swp391_assetmanagement.repository;
 
-import com.example.swp391_assetmanagement.repository.entity.AssetHistory;
+import com.example.swp391_assetmanagement.repository.entity.operation.AssetsHistory;
 import org.seasar.doma.*;
 import org.seasar.doma.boot.ConfigAutowireable;
 
@@ -12,20 +12,20 @@ import java.util.Optional;
 public interface AssetHistoryRepository {
 
     @Select
-    Optional<AssetHistory> findById(Long id);
+    Optional<AssetsHistory> findById(Long id);
 
     @Insert
-    int insert(AssetHistory assetHistory);
+    int insert(AssetsHistory assetHistory);
 
     @Update
-    int update(AssetHistory assetHistory);
+    int update(AssetsHistory assetHistory);
 
     @Delete
-    int delete(AssetHistory assetHistory);
+    int delete(AssetsHistory assetHistory);
 
     @BatchInsert
-    int[] batchInsert(List<AssetHistory> assetHistories);
+    int[] batchInsert(List<AssetsHistory> assetHistories);
 
     @BatchDelete
-    int[] batchDelete(List<AssetHistory> assetHistories);
+    int[] batchDelete(List<AssetsHistory> assetHistories);
 }

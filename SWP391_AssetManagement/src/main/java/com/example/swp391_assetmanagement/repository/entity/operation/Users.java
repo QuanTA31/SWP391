@@ -1,4 +1,4 @@
-package com.example.swp391_assetmanagement.repository.entity;
+package com.example.swp391_assetmanagement.repository.entity.operation;
 
 import lombok.Setter;
 import org.seasar.doma.*;
@@ -14,16 +14,21 @@ public class Users {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
+    @Column(name = "user_code")
+    public String userCode;
+
+    @Column(name = "username")
+    public String username;
+
+    @Column(name = "password")
+    public String password;
+
     @Column(name = "role_id")
     public Long roleId;
 
-    public String username;
-    public String password;
-    public Integer status;
+    @Column(name = "user_status_id")
+    public Long userStatusId;
 
     @Column(name = "created_at")
     public LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    public LocalDateTime updatedAt;
 }
