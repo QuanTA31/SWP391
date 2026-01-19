@@ -1,6 +1,6 @@
 package com.example.swp391_assetmanagement.controller;
 
-import com.example.swp391_assetmanagement.dto.AssetDTO;
+import com.example.swp391_assetmanagement.dto.response.AssetDTOResponse;
 import com.example.swp391_assetmanagement.service.AssetService;
 import com.example.swp391_assetmanagement.service.servicerequest.AssetRequest;
 import com.example.swp391_assetmanagement.service.serviceresponse.AssetResponse;
@@ -21,18 +21,18 @@ public class TemplateController {
     }
 
     @GetMapping("/details/{productId}")
-    public String detail(@PathVariable int productId, Model model) {
+    public String detail(@PathVariable Long productId, Model model) {
 
         AssetResponse assetResponse = assetService.createAsset(AssetRequest.builder()
-                .id(1)
+                .id(productId)
                 .build());
 
-        AssetDTO assetDTO = AssetDTO.builder()
+        AssetDTOResponse response = AssetDTOResponse.builder()
                 .assetCode(assetResponse.getAssetCode())
                 .description(assetResponse.getDescription())
                 .build();
 
-        model.addAttribute("product", assetDTO);
+        model.addAttribute("product", response);
         return "example";
     }
 }

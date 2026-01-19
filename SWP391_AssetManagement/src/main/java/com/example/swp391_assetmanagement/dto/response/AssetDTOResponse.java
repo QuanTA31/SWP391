@@ -1,11 +1,11 @@
-package com.example.swp391_assetmanagement.service.serviceresponse;
+package com.example.swp391_assetmanagement.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
-public class AssetResponse {
+public class AssetDTOResponse {
 
     public String assetCode;
 

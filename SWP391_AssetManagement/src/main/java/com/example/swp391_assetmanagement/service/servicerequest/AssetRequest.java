@@ -7,5 +7,5 @@ import lombok.Getter;
 @Builder
 public class AssetRequest {
 
-    private final int id;
+    public final Long id;
 }
