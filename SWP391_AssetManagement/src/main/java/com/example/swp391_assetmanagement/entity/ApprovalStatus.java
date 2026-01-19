@@ -1,12 +1,12 @@
-package com.example.swp391_assetmanagement.repository.entity.enums;
+package com.example.swp391_assetmanagement.entity;
 
 import lombok.Setter;
 import org.seasar.doma.*;
 
 @Setter
 @Entity
-@Table(name = "roles")
-public class Roles {
+@Table(name = "approval_status")
+public class ApprovalStatus {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,4 +1,4 @@
-package com.example.swp391_assetmanagement.repository.entity.operation;
+package com.example.swp391_assetmanagement.entity;
 
 import lombok.Setter;
 import org.seasar.doma.*;

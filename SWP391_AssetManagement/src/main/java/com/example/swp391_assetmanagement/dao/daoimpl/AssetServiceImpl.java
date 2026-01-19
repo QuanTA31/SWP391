@@ -1,20 +1,20 @@
-package com.example.swp391_assetmanagement.service.serviceimpl;
+package com.example.swp391_assetmanagement.dao.daoimpl;
 
 import com.example.swp391_assetmanagement.service.AssetService;
 import com.example.swp391_assetmanagement.service.servicerequest.AssetRequest;
 import com.example.swp391_assetmanagement.service.serviceresponse.AssetResponse;
 import com.example.swp391_assetmanagement.service.specialrepository.AssetSpecialEntity;
-import com.example.swp391_assetmanagement.service.specialrepository.AssetSpecialRepository;
+import com.example.swp391_assetmanagement.dao.AssetsDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AssetServiceImpl implements AssetService {
 
-    private final AssetSpecialRepository assetSpecialRepository;
+    private final AssetsDAO assetSpecialRepository;
 
     @Autowired
-    public AssetServiceImpl(AssetSpecialRepository assetSpecialRepository) {
+    public AssetServiceImpl(AssetsDAO assetSpecialRepository) {
         this.assetSpecialRepository = assetSpecialRepository;
     }
 
