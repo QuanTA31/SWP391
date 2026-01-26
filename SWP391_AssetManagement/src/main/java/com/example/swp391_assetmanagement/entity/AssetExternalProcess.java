@@ -16,9 +16,6 @@ public class AssetExternalProcess {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
-    @Column(name = "request_code")
-    public String requestCode;
-
     @Column(name = "asset_type_id")
     public Long assetTypeId;
 
