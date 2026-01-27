@@ -1,9 +1,11 @@
 package com.example.swp391_assetmanagement.service;
 
-import com.example.swp391_assetmanagement.service.servicerequest.AssetRequest;
-import com.example.swp391_assetmanagement.service.serviceresponse.AssetResponse;
+import com.example.swp391_assetmanagement.service.servicerequest.AssetViewAllServiceRequest;
+import com.example.swp391_assetmanagement.service.serviceresponse.AssetViewAllServiceResponse;
+
+import java.util.List;
 
 public interface AssetService {
 
-    AssetResponse createAsset(AssetRequest assetRequest);
+    List<AssetViewAllServiceResponse> viewAllAsset(AssetViewAllServiceRequest assetRequest);
 }
