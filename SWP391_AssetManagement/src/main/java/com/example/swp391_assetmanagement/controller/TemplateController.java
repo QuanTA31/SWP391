@@ -35,4 +35,12 @@ public class TemplateController {
         model.addAttribute("product", response);
         return "example";
     }
+    @GetMapping("/login")
+    public String detail() {
+
+
+
+
+        return "login";
+    }
 }
