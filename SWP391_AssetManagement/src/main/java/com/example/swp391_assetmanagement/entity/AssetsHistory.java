@@ -15,7 +15,7 @@ public class AssetsHistory {
     public Long id;
 
     @Column(name = "asset_status_id")
-    public Long assetStatusId;
+    public String assetStatusId;
 
     @Column(name = "asset_id")
     public Long assetId;

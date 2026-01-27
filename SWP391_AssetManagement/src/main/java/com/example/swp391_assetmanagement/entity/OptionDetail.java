@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 
 @Setter
 @Entity
-@Table(name = "procurement_plan")
-public class ProcurementPlan {
+@Table(name = "option_detail")
+public class OptionDetail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +25,7 @@ public class ProcurementPlan {
     public String description;
 
     @Column(name = "approval_status_id")
-    public Long approvalStatusId;
+    public String approvalStatusId;
 
     @Column(name = "merchant")
     public String merchant;

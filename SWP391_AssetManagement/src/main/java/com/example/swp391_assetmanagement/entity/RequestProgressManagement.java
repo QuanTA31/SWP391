@@ -18,7 +18,7 @@ public class RequestProgressManagement {
     public Long requestParentId;
 
     @Column(name = "approval_status_id")
-    public Long approvalStatusId;
+    public String approvalStatusId;
 
     @Column(name = "approver_by")
     public Long approverBy;

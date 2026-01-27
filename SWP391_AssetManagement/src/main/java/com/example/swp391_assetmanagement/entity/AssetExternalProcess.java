@@ -17,13 +17,13 @@ public class AssetExternalProcess {
     public Long id;
 
     @Column(name = "asset_type_id")
-    public Long assetTypeId;
+    public String assetTypeId;
 
     @Column(name = "request_type_id")
-    public Long requestTypeId;
+    public String requestTypeId;
 
     @Column(name = "request_status_id")
-    public Long requestStatusId;
+    public String requestStatusId;
 
     @Column(name = "request_progress_management_id")
     public Long requestProgressManagementId;

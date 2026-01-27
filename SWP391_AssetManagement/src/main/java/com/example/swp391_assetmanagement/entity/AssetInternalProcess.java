@@ -20,10 +20,10 @@ public class AssetInternalProcess {
     public Long assetId;
 
     @Column(name = "request_status_id")
-    public Long requestStatusId;
+    public String requestStatusId;
 
     @Column(name = "request_type_id")
-    public Long requestTypeId;
+    public String requestTypeId;
 
     @Column(name = "request_progress_management_id")
     public Long requestProgressManagementId;

@@ -9,8 +9,8 @@ import org.seasar.doma.*;
 public class AssetStatus {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long id;
+    @Column(name = "id")
+    public String id;
 
     @Column(name = "name")
     public String name;
