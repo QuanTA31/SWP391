@@ -11,4 +11,7 @@ public interface AssetsDAO {
 
     @Select
     AssetsDaoResponse selectById(Long id);
+
+//    @Update(sqlFile = true)
+//    int updateById(AssetsDaoResponse assetsDaoResponse);
 }
