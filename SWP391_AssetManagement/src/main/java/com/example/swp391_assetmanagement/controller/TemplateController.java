@@ -43,4 +43,12 @@ public class TemplateController {
 
         return "login";
     }
+    @GetMapping("/login")
+    public String detail() {
+
+
+
+
+        return "login";
+    }
 }
