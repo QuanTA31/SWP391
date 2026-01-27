@@ -33,6 +33,6 @@ public class TemplateController {
                 .build();
 
         model.addAttribute("product", response);
-        return "example";
+        return "template";
     }
 }
