@@ -1,28 +1,38 @@
 package com.example.swp391_assetmanagement.enums;
 
-public enum AssetStatus {
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.seasar.doma.Domain;
 
-    NEW(1, "NEW"),
-    ASSIGNED(2, "ASSIGNED"),
-    TRANSFERRING(3, "TRANSFERRING"),
-    MAINTENANCE(4, "MAINTENANCE"),
-    BROKEN(5, "BROKEN"),
-    DISPOSED(6, "DISPOSED"),
-    LOST(7, "LOST");
+@Getter
+@AllArgsConstructor
+@Domain(valueType = String.class, factoryMethod = "of")
+public enum AssetStatus implements EnumBase<AssetStatus> {
 
-    private final int value;
+    NEW("01", "NEW"),
+    ASSIGNED("02", "ASSIGNED"),
+    TRANSFERRING("03", "TRANSFERRING"),
+    MAINTENANCE("04", "MAINTENANCE"),
+    BROKEN("05", "BROKEN"),
+    DISPOSED("06", "DISPOSED"),
+    LOST("07", "LOST");
+
+    private final String value;
     private final String name;
 
-    AssetStatus(int value, String name) {
-        this.value = value;
-        this.name = name;
-    }
-
-    public int getValue() {
+    public String getValue() {
         return value;
     }
 
     public String getName() {
         return name;
+    }
+
+    public static AssetStatus of(String key) {
+        return EnumBase.of(AssetStatus.class, key);
+    }
+
+    public static boolean hasValue(String key) {
+        return EnumBase.hasValue(AssetStatus.class, key);
     }
 }

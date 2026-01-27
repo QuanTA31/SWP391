@@ -1,27 +1,37 @@
 package com.example.swp391_assetmanagement.enums;
 
-public enum Roles {
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.seasar.doma.Domain;
 
-    ADMIN(1, "ADMIN"),
-    MANAGER(2, "MANAGER"),
-    WAREHOUSE(3, "WAREHOUSE"),
-    PURCHASING(4, "PURCHASING"),
-    DEPARTMENT_MANAGER(5, "DEPARTMENT_MANAGER"),
-    CLIENT(6, "CLIENT");
+@Getter
+@AllArgsConstructor
+@Domain(valueType = String.class, factoryMethod = "of")
+public enum Roles implements EnumBase<Roles> {
 
-    private final int value;
+    ADMIN("01", "ADMIN"),
+    MANAGER("02", "MANAGER"),
+    WAREHOUSE("03", "WAREHOUSE"),
+    PURCHASING("04", "PURCHASING"),
+    DEPARTMENT_MANAGER("05", "DEPARTMENT_MANAGER"),
+    CLIENT("06", "CLIENT");
+
+    private final String value;
     private final String name;
 
-    Roles (int value, String name) {
-        this.value = value;
-        this.name = name;
-    }
-
-    public int getValue() {
+    public String getValue() {
         return value;
     }
 
     public String getName() {
         return name;
+    }
+
+    public static Roles of(String key) {
+        return EnumBase.of(Roles.class, key);
+    }
+
+    public static boolean hasValue(String key) {
+        return EnumBase.hasValue(Roles.class, key);
     }
 }

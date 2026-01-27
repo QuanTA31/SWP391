@@ -1,26 +1,36 @@
 package com.example.swp391_assetmanagement.enums;
 
-public enum RequestType {
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.seasar.doma.Domain;
 
-    ALLOCATION(1, "ALLOCATION"),
-    RETRIEVAL(2, "RETRIEVAL"),
-    PROCUREMENT(3, "PROCUREMENT"),
-    MAINTENANCE(4, "MAINTENANCE"),
-    LIQUIDATION(5, "LIQUIDATION");
+@Getter
+@AllArgsConstructor
+@Domain(valueType = String.class, factoryMethod = "of")
+public enum RequestType implements EnumBase<RequestType> {
 
-    private final int value;
+    ALLOCATION("01", "ALLOCATION"),
+    RETRIEVAL("02", "RETRIEVAL"),
+    PROCUREMENT("03", "PROCUREMENT"),
+    MAINTENANCE("04", "MAINTENANCE"),
+    LIQUIDATION("05", "LIQUIDATION");
+
+    private final String value;
     private final String name;
 
-    RequestType(int value, String name) {
-        this.value = value;
-        this.name = name;
-    }
-
-    public int getValue() {
+    public String getValue() {
         return value;
     }
 
     public String getName() {
         return name;
+    }
+
+    public static RequestType of(String key) {
+        return EnumBase.of(RequestType.class, key);
+    }
+
+    public static boolean hasValue(String key) {
+        return EnumBase.hasValue(RequestType.class, key);
     }
 }

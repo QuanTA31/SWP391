@@ -1,27 +1,37 @@
 package com.example.swp391_assetmanagement.enums;
 
-public enum Location {
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.seasar.doma.Domain;
 
-    HEAD_OFFICE(1, "HEAD_OFFICE"),
-    BRANCH_OFFICE(2, "BRANCH_OFFICE"),
-    MEETING_ROOM(3, "MEETING_ROOM"),
-    IT_ROOM(4, "IT_ROOM"),
-    WAREHOUSE(5, "WAREHOUSE"),
-    OUTSIDE_COMPANY(6, "OUTSIDE_COMPANY");
+@Getter
+@AllArgsConstructor
+@Domain(valueType = String.class, factoryMethod = "of")
+public enum Location implements EnumBase<Location> {
 
-    private final int value;
+    HEAD_OFFICE("01", "HEAD_OFFICE"),
+    BRANCH_OFFICE("02", "BRANCH_OFFICE"),
+    MEETING_ROOM("03", "MEETING_ROOM"),
+    IT_ROOM("04", "IT_ROOM"),
+    WAREHOUSE("05", "WAREHOUSE"),
+    OUTSIDE_COMPANY("06", "OUTSIDE_COMPANY");
+
+    private final String value;
     private final String name;
 
-    Location(int value, String name) {
-        this.value = value;
-        this.name = name;
-    }
-
-    public int getValue() {
+    public String getValue() {
         return value;
     }
 
     public String getName() {
         return name;
+    }
+
+    public static Location of(String key) {
+        return EnumBase.of(Location.class, key);
+    }
+
+    public static boolean hasValue(String key) {
+        return EnumBase.hasValue(Location.class, key);
     }
 }

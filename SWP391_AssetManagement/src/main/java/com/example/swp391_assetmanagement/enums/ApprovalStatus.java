@@ -1,25 +1,35 @@
 package com.example.swp391_assetmanagement.enums;
 
-public enum ApprovalStatus {
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.seasar.doma.Domain;
 
-    PENDING(1, "PENDING"),
-    APPROVED(2, "APPROVED"),
-    REJECTED(3, "REJECTED");
+@Getter
+@AllArgsConstructor
+@Domain(valueType = String.class, factoryMethod = "of")
+public enum ApprovalStatus implements EnumBase<ApprovalStatus> {
 
-    private final int value;        // id trong DB
+    PENDING("01", "PENDING"),
+    APPROVED("02", "APPROVED"),
+    REJECTED("03", "REJECTED");
+
+    private final String value;        // id trong DB
     private final String name;       // name trong DB
 
-    ApprovalStatus(int value, String name) {
-        this.value = value;
-        this.name = name;
-    }
-
-    public int getValue() {
+    public String getValue() {
         return value;
     }
 
     public String getName() {
         return name;
+    }
+
+    public static ApprovalStatus of(String key) {
+        return EnumBase.of(ApprovalStatus.class, key);
+    }
+
+    public static boolean hasValue(String key) {
+        return EnumBase.hasValue(ApprovalStatus.class, key);
     }
 }
 
