@@ -10,4 +10,3 @@ public class AssetManagementApplication {
         SpringApplication.run(AssetManagementApplication.class, args);
     }
 }
-

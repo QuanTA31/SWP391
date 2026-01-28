@@ -24,10 +24,10 @@ public class Users {
     public String password;
 
     @Column(name = "role_id")
-    public Long roleId;
+    public String roleId;
 
     @Column(name = "user_status_id")
-    public Long userStatusId;
+    public String userStatusId;
 
     @Column(name = "created_at")
     public LocalDateTime createdAt;

@@ -20,10 +20,10 @@ public class Assets {
     public String assetCode;
 
     @Column(name = "asset_status_id")
-    public Long assetStatusId;
+    public String assetStatusId;
 
     @Column(name = "asset_type_id")
-    public Long assetTypeId;
+    public String assetTypeId;
 
     @Column(name = "warranty_period")
     public LocalDate warrantyPeriod;
@@ -38,7 +38,7 @@ public class Assets {
     public Long currentUserId;
 
     @Column(name = "location_id")
-    public Long locationId;
+    public String locationId;
 
     @Column(name = "depreciation_value")
     public BigDecimal depreciationValue;
