@@ -5,9 +5,6 @@ import com.example.swp391_assetmanagement.dao.daoresponse.ViewAssetDAOResponse;
 import com.example.swp391_assetmanagement.service.AssetService;
 import com.example.swp391_assetmanagement.service.servicerequest.AssetViewAllServiceRequest;
 import com.example.swp391_assetmanagement.service.serviceresponse.AssetViewAllServiceResponse;
-import com.example.swp391_assetmanagement.service.servicerequest.AssetRequest;
-import com.example.swp391_assetmanagement.service.servicerequest.LoginRequest;
-import com.example.swp391_assetmanagement.service.serviceresponse.AssetResponse;
 import com.example.swp391_assetmanagement.dao.AssetsDAO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -52,11 +49,4 @@ public class AssetServiceImpl implements AssetService {
                 .toList();
     }
 
-    @Autowired
-    public AssetsDAO assetDAO;
-
-    @Override
-    public boolean authenticate(LoginRequest request){
-
-    }
 }
