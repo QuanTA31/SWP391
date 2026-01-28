@@ -9,8 +9,8 @@ SELECT aip.asset_id,
        rpm.approval_status_id,
        COUNT(1) OVER() AS total_items
 FROM asset_internal_process AS aip
-    INNER JOIN request_progress_management AS rpm
-ON aip.request_progress_management_id = rpm.id
+         INNER JOIN request_progress_management AS rpm
+                    ON aip.request_progress_management_id = rpm.id
 
 WHERE 1 = 1
 /*%if request.requestStatusId != null && request.requestStatusId != "" */

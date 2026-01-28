@@ -11,9 +11,9 @@ public class InternalProcessResponse {
 
     private final String assetId;
 
-    private final String requestStatusId;
+    private final String requestStatusName;
 
-    private final String requestTypeId;
+    private final String requestTypeName;
 
     private final Long fromUserId;
 
@@ -25,6 +25,6 @@ public class InternalProcessResponse {
 
     private final String note;
 
-    private final String approvalStatusId;
+    private final String approvalStatusName;
 
 }

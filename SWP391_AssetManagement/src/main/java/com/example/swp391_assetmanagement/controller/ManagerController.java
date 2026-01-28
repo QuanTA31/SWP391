@@ -36,8 +36,8 @@ public class ManagerController {
     public String viewRequest(@ModelAttribute ViewInternalProcessRequest request, HttpSession session, Model model){
 
         ViewInternalProcessAllResponse response = managerAssetInternalProcessUsecase.viewInternalProcess(request, session);
-        model.addAttribute("internalProcess", response);
+        model.addAttribute("data", response);
 
-        return "ManagerViewAsset";
+        return "RequestList";
     }
 }
