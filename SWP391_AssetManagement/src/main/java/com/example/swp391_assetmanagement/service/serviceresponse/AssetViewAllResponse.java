@@ -1,14 +1,15 @@
-package com.example.swp391_assetmanagement.dao.daoresponse;
+package com.example.swp391_assetmanagement.service.serviceresponse;
 
+import lombok.Getter;
 import org.seasar.doma.Column;
 import org.seasar.doma.Entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
-public class ViewAssetDAOResponse {
+@Getter
+public class AssetViewAllResponse {
 
     @Column(name = "asset_code")
     public String assetCode;
@@ -39,4 +40,5 @@ public class ViewAssetDAOResponse {
 
     @Column(name = "total_items")
     public Integer totalItems;
+
 }

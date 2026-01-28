@@ -7,10 +7,9 @@ import com.example.swp391_assetmanagement.dto.response.ViewAllAssetResponse;
 import com.example.swp391_assetmanagement.enums.AssetStatus;
 import com.example.swp391_assetmanagement.enums.AssetType;
 import com.example.swp391_assetmanagement.enums.Location;
-import com.example.swp391_assetmanagement.enums.Roles;
 import com.example.swp391_assetmanagement.service.AssetService;
-import com.example.swp391_assetmanagement.service.servicerequest.AssetViewAllServiceRequest;
-import com.example.swp391_assetmanagement.service.serviceresponse.AssetViewAllServiceResponse;
+import com.example.swp391_assetmanagement.service.servicerequest.AssetViewAllRequest;
+import com.example.swp391_assetmanagement.service.serviceresponse.AssetViewAllResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,7 +20,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -39,12 +37,12 @@ public class ManagerUsecase {
         int pageIndex = (request.getPageIndex() != null && request.getPageIndex() != 0)  ? request.getPageIndex() : 1;
 
         // Get data from database
-        List<AssetViewAllServiceResponse> serviceResponses = assetService.viewAllAsset(
-                AssetViewAllServiceRequest.builder()
+        List<AssetViewAllResponse> serviceResponses = assetService.viewAllAsset(
+                AssetViewAllRequest.builder()
                         .locationId(request.getLocationId())
                         .assetTypeId(request.getAssetTypeId())
                         .assetStatusId(request.getAssetStatusId())
-                        .pageIndex(pageIndex)
+                        .offset((pageIndex-1)*PAGE_SIZE)
                         .pageSize(PAGE_SIZE)
                         .build());
 
