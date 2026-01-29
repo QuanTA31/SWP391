@@ -1,8 +1,10 @@
-package com.example.swp391_assetmanagement.dao.daoresponse;
+package com.example.swp391_assetmanagement.service.serviceresponse;
 
+import lombok.Getter;
 import org.seasar.doma.Column;
 import org.seasar.doma.Entity;
 
+@Getter
 @Entity
 public class UserDAOResponse {
     @Column(name = "name")

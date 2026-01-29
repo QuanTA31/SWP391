@@ -1,4 +1,4 @@
-package com.example.swp391_assetmanagement.dao.daorequest;
+package com.example.swp391_assetmanagement.service.servicerequest;
 
 import lombok.Builder;
 import lombok.Getter;
