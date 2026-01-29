@@ -5,10 +5,10 @@ SELECT axp.asset_id,
        axp.quantity,
        axp.handover_date,
        axp.note,
-       rpm.approval_status_id,
-       od.approval_status_id,
+       rpm.approval_status_id AS approval_status_id,
+       od.approval_status_id AS option_detail,
        COUNT(1) OVER() AS total_items
-FROM asset_internal_process AS axp
+FROM asset_external_process AS axp
          INNER JOIN request_progress_management AS rpm
                     ON axp.request_progress_management_id = rpm.id
          LEFT JOIN option_detail AS od
