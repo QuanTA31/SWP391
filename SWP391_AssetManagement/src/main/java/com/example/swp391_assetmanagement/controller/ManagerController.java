@@ -41,12 +41,12 @@ public class ManagerController {
         return "RequestList";
     }
 
-//    @GetMapping("/viewRequestExternal")
-//    public String viewRequest(){
+    @GetMapping("/viewRequestExternal")
+    public String viewRequest(){
+
+//        ViewInternalProcessAllResponse response = managerAssetInternalProcessUsecase.viewInternalProcess(request, session);
+//        model.addAttribute("data", response);
 //
-////        ViewInternalProcessAllResponse response = managerAssetInternalProcessUsecase.viewInternalProcess(request, session);
-////        model.addAttribute("data", response);
-////
-//        return "RequestListExternal";
-//    }
+        return "RequestListExternal";
+    }
 }
