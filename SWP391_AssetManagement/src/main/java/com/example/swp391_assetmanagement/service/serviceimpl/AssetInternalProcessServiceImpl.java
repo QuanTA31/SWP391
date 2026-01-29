@@ -17,6 +17,6 @@ public class AssetInternalProcessServiceImpl implements AssetInternalProcessServ
 
     @Override
     public List<InternalProcessAllResponse> viewInternalProcess(InternalProcessRequest assetRequest) {
-        return assetInternalProcessDAO.selectAssetAll(assetRequest);
+        return assetInternalProcessDAO.selectInternalProcessAll(assetRequest);
     }
 }

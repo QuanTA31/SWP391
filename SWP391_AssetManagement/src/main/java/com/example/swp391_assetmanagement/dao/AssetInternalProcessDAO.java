@@ -13,5 +13,5 @@ import java.util.List;
 public interface AssetInternalProcessDAO {
 
     @Select
-    List<InternalProcessAllResponse> selectAssetAll(InternalProcessRequest request);
+    List<InternalProcessAllResponse> selectInternalProcessAll(InternalProcessRequest request);
 }
