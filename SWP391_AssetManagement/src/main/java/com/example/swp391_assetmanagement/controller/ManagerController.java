@@ -1,10 +1,7 @@
 package com.example.swp391_assetmanagement.controller;
 
 import com.example.swp391_assetmanagement.dto.request.ViewAssetRequest;
-import com.example.swp391_assetmanagement.dto.request.ViewInternalProcessRequest;
 import com.example.swp391_assetmanagement.dto.response.ViewAllAssetResponse;
-import com.example.swp391_assetmanagement.dto.response.ViewInternalProcessAllResponse;
-import com.example.swp391_assetmanagement.usecase.ManagerAssetInternalProcessUsecase;
 import com.example.swp391_assetmanagement.usecase.ManagerUsecase;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +18,6 @@ public class ManagerController {
 
     private final ManagerUsecase managerUsecase;
 
-    private final ManagerAssetInternalProcessUsecase managerAssetInternalProcessUsecase;
-
     @GetMapping("/viewAsset")
     public String viewAsset(@ModelAttribute ViewAssetRequest request, HttpSession session, Model model){
 
@@ -30,14 +25,5 @@ public class ManagerController {
         model.addAttribute("assets", response);
 
         return "ManagerViewAsset";
-    }
-
-    @GetMapping("/viewRequest")
-    public String viewRequest(@ModelAttribute ViewInternalProcessRequest request, HttpSession session, Model model){
-
-        ViewInternalProcessAllResponse response = managerAssetInternalProcessUsecase.viewInternalProcess(request, session);
-        model.addAttribute("data", response);
-
-        return "RequestList";
     }
 }
