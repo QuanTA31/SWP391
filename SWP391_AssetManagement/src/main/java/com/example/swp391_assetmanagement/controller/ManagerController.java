@@ -1,7 +1,10 @@
 package com.example.swp391_assetmanagement.controller;
 
 import com.example.swp391_assetmanagement.dto.request.ViewAssetRequest;
+import com.example.swp391_assetmanagement.dto.request.ViewExternalProcessRequest;
 import com.example.swp391_assetmanagement.dto.response.ViewAllAssetResponse;
+import com.example.swp391_assetmanagement.dto.response.ViewExternalProcessAllResponse;
+import com.example.swp391_assetmanagement.usecase.ManagerAssetExternalProcessUsecase;
 import com.example.swp391_assetmanagement.usecase.ManagerUsecase;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +21,8 @@ public class ManagerController {
 
     private final ManagerUsecase managerUsecase;
 
+    private final ManagerAssetExternalProcessUsecase managerAssetExternalProcessUsecase;
+
     @GetMapping("/viewAsset")
     public String viewAsset(@ModelAttribute ViewAssetRequest request, HttpSession session, Model model){
 
@@ -27,12 +32,12 @@ public class ManagerController {
         return "ManagerViewAsset";
     }
 
-    @GetMapping("/viewRequestExternal")
-    public String viewRequest(){
+    @GetMapping("/viewExternalRequest")
+    public String viewRequest(@ModelAttribute ViewExternalProcessRequest request, HttpSession session, Model model){
 
-//        ViewInternalProcessAllResponse response = managerAssetInternalProcessUsecase.viewInternalProcess(request, session);
-//        model.addAttribute("data", response);
-//
-        return "RequestListExternal";
+        ViewExternalProcessAllResponse response = managerAssetExternalProcessUsecase.viewExternalProcess(request, session);
+        model.addAttribute("data", response);
+
+        return "RequestExternalList";
     }
 }

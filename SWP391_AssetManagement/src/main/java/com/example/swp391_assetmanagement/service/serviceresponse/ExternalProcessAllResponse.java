@@ -25,9 +25,6 @@ public class ExternalProcessAllResponse {
     @Column(name = "quantity")
     public Long quantity;
 
-    @Column(name = "date_of_execution")
-    public LocalDate dateOfExecution;
-
     @Column(name = "handover_date")
     public LocalDate handoverDate;
 
@@ -36,6 +33,9 @@ public class ExternalProcessAllResponse {
 
     @Column(name = "approval_status_id")
     public String approvalStatusId;
+
+    @Column(name = "option_detail")
+    public Long optionDetail;
 
     @Column(name = "total_items")
     public Integer totalItems;

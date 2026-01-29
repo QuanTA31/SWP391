@@ -19,12 +19,12 @@ public class ExternalProcessResponse {
 
     private final Long quantity;
 
-    private final LocalDate dateOfExecution;
-
     private final LocalDate handoverDate;
 
     private final String note;
 
     private final String approvalStatusName;
+
+    private final Long optionDetailId;
 
 }
