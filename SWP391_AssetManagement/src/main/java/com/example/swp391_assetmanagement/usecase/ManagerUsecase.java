@@ -1,9 +1,9 @@
 package com.example.swp391_assetmanagement.usecase;
 
-import com.example.swp391_assetmanagement.dto.request.ViewAssetRequest;
-import com.example.swp391_assetmanagement.dto.response.AssetResponse;
-import com.example.swp391_assetmanagement.dto.response.FiltersResponse;
-import com.example.swp391_assetmanagement.dto.response.ViewAllAssetResponse;
+import com.example.swp391_assetmanagement.dto.request.ViewAssetDTORequest;
+import com.example.swp391_assetmanagement.dto.response.AssetDTOResponse;
+import com.example.swp391_assetmanagement.dto.response.FiltersDTOResponse;
+import com.example.swp391_assetmanagement.dto.response.ViewAllAssetDTOResponse;
 import com.example.swp391_assetmanagement.enums.AssetStatus;
 import com.example.swp391_assetmanagement.enums.AssetType;
 import com.example.swp391_assetmanagement.enums.Location;
@@ -30,7 +30,7 @@ public class ManagerUsecase {
     private final AssetService assetService;
 
     @Transactional(readOnly = true)
-    public ViewAllAssetResponse viewAsset(ViewAssetRequest request, HttpSession session) {
+    public ViewAllAssetDTOResponse viewAsset(ViewAssetDTORequest request, HttpSession session) {
 
         validateRequest(request, session);
 
@@ -47,9 +47,9 @@ public class ManagerUsecase {
                         .build());
 
         if (serviceResponses.isEmpty()) {
-            return ViewAllAssetResponse.builder()
+            return ViewAllAssetDTOResponse.builder()
                     .assetResponses(Collections.emptyList())
-                    .filters(FiltersResponse.builder()
+                    .filters(FiltersDTOResponse.builder()
                             .locationId(request.getLocationId())
                             .assetTypeId(request.getAssetTypeId())
                             .assetStatusId(request.getAssetStatusId())
@@ -68,10 +68,10 @@ public class ManagerUsecase {
         boolean hasNext = pageIndex < totalPages;
         boolean hasPrevious = pageIndex > 1;
 
-        return ViewAllAssetResponse.builder()
+        return ViewAllAssetDTOResponse.builder()
                 .assetResponses(
                         serviceResponses.stream().map(
-                                        entity -> AssetResponse.builder()
+                                        entity -> AssetDTOResponse.builder()
                                                 .assetCode(entity.assetCode)
                                                 .description(entity.description)
                                                 .originalPrice(entity.originalPrice)
@@ -84,7 +84,7 @@ public class ManagerUsecase {
                                                 .build())
                                 .toList()
                 )
-                .filters(FiltersResponse.builder()
+                .filters(FiltersDTOResponse.builder()
                         .locationId(request.getLocationId())
                         .assetTypeId(request.getAssetTypeId())
                         .assetStatusId(request.getAssetStatusId())
@@ -97,7 +97,7 @@ public class ManagerUsecase {
                 .build();
     }
 
-    private void validateRequest(ViewAssetRequest request, HttpSession session) {
+    private void validateRequest(ViewAssetDTORequest request, HttpSession session) {
 
         // Check role
 //        if (!Objects.equals(session.getAttribute("ROLE"), Roles.MANAGER.getValue())) {

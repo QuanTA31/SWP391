@@ -6,9 +6,11 @@ import org.seasar.doma.Entity;
 
 @Getter
 @Entity
-public class UserDAOResponse {
+public class UserLoginResponse {
+
     @Column(name = "name")
     public String name;
+
     @Column(name = "role_id")
     public String roleId;
 }

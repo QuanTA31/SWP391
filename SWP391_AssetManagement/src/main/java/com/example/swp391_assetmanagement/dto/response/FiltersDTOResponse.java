@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class FiltersResponse {
+public class FiltersDTOResponse {
 
     private final String locationId;
 

@@ -1,7 +1,7 @@
 package com.example.swp391_assetmanagement.controller;
 
-import com.example.swp391_assetmanagement.dto.request.ViewAssetRequest;
-import com.example.swp391_assetmanagement.dto.response.ViewAllAssetResponse;
+import com.example.swp391_assetmanagement.dto.request.ViewAssetDTORequest;
+import com.example.swp391_assetmanagement.dto.response.ViewAllAssetDTOResponse;
 import com.example.swp391_assetmanagement.usecase.ManagerUsecase;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -19,18 +19,18 @@ public class ManagerController {
     private final ManagerUsecase managerUsecase;
 
     @GetMapping("/viewAsset")
-    public String viewAsset(@ModelAttribute ViewAssetRequest request, HttpSession session, Model model){
+    public String viewAsset(@ModelAttribute ViewAssetDTORequest request, HttpSession session, Model model){
 
-        ViewAllAssetResponse response = managerUsecase.viewAsset(request, session);
+        ViewAllAssetDTOResponse response = managerUsecase.viewAsset(request, session);
         model.addAttribute("assets", response);
 
         return "ManagerViewAsset";
     }
 
     @GetMapping("/viewRequest")
-    public String viewRequest(@ModelAttribute ViewAssetRequest request, HttpSession session, Model model){
+    public String viewRequest(@ModelAttribute ViewAssetDTORequest request, HttpSession session, Model model){
 
-        ViewAllAssetResponse response = managerUsecase.viewAsset(request, session);
+        ViewAllAssetDTOResponse response = managerUsecase.viewAsset(request, session);
         model.addAttribute("assets", response);
 
         return "ManagerViewAsset";

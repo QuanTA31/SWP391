@@ -1,8 +1,8 @@
 package com.example.swp391_assetmanagement.controller;
 
-import com.example.swp391_assetmanagement.service.UserService;
-import com.example.swp391_assetmanagement.dto.request.LoginRequest;
-import com.example.swp391_assetmanagement.service.serviceresponse.UserDAOResponse;
+import com.example.swp391_assetmanagement.dto.request.LoginDTORequest;
+import com.example.swp391_assetmanagement.dto.response.UserLoginDTOResponse;
+import com.example.swp391_assetmanagement.usecase.LoginUsecase;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RequiredArgsConstructor
 public class LoginController {
 
-    private final UserService userService;
+    private final LoginUsecase loginUsecase;
 
     @GetMapping("/login")
     public String showLoginPage() {
@@ -23,11 +23,11 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public String login(@ModelAttribute LoginRequest request, HttpSession session, Model model) {
-        UserDAOResponse userResponse = userService.authenticate(request);
+    public String login(@ModelAttribute LoginDTORequest request, HttpSession session, Model model) {
+        UserLoginDTOResponse userResponse = loginUsecase.executeLogin(request);
 
         if(userResponse != null){
-            session.setAttribute("user", userResponse.getName());
+            session.setAttribute("userName", userResponse.getName());
             session.setAttribute("role", userResponse.getRoleId());
             return "redirect:/ManagerViewAsset";
         }
