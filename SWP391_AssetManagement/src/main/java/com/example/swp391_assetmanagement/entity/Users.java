@@ -26,8 +26,8 @@ public class Users {
     @Column(name = "role_id")
     public String roleId;
 
-    @Column(name = "user_status_id")
-    public String userStatusId;
+    @Column(name = "status_id")
+    public String statusId;
 
     @Column(name = "created_at")
     public LocalDateTime createdAt;
