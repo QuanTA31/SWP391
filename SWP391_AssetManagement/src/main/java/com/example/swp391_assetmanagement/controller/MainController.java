@@ -24,6 +24,6 @@ public class MainController {
         ViewInternalProcessAllResponse response = managerAssetInternalProcessUsecase.viewInternalProcess(request, session);
         model.addAttribute("data", response);
 
-        return "RequestInternalListabcd";
+        return "RequestInternalList";
     }
 }
