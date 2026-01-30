@@ -1,12 +1,10 @@
 package com.example.swp391_assetmanagement.usecase;
 
-import com.example.swp391_assetmanagement.dto.request.ViewAssetDTORequest;
-import com.example.swp391_assetmanagement.dto.response.AssetDTOResponse;
-import com.example.swp391_assetmanagement.dto.response.FiltersDTOResponse;
-import com.example.swp391_assetmanagement.dto.response.ViewAllAssetDTOResponse;
-import com.example.swp391_assetmanagement.enums.AssetStatus;
-import com.example.swp391_assetmanagement.enums.AssetType;
-import com.example.swp391_assetmanagement.enums.Location;
+import com.example.swp391_assetmanagement.dto.request.ViewAssetRequest;
+import com.example.swp391_assetmanagement.dto.response.AssetResponse;
+import com.example.swp391_assetmanagement.dto.response.FiltersResponse;
+import com.example.swp391_assetmanagement.dto.response.ViewAllAssetResponse;
+import com.example.swp391_assetmanagement.enums.*;
 import com.example.swp391_assetmanagement.service.AssetService;
 import com.example.swp391_assetmanagement.service.servicerequest.AssetViewAllRequest;
 import com.example.swp391_assetmanagement.service.serviceresponse.AssetViewAllResponse;
@@ -30,9 +28,9 @@ public class ManagerUsecase {
     private final AssetService assetService;
 
     @Transactional(readOnly = true)
-    public ViewAllAssetDTOResponse viewAsset(ViewAssetDTORequest request, HttpSession session) {
+    public ViewAllAssetResponse viewAsset(ViewAssetRequest request, HttpSession session) {
 
-        validateRequest(request, session);
+        validateAssetRequest(request, session);
 
         int pageIndex = (request.getPageIndex() != null && request.getPageIndex() != 0)  ? request.getPageIndex() : 1;
 
@@ -47,15 +45,16 @@ public class ManagerUsecase {
                         .build());
 
         if (serviceResponses.isEmpty()) {
-            return ViewAllAssetDTOResponse.builder()
+            return ViewAllAssetResponse.builder()
                     .assetResponses(Collections.emptyList())
-                    .filters(FiltersDTOResponse.builder()
+                    .filters(FiltersResponse.builder()
                             .locationId(request.getLocationId())
                             .assetTypeId(request.getAssetTypeId())
                             .assetStatusId(request.getAssetStatusId())
                             .page(pageIndex)
                             .pageSize(PAGE_SIZE)
                             .totalItems(0)
+                            .totalPages(1)
                             .hasNextPage(false)
                             .hasPreviousPage(false)
                             .build())
@@ -68,10 +67,10 @@ public class ManagerUsecase {
         boolean hasNext = pageIndex < totalPages;
         boolean hasPrevious = pageIndex > 1;
 
-        return ViewAllAssetDTOResponse.builder()
+        return ViewAllAssetResponse.builder()
                 .assetResponses(
                         serviceResponses.stream().map(
-                                        entity -> AssetDTOResponse.builder()
+                                        entity -> AssetResponse.builder()
                                                 .assetCode(entity.assetCode)
                                                 .description(entity.description)
                                                 .originalPrice(entity.originalPrice)
@@ -84,20 +83,21 @@ public class ManagerUsecase {
                                                 .build())
                                 .toList()
                 )
-                .filters(FiltersDTOResponse.builder()
+                .filters(FiltersResponse.builder()
                         .locationId(request.getLocationId())
                         .assetTypeId(request.getAssetTypeId())
                         .assetStatusId(request.getAssetStatusId())
                         .page(pageIndex)
                         .pageSize(PAGE_SIZE)
                         .totalItems(totalItems)
+                        .totalPages(totalPages)
                         .hasNextPage(hasNext)
                         .hasPreviousPage(hasPrevious)
                         .build())
                 .build();
     }
 
-    private void validateRequest(ViewAssetDTORequest request, HttpSession session) {
+    private void validateAssetRequest(ViewAssetRequest request, HttpSession session) {
 
         // Check role
 //        if (!Objects.equals(session.getAttribute("ROLE"), Roles.MANAGER.getValue())) {
