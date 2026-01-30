@@ -18,7 +18,7 @@ public class MainController {
 
     private final ManagerAssetInternalProcessUsecase managerAssetInternalProcessUsecase;
 
-    @GetMapping("/viewInternalRequest")
+    @GetMapping("/viewRequest")
     public String viewRequest(@ModelAttribute ViewInternalProcessRequest request, HttpSession session, Model model){
 
         ViewInternalProcessAllResponse response = managerAssetInternalProcessUsecase.viewInternalProcess(request, session);
