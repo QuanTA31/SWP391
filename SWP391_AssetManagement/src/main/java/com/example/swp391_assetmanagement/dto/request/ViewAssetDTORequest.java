@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ViewAssetRequest {
+public class ViewAssetDTORequest {
 
     private String locationId;
 

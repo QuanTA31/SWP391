@@ -27,4 +27,5 @@ public class AssetServiceImpl implements AssetService {
 
         return daoResponses;
     }
+
 }
