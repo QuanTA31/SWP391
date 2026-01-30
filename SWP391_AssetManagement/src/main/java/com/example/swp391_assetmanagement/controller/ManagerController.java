@@ -26,13 +26,4 @@ public class ManagerController {
 
         return "ManagerViewAsset";
     }
-
-    @GetMapping("/viewRequest")
-    public String viewRequest(@ModelAttribute ViewAssetRequest request, HttpSession session, Model model){
-
-        ViewAllAssetResponse response = managerUsecase.viewAsset(request, session);
-        model.addAttribute("assets", response);
-
-        return "ManagerViewAsset";
-    }
 }

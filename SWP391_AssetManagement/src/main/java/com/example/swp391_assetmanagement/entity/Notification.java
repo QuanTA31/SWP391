@@ -18,9 +18,9 @@ public class Notification {
     @Column(name = "assignee_to")
     public Long assigneeTo;
 
-    @Column(name = "request_progress_management_id")
-    public Long requestProgressManagementId;
+    @Column(name = "asset_request_id")
+    public Long assetRequestId;
 
-    @Column(name = "is_viewed")
-    public Boolean isViewed;
+    @Column(name = "read_already")
+    public Boolean readAlready;
 }

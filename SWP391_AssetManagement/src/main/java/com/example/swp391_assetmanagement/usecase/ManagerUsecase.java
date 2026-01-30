@@ -4,9 +4,7 @@ import com.example.swp391_assetmanagement.dto.request.ViewAssetRequest;
 import com.example.swp391_assetmanagement.dto.response.AssetResponse;
 import com.example.swp391_assetmanagement.dto.response.FiltersResponse;
 import com.example.swp391_assetmanagement.dto.response.ViewAllAssetResponse;
-import com.example.swp391_assetmanagement.enums.AssetStatus;
-import com.example.swp391_assetmanagement.enums.AssetType;
-import com.example.swp391_assetmanagement.enums.Location;
+import com.example.swp391_assetmanagement.enums.*;
 import com.example.swp391_assetmanagement.service.AssetService;
 import com.example.swp391_assetmanagement.service.servicerequest.AssetViewAllRequest;
 import com.example.swp391_assetmanagement.service.serviceresponse.AssetViewAllResponse;
@@ -32,7 +30,7 @@ public class ManagerUsecase {
     @Transactional(readOnly = true)
     public ViewAllAssetResponse viewAsset(ViewAssetRequest request, HttpSession session) {
 
-        validateRequest(request, session);
+        validateAssetRequest(request, session);
 
         int pageIndex = (request.getPageIndex() != null && request.getPageIndex() != 0)  ? request.getPageIndex() : 1;
 
@@ -56,6 +54,7 @@ public class ManagerUsecase {
                             .page(pageIndex)
                             .pageSize(PAGE_SIZE)
                             .totalItems(0)
+                            .totalPages(1)
                             .hasNextPage(false)
                             .hasPreviousPage(false)
                             .build())
@@ -91,13 +90,14 @@ public class ManagerUsecase {
                         .page(pageIndex)
                         .pageSize(PAGE_SIZE)
                         .totalItems(totalItems)
+                        .totalPages(totalPages)
                         .hasNextPage(hasNext)
                         .hasPreviousPage(hasPrevious)
                         .build())
                 .build();
     }
 
-    private void validateRequest(ViewAssetRequest request, HttpSession session) {
+    private void validateAssetRequest(ViewAssetRequest request, HttpSession session) {
 
         // Check role
 //        if (!Objects.equals(session.getAttribute("ROLE"), Roles.MANAGER.getValue())) {

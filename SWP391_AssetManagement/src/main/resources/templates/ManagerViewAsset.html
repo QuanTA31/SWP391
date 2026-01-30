@@ -175,7 +175,7 @@
                     <th:block th:if="${assets.filters.totalPages != null}">
                         <li class="page-item"
                             th:each="i : ${#numbers.sequence(0, assets.filters.totalPages - 1)}"
-                            th:classappend="${i == assets.filters.page} ? 'active'">
+                            th:classappend="${i +1 == assets.filters.page} ? 'active'">
                             <a class="page-link"
                                th:text="${i + 1}"
                                th:href="@{/manager/viewAsset(

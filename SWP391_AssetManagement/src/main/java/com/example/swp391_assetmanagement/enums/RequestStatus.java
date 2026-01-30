@@ -11,13 +11,14 @@ import org.seasar.doma.Domain;
 public enum RequestStatus implements EnumBase<RequestStatus> {
 
     DRAFT("01", "DRAFT"),
-    SUBMITTED("02", "SUBMITTED"),
-    PENDING_APPROVAL("03", "PENDING_APPROVAL"),
-    APPROVED("04", "APPROVED"),
+    PENDING_APPROVAL("02", "PENDING_APPROVAL"),
+    APPROVED("03", "APPROVED"),
+    RESEARCH("04", "RESEARCH"),
     IN_PROGRESS("05", "IN_PROGRESS"),
     COMPLETED("06", "COMPLETED"),
     CANCELLED("07", "CANCELLED"),
-    WAITING_PARENT("08", "WAITING_PARENT");
+    RESEARCH_DONE("08", "RESEARCH_DONE");
+
 
     private final String value;
     private final String name;

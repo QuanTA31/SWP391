@@ -7,14 +7,11 @@ import org.seasar.doma.Domain;
 @Getter
 @AllArgsConstructor
 @Domain(valueType = String.class, factoryMethod = "of")
-public enum RequestType implements EnumBase<RequestType> {
+public enum UserStatus implements EnumBase<UserStatus> {
 
-    ALLOCATION("01", "ALLOCATION"),
-    RETRIEVAL("02", "RETRIEVAL"),
-    PROCUREMENT("03", "PROCUREMENT"),
-    STOCK_IN("04", "STOCK_IN"),
-    MAINTENANCE("05", "MAINTENANCE"),
-    LIQUIDATION("06", "LIQUIDATION");
+    ACTIVE("01", "ACTIVE"),
+    SUSPENDED("02", "SUSPENDED"),
+    DISABLED("03", "DISABLED");
 
     private final String value;
     private final String name;
@@ -27,11 +24,11 @@ public enum RequestType implements EnumBase<RequestType> {
         return name;
     }
 
-    public static RequestType of(String key) {
-        return EnumBase.of(RequestType.class, key);
+    public static Roles of(String key) {
+        return EnumBase.of(Roles.class, key);
     }
 
     public static boolean hasValue(String key) {
-        return EnumBase.hasValue(RequestType.class, key);
+        return EnumBase.hasValue(Roles.class, key);
     }
 }
