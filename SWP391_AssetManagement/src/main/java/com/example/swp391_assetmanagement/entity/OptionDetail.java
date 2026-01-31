@@ -16,8 +16,8 @@ public class OptionDetail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
-    @Column(name = "asset_request_detail_id")
-    public Long assetRequestDetailId;
+    @Column(name = "asset_external_request_detail")
+    public Long assetExternalRequestDetail;
 
     @Column(name = "total_amount")
     public BigDecimal totalAmount;
