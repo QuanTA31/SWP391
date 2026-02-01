@@ -5,6 +5,7 @@ import org.seasar.doma.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Setter
 @Entity
@@ -15,25 +16,28 @@ public class OptionDetail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
-    @Column(name = "asset_external_process_id")
-    public Long assetExternalProcessId;
+    @Column(name = "asset_external_request_detail")
+    public Long assetExternalRequestDetail;
 
-    @Column(name = "unit_price")
-    public BigDecimal unitPrice;
+    @Column(name = "total_amount")
+    public BigDecimal totalAmount;
 
-    @Column(name = "description")
-    public String description;
-
-    @Column(name = "approval_status_id")
-    public String approvalStatusId;
+    @Column(name = "describe")
+    public String describe;
 
     @Column(name = "merchant")
     public String merchant;
 
+    @Column(name = "is_selected")
+    public Boolean isSelected;
+
+    @Column(name = "approved_date")
+    public Date approvedDate;
+
     @Column(name = "approver_by")
     public Long approverBy;
 
-    @Column(name = "approved_at")
+    @Column(name = "created_at")
     public LocalDateTime approvedAt;
 }
 

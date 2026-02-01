@@ -27,6 +27,9 @@ public class UserDetail {
     @Column(name = "date_of_birth")
     public LocalDate dateOfBirth;
 
+    @Column(name = "location_id")
+    public String locationId;
+
     @Column(name = "created_at")
     public LocalDateTime createdAt;
 }

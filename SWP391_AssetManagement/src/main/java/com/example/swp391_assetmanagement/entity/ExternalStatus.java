@@ -1,12 +1,15 @@
 package com.example.swp391_assetmanagement.entity;
 
 import lombok.Setter;
-import org.seasar.doma.*;
+import org.seasar.doma.Column;
+import org.seasar.doma.Entity;
+import org.seasar.doma.Id;
+import org.seasar.doma.Table;
 
 @Setter
 @Entity
-@Table(name = "approval_status")
-public class ApprovalStatus {
+@Table(name = "external_status")
+public class ExternalStatus {
 
     @Id
     @Column(name = "id")
