@@ -7,36 +7,21 @@ import java.time.LocalDateTime;
 
 @Setter
 @Entity
-@Table(name = "asset_request_detail")
-public class AssetRequestDetail {
+@Table(name = "asset_internal_request_detail")
+public class AssetExternalRequestDetail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
-    @Column(name = "asset_id")
-    public Long assetId;
-
     @Column(name = "asset_request_id")
     public String assetRequestId;
 
-    @Column(name = "asset_type_id")
-    public String assetTypeId;
+    @Column(name = "asset_request_type_id")
+    public String assetRequestTypeId;
 
     @Column(name = "quantity")
     public Integer quantity;
-
-    @Column(name = "from_location_id")
-    public String fromLocationId;
-
-    @Column(name = "to_location_id")
-    public String toLocationId;
-
-    @Column(name = "from_user_id")
-    public Long fromUserId;
-
-    @Column(name = "to_user_id")
-    public Long toUserId;
 
     @Column(name = "note")
     public String note;

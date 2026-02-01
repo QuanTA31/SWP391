@@ -17,7 +17,8 @@ public enum RequestStatus implements EnumBase<RequestStatus> {
     IN_PROGRESS("05", "IN_PROGRESS"),
     COMPLETED("06", "COMPLETED"),
     CANCELLED("07", "CANCELLED"),
-    RESEARCH_DONE("08", "RESEARCH_DONE");
+    RESEARCH_DONE("08", "RESEARCH_DONE"),
+    STOCK_IN("09", "STOCK_IN");
 
 
     private final String value;

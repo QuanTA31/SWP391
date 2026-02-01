@@ -7,13 +7,12 @@ import org.seasar.doma.Domain;
 @Getter
 @AllArgsConstructor
 @Domain(valueType = String.class, factoryMethod = "of")
-public enum RequestType implements EnumBase<RequestType> {
+public enum ExternalStatus implements EnumBase<RequestType> {
 
-    ALLOCATION("01", "ALLOCATION"),
-    RETRIEVAL("02", "RETRIEVAL"),
-    PROCUREMENT("03", "PROCUREMENT"),
-    MAINTENANCE("04", "MAINTENANCE"),
-    LIQUIDATION("05", "LIQUIDATION");
+    IN_PROGRESS("01", "IN_PROGRESS"),
+    UN_REPAIR("02", "UN_REPAIR"),
+    STOCK_IN("03", "STOCK_IN"),
+    COMPLETED("04", "COMPLETED");
 
     private final String value;
     private final String name;
