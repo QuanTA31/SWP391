@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 @Getter
 @Builder
-public class AssetResponse {
+public class AssetDTOResponse {
 
     private final String assetCode;
 

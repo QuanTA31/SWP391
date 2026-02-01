@@ -7,9 +7,9 @@ import java.util.List;
 
 @Getter
 @Builder
-public class ViewAllAssetResponse {
+public class ViewAllAssetDTOResponse {
 
-    private final List<AssetResponse> assetResponses;
+    private final List<AssetDTOResponse> assetResponses;
 
-    private final FiltersResponse filters;
+    private final FiltersDTOResponse filters;
 }

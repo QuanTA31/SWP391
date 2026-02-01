@@ -1,0 +1,31 @@
+package com.example.swp391_assetmanagement.entity;
+
+import lombok.Setter;
+import org.seasar.doma.*;
+
+import java.time.LocalDateTime;
+
+@Setter
+@Entity
+@Table(name = "asset_internal_request_detail")
+public class AssetExternalRequestDetail {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public Long id;
+
+    @Column(name = "asset_request_id")
+    public String assetRequestId;
+
+    @Column(name = "asset_request_type_id")
+    public String assetRequestTypeId;
+
+    @Column(name = "quantity")
+    public Integer quantity;
+
+    @Column(name = "note")
+    public String note;
+
+    @Column(name = "created_at")
+    public LocalDateTime createdAt;
+}

@@ -1,0 +1,39 @@
+package com.example.swp391_assetmanagement.controller;
+
+import com.example.swp391_assetmanagement.dto.request.LoginDTORequest;
+import com.example.swp391_assetmanagement.dto.response.UserLoginDTOResponse;
+import com.example.swp391_assetmanagement.usecase.LoginUsecase;
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+
+@Controller
+@RequiredArgsConstructor
+public class LoginController {
+
+    private final LoginUsecase loginUsecase;
+
+    @GetMapping("/login")
+    public String showLoginPage() {
+        return "login";
+    }
+
+    @PostMapping("/login")
+    public String login(@ModelAttribute LoginDTORequest request, HttpSession session, Model model) {
+        UserLoginDTOResponse userResponse = loginUsecase.executeLogin(request);
+
+        if(userResponse != null){
+            session.setAttribute("userName", userResponse.getName());
+            session.setAttribute("role", userResponse.getRoleId());
+            return "redirect:/ManagerViewAsset";
+        }
+        else {
+            model.addAttribute("error", "Incorrect username or password");
+            return "login";
+        }
+    }
+}
