@@ -1,14 +1,13 @@
 package com.example.swp391_assetmanagement.usecase;
 
-import com.example.swp391_assetmanagement.dto.request.ViewExternalProcessRequest;
+import com.example.swp391_assetmanagement.dto.request.ViewAllProcessRequest;
 import com.example.swp391_assetmanagement.dto.response.*;
-//import com.example.swp391_assetmanagement.enums.ApprovalStatus;
-import com.example.swp391_assetmanagement.enums.AssetType;
 import com.example.swp391_assetmanagement.enums.RequestStatus;
 import com.example.swp391_assetmanagement.enums.RequestType;
-import com.example.swp391_assetmanagement.service.AssetExternalProcessService;
-import com.example.swp391_assetmanagement.service.servicerequest.ExternalProcessRequest;
-import com.example.swp391_assetmanagement.service.serviceresponse.ExternalProcessAllResponse;
+import com.example.swp391_assetmanagement.enums.Roles;
+import com.example.swp391_assetmanagement.service.AssetAllProcessService;
+import com.example.swp391_assetmanagement.service.servicerequest.AllProcessRequest;
+import com.example.swp391_assetmanagement.service.serviceresponse.RequestProcessAllResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,22 +21,22 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ManagerAssetExternalProcessUsecase {
+public class ManageAssetRequestProcessUseCase {
 
     private final Integer PAGE_SIZE = 15;
 
-    private final AssetExternalProcessService assetExternalProcessService;
+    private final AssetAllProcessService assetAllProcessService;
 
     @Transactional(readOnly = true)
-    public ViewExternalProcessAllResponse viewExternalProcess(ViewExternalProcessRequest request, HttpSession session) {
+    public ViewAllProcessResponse viewAllProcessAllResponseProcess(ViewAllProcessRequest request, HttpSession session) {
 
-        validateExternalRequest(request, session);
+        validateAllRequest(request, session);
 
         int pageIndex = (request.getPageIndex() != null && request.getPageIndex() != 0)  ? request.getPageIndex() : 1;
 
         // Get data from database
-        List<ExternalProcessAllResponse> externalProcessResponses = assetExternalProcessService.viewExternalProcess(
-                ExternalProcessRequest.builder()
+        List<RequestProcessAllResponse> allProcessResponses = assetAllProcessService.viewAllProcess(
+                AllProcessRequest.builder()
                         .requestStatusId(request.getRequestStatusId())
                         .requestTypeId(request.getRequestTypeId())
                         .approvalStatusId(request.getApprovalStatusId())
@@ -45,10 +44,10 @@ public class ManagerAssetExternalProcessUsecase {
                         .pageSize(PAGE_SIZE)
                         .build());
 
-        if (externalProcessResponses.isEmpty()) {
-            return ViewExternalProcessAllResponse.builder()
-                    .externalProcessResponses(Collections.emptyList())
-                    .filters(FilterExternalResponse.builder()
+        if (allProcessResponses.isEmpty()) {
+            return ViewAllProcessResponse.builder()
+                    .allProcessResponses(Collections.emptyList())
+                    .filters(FilterAllResponse.builder()
                             .requestStatusId(request.getRequestStatusId())
                             .requestTypeId(request.getRequestTypeId())
                             .approvalStatusId(request.getApprovalStatusId())
@@ -62,29 +61,29 @@ public class ManagerAssetExternalProcessUsecase {
                     .build();
         }
 
-        int totalItems = externalProcessResponses.stream().findFirst().get().getTotalItems();
+        int totalItems = allProcessResponses.stream().findFirst().get().getTotalItems();
 
         int totalPages = (int) Math.ceil((double) totalItems / PAGE_SIZE);
         boolean hasNext = pageIndex < totalPages;
         boolean hasPrevious = pageIndex > 1;
 
-        return ViewExternalProcessAllResponse.builder()
-                .externalProcessResponses(
-                        externalProcessResponses.stream().map(
-                                        entity -> ExternalProcessResponse.builder()
-                                                .assetId(entity.assetId)
-                                                .assetTypeName(AssetType.of(entity.assetTypeId).getName())
-                                                .requestStatusName(RequestStatus.of(entity.requestStatusId).getName())
+        return ViewAllProcessResponse.builder()
+                .allProcessResponses(
+                        allProcessResponses.stream().map(
+                                        entity -> AllProcessResponse.builder()
                                                 .requestTypeName(RequestType.of(entity.requestTypeId).getName())
-                                                .quantity(entity.quantity)
+                                                .requestedBy(Roles.of(entity.requestedBy).getName())
+                                                .requestedDate(entity.requestDate)
+                                                .requestStatusName(RequestStatus.of(entity.requestStatusId).getName())
+                                                .approvalBy(Roles.of(entity.approvalBy).getName())
+                                                .approvalDate(entity.approvalDate)
                                                 .handoverDate(entity.handoverDate)
                                                 .note(entity.note)
-                                                //.approvalStatusName(ApprovalStatus.of(entity.approvalStatusId).getName())
-                                                .optionDetailId(entity.optionDetail)
+                                                .createAt(entity.createdAt)
                                                 .build())
                                 .toList()
                 )
-                .filters(FilterExternalResponse.builder()
+                .filters(FilterAllResponse.builder()
                         .requestStatusId(request.getRequestStatusId())
                         .requestTypeId(request.getRequestTypeId())
                         .approvalStatusId(request.getApprovalStatusId())
@@ -98,7 +97,8 @@ public class ManagerAssetExternalProcessUsecase {
                 .build();
     }
 
-    private void validateExternalRequest(ViewExternalProcessRequest request, HttpSession session) {
+
+    private void validateAllRequest(ViewAllProcessRequest request, HttpSession session) {
 
         // Check role
 //        if (!Objects.equals(session.getAttribute("ROLE"), Roles.MANAGER.getValue())) {

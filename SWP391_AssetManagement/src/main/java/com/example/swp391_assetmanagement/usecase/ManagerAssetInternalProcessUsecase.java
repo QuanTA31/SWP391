@@ -77,7 +77,7 @@ public class ManagerAssetInternalProcessUsecase {
                                                 .dateOfExecution(entity.dateOfExecution)
                                                 .handoverDate(entity.handoverDate)
                                                 .note(entity.note)
-                                                .approvalStatusName(ApprovalStatus.of(entity.approvalStatusId).getName())
+//                                                .approvalStatusName(ApprovalStatus.of(entity.approvalStatusId).getName())
                                                 .build())
                                 .toList()
                 )
@@ -109,8 +109,8 @@ public class ManagerAssetInternalProcessUsecase {
         if (!ObjectUtils.isEmpty(request.getRequestTypeId()) && !RequestType.hasValue(request.getRequestTypeId())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request Type is invalid !");
         }
-        if (!ObjectUtils.isEmpty(request.getApprovalStatusId()) && !ApprovalStatus.hasValue(request.getApprovalStatusId())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Approval Status is invalid !");
-        }
+//        if (!ObjectUtils.isEmpty(request.getApprovalStatusId()) && !ApprovalStatus.hasValue(request.getApprovalStatusId())) {
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Approval Status is invalid !");
+//        }
     }
 }

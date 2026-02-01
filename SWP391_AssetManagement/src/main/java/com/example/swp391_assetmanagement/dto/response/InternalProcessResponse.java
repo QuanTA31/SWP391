@@ -25,6 +25,6 @@ public class InternalProcessResponse {
 
     private final String note;
 
-    private final String approvalStatusName;
+ //   private final String approvalStatusName;
 
 }
