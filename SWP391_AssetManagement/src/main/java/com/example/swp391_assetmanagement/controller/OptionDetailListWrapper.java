@@ -10,7 +10,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class ProcurementPlanListWrapper {
+public class OptionDetailListWrapper {
     @Valid
     @NotEmpty
     private List<OptionDetail> plans;

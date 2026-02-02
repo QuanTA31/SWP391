@@ -10,6 +10,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -22,8 +23,8 @@ public class OptionDetail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
-    @Column(name = "asset_external_process_id")
-    public Long assetExternalProcessId;
+    @Column(name = "asset_external_request_detail_id")
+    public Long assetExternalRequestDetailId;
 
     @Column(name = "unit_price")
     @NotNull
@@ -31,23 +32,32 @@ public class OptionDetail {
     @Digits(integer = 12, fraction = 2)
     public BigDecimal unitPrice;
 
-    @Column(name = "description")
+    @Column(name = "describe")
     @NotBlank
     @Size(max = 255)
     public String description;
-
-    @Column(name = "approval_status_id")
-    public String approvalStatusId;
 
     @Column(name = "merchant")
     @NotBlank
     @Size(max = 120)
     public String merchant;
 
+    @Column(name = "warranty_period")
+    public LocalDate warrantyPeriod;
+
+    @Column(name = "is_selected")
+    public Boolean isSelected;
+
+    @Column(name = "approved_date")
+    public LocalDate approvedDate;
+
     @Column(name = "approver_by")
     public Long approverBy;
 
-    @Column(name = "approved_at")
-    public LocalDateTime approvedAt;
+    @Column(name = "approver_name")
+    public String approverName;
+
+    @Column(name = "created_at", insertable = false, updatable = false)
+    public LocalDateTime createdAt;
 }
 

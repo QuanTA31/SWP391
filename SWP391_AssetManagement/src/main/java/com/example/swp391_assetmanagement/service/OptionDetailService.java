@@ -1,11 +1,12 @@
 package com.example.swp391_assetmanagement.service;
 
 import com.example.swp391_assetmanagement.entity.OptionDetail;
+import com.example.swp391_assetmanagement.service.servicerequest.OptionDetailListRequest;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface ProcurementPlanService {
+public interface OptionDetailService {
 
     Optional<OptionDetail> getById(Long id);
 
@@ -15,8 +16,13 @@ public interface ProcurementPlanService {
 
     void saveAll(List<OptionDetail> plans);
 
-    List<OptionDetail> getByProcessId(Long processId);
+    List<OptionDetail> getByRequestDetailId(OptionDetailListRequest request);
+
+    int countByRequestDetailId(OptionDetailListRequest request);
+
+    void unselectByRequestDetailId(Long requestDetailId);
 
     void deleteById(Long id);
 
 }
+

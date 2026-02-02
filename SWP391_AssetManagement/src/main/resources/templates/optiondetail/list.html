@@ -1,0 +1,387 @@
+﻿﻿<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Option Detail - List</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/MainView.css}">
+    <link rel="stylesheet" th:href="@{/css/ViewAsset.css}">
+</head>
+
+<body>
+
+<div class="app-wrapper">
+    <div class="app-header">
+        <span>Asset Tracker</span>
+        <span>Option Detail</span>
+    </div>
+
+    <div class="app-content">
+        <div class="sidebar">
+            <div class="fw-semibold mb-2">Menu</div>
+            <div class="menu-item">Main View Asset</div>
+            <div class="menu-item">Create Request</div>
+            <div class="menu-item">View Request</div>
+            <div class="menu-item">Approval Request</div>
+            <div class="menu-item active">View Option Detail</div>
+        </div>
+
+        <div class="content-right">
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <span class="fw-semibold">View Option Detail</span>
+                </div>
+                <form class="toolbar-right" method="get" th:action="@{/option-detail/list}">
+                    <input type="hidden" name="asset_external_request_detail_id" th:value="${asset_external_request_detail_id}">
+                    <select name="status" class="form-select form-select-sm">
+                        <option value="all" th:selected="${status == 'all'}">All</option>
+                        <option value="selected" th:selected="${status == 'selected'}">Selected</option>
+                        <option value="unselected" th:selected="${status == 'unselected'}">Unselected</option>
+                    </select>
+                    <button class="btn btn-sm btn-save-draft" type="submit">Filter</button>
+                </form>
+                <div class="toolbar-right ms-2">
+                    <a class="btn btn-sm btn-save-draft"
+                       data-bs-toggle="modal"
+                       data-bs-target="#createOptionModal"
+                       th:if="${canManage}">
+                        Create Option
+                    </a>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover w-100">
+                        <colgroup>
+                            <col style="width: 140px;">
+                            <col style="width: 240px;">
+                            <col style="width: 110px;">
+                            <col style="width: 140px;">
+                            <col style="width: 120px;">
+                            <col style="width: 140px;">
+                            <col style="width: 120px;">
+                            <col style="width: 140px;">
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th class="col-asset-tag">Merchant</th>
+                            <th>Description</th>
+                            <th class="col-price">Unit Price</th>
+                            <th class="col-price">Warranty</th>
+                            <th class="col-price">Select</th>
+                            <th class="col-price">Approver</th>
+                            <th class="col-price">Approved At</th>
+                            <th style="width: 140px;">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${plans == null || plans.isEmpty()}">
+                            <td colspan="8" class="text-center text-muted">
+                                No data found
+                            </td>
+                        </tr>
+                        <tr th:each="p : ${plans}">
+                            <td th:text="${p.merchant}"></td>
+                            <td class="text-multiline" th:text="${p.description}"></td>
+                            <td th:text="${p.unitPrice}"></td>
+                            <td>
+                                <span th:text="${p.warrantyPeriod != null ? #temporals.format(p.warrantyPeriod, 'yyyy-MM-dd') : ''}"></span>
+                            </td>
+                            <td>
+                                <form method="post" th:action="@{/option-detail/approval}" th:if="${canApprove}" class="js-select-form">
+                                    <input type="hidden" name="id" th:value="${p.id}">
+                                    <input type="hidden" name="asset_external_request_detail_id" th:value="${asset_external_request_detail_id}">
+                                    <input type="hidden" name="selected" value="true" class="js-selected-input">
+                                    <button class="btn btn-sm btn-save-draft js-select-btn" type="submit"
+                                            th:attr="data-selected=${p.isSelected}">
+                                        <span th:text="${p.isSelected ? 'Selected' : 'Select'}">Select</span>
+                                    </button>
+                                </form>
+                                <span th:unless="${canApprove}" th:text="${p.isSelected ? 'Selected' : '-'}"></span>
+                            </td>
+                            <td th:text="${p.approvedDate != null ? 'Manager01' : ''}"></td>
+                            <td th:text="${p.approvedDate != null ? #temporals.format(p.approvedDate, 'yyyy-MM-dd') : ''}"></td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary mb-1"
+                                        type="button"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editOptionModal"
+                                        th:attr="data-id=${p.id},
+                                                 data-merchant=${p.merchant},
+                                                 data-description=${p.description},
+                                                 data-unit-price=${p.unitPrice},
+                                                 data-warranty-period=${p.warrantyPeriod != null ? #temporals.format(p.warrantyPeriod, 'yyyy-MM-dd') : ''}">
+                                    Edit
+                                </button>
+                                <form method="post"
+                                      th:action="@{/option-detail/delete/{id}(id=${p.id})}">
+                                    <input type="hidden" name="asset_external_request_detail_id" th:value="${asset_external_request_detail_id}">
+                                    <button class="btn btn-sm btn-outline-danger" type="submit">
+                                        Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="content-pagination">
+                <div class="pagination-info">
+                    Showing
+                    <strong th:text="${totalItems == 0 ? 0 : (page - 1) * pageSize + 1}">0</strong>
+                    -
+                    <strong th:text="${totalItems == 0 ? 0 : (page - 1) * pageSize + (plans != null ? plans.size() : 0)}">0</strong>
+                    of
+                    <strong th:text="${totalItems}">0</strong>
+                </div>
+
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item" th:classappend="${!hasPreviousPage} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/option-detail/list(
+                               page=${page - 1},
+                               status=${status},
+                               asset_external_request_detail_id=${asset_external_request_detail_id}
+                           )}">
+                            &laquo;
+                        </a>
+                    </li>
+
+                    <li class="page-item"
+                        th:each="i : ${#numbers.sequence(1, totalPages)}"
+                        th:classappend="${i == page} ? 'active'">
+                        <a class="page-link"
+                           th:text="${i}"
+                           th:href="@{/option-detail/list(
+                               page=${i},
+                               status=${status},
+                               asset_external_request_detail_id=${asset_external_request_detail_id}
+                           )}">
+                        </a>
+                    </li>
+
+                    <li class="page-item" th:classappend="${!hasNextPage} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/option-detail/list(
+                               page=${page + 1},
+                               status=${status},
+                               asset_external_request_detail_id=${asset_external_request_detail_id}
+                           )}">
+                            &raquo;
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="createOptionModal" tabindex="-1" aria-labelledby="createOptionModalLabel" aria-hidden="true" th:if="${canManage}">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createOptionModalLabel">Create Option Detail</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form th:action="@{/option-detail/create}" method="post" th:object="${createPlans}">
+                <div class="modal-body">
+                    <input type="hidden" name="asset_external_request_detail_id" th:value="${asset_external_request_detail_id}"/>
+                    <div class="mb-2">
+                        <label class="form-label">Merchant</label>
+                        <input class="form-control form-control-sm"
+                               th:field="*{plans[0].merchant}"
+                               th:classappend="${#fields.hasErrors('plans[0].merchant')} ? 'is-invalid'"
+                               required maxlength="255"/>
+                        <div class="invalid-feedback"
+                             th:if="${#fields.hasErrors('plans[0].merchant')}"
+                             th:errors="*{plans[0].merchant}">
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Describe</label>
+                        <input class="form-control form-control-sm"
+                               th:field="*{plans[0].description}"
+                               th:classappend="${#fields.hasErrors('plans[0].description')} ? 'is-invalid'"
+                               required maxlength="255"/>
+                        <div class="invalid-feedback"
+                             th:if="${#fields.hasErrors('plans[0].description')}"
+                             th:errors="*{plans[0].description}">
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Unit Price</label>
+                        <input class="form-control form-control-sm"
+                               th:field="*{plans[0].unitPrice}"
+                               th:classappend="${#fields.hasErrors('plans[0].unitPrice')} ? 'is-invalid'"
+                               type="number" step="0.01" min="0.01" required/>
+                        <div class="invalid-feedback"
+                             th:if="${#fields.hasErrors('plans[0].unitPrice')}"
+                             th:errors="*{plans[0].unitPrice}">
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Warranty Period</label>
+                        <input class="form-control form-control-sm"
+                               th:field="*{plans[0].warrantyPeriod}"
+                               type="date"/>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-sm btn-save-draft" type="submit">Save Option</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editOptionModal" tabindex="-1" aria-labelledby="editOptionModalLabel" aria-hidden="true" th:if="${canManage}">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editOptionModalLabel">Edit Option Detail</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="edit-option-form" method="post" th:object="${editPlans}">
+                <div class="modal-body">
+                    <input type="hidden" name="asset_external_request_detail_id" th:value="${asset_external_request_detail_id}"/>
+                    <input type="hidden" th:field="*{plans[0].id}"/>
+                    <div class="mb-2">
+                        <label class="form-label">Merchant</label>
+                        <input class="form-control form-control-sm"
+                               th:field="*{plans[0].merchant}"
+                               required maxlength="255"/>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Describe</label>
+                        <input class="form-control form-control-sm"
+                               th:field="*{plans[0].description}"
+                               required maxlength="255"/>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Unit Price</label>
+                        <input class="form-control form-control-sm"
+                               th:field="*{plans[0].unitPrice}"
+                               type="number" step="0.01" min="0.01" required/>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Warranty Period</label>
+                        <input class="form-control form-control-sm"
+                               th:field="*{plans[0].warrantyPeriod}"
+                               type="date"/>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-sm btn-save-draft" type="submit">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    (function () {
+        const editModal = document.getElementById("editOptionModal");
+        const editForm = document.getElementById("edit-option-form");
+        if (!editModal || !editForm) {
+            return;
+        }
+        editModal.addEventListener("show.bs.modal", function (event) {
+            const button = event.relatedTarget;
+            if (!button) {
+                return;
+            }
+            const id = button.getAttribute("data-id");
+            const merchant = button.getAttribute("data-merchant");
+            const description = button.getAttribute("data-description");
+            const unitPrice = button.getAttribute("data-unit-price");
+            const warrantyPeriod = button.getAttribute("data-warranty-period");
+            editForm.action = "/option-detail/edit/" + id;
+            const idInput = editForm.querySelector('input[name="plans[0].id"]');
+            const merchantInput = editForm.querySelector('input[name="plans[0].merchant"]');
+            const descriptionInput = editForm.querySelector('input[name="plans[0].description"]');
+            const unitPriceInput = editForm.querySelector('input[name="plans[0].unitPrice"]');
+            const warrantyInput = editForm.querySelector('input[name="plans[0].warrantyPeriod"]');
+            if (idInput) {
+                idInput.value = id || "";
+            }
+            if (merchantInput) {
+                merchantInput.value = merchant || "";
+            }
+            if (descriptionInput) {
+                descriptionInput.value = description || "";
+            }
+            if (unitPriceInput) {
+                unitPriceInput.value = unitPrice || "";
+            }
+            if (warrantyInput) {
+                warrantyInput.value = warrantyPeriod || "";
+            }
+        });
+
+        const selectButtons = Array.from(document.querySelectorAll(".js-select-btn"));
+        const selectForms = Array.from(document.querySelectorAll(".js-select-form"));
+
+        function setOtherButtonsDisabled(activeButton, disabled) {
+            selectButtons.forEach(function (btn) {
+                if (btn !== activeButton) {
+                    btn.disabled = disabled;
+                }
+            });
+        }
+
+        const selectedButton = selectButtons.find(function (btn) {
+            return btn.getAttribute("data-selected") === "true";
+        });
+        if (selectedButton) {
+            setOtherButtonsDisabled(selectedButton, true);
+        }
+
+        selectForms.forEach(function (form) {
+            const button = form.querySelector(".js-select-btn");
+            const selectedInput = form.querySelector(".js-selected-input");
+            if (!button) {
+                return;
+            }
+            button.addEventListener("click", function (event) {
+                const isSelected = button.getAttribute("data-selected") === "true";
+                if (isSelected) {
+                    if (selectedInput) {
+                        selectedInput.remove();
+                    }
+                    button.setAttribute("data-selected", "false");
+                    const label = button.querySelector("span");
+                    if (label) {
+                        label.textContent = "Select";
+                    }
+                    setOtherButtonsDisabled(button, false);
+                } else {
+                    if (!selectedInput) {
+                        const input = document.createElement("input");
+                        input.type = "hidden";
+                        input.name = "selected";
+                        input.value = "true";
+                        input.className = "js-selected-input";
+                        form.appendChild(input);
+                    }
+                    button.setAttribute("data-selected", "true");
+                    const label = button.querySelector("span");
+                    if (label) {
+                        label.textContent = "Selected";
+                    }
+                    setOtherButtonsDisabled(button, true);
+                }
+            });
+        });
+    })();
+</script>
+
+</body>
+</html>
+
+
+
