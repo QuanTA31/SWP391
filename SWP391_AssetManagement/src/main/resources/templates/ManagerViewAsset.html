@@ -40,7 +40,7 @@
                 </div>
 
                 <!-- FILTER -->
-                <form method="get" th:action="@{/manager/viewAsset}">
+                <form method="get" th:action="@{/main/viewAsset}">
                     <div class="toolbar-right">
 
                         <!-- LOCATION -->
@@ -168,7 +168,7 @@
                     <li class="page-item"
                         th:classappend="${!assets.filters.hasPreviousPage} ? 'disabled'">
                         <a class="page-link"
-                           th:href="@{/manager/viewAsset(
+                           th:href="@{/main/viewAsset(
                    pageIndex=${assets.filters.page - 1},
                    locationId=${assets.filters.locationId},
                    assetTypeId=${assets.filters.assetTypeId},
@@ -187,7 +187,7 @@
                             th:classappend="${i +1 == assets.filters.page} ? 'active'">
                             <a class="page-link"
                                th:text="${i + 1}"
-                               th:href="@{/manager/viewAsset(
+                               th:href="@{/main/viewAsset(
                pageIndex=${i},
                locationId=${assets.filters.locationId},
                assetTypeId=${assets.filters.assetTypeId},
@@ -209,7 +209,7 @@
                     <li class="page-item"
                         th:classappend="${!assets.filters.hasNextPage} ? 'disabled'">
                         <a class="page-link"
-                           th:href="@{/manager/viewAsset(
+                           th:href="@{/main/viewAsset(
                    pageIndex=${assets.filters.page + 1},
                    locationId=${assets.filters.locationId},
                    assetTypeId=${assets.filters.assetTypeId},
