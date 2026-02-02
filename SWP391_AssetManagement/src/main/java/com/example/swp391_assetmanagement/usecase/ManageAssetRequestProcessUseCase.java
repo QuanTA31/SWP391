@@ -28,7 +28,7 @@ public class ManageAssetRequestProcessUseCase {
     private final AssetAllProcessService assetAllProcessService;
 
     @Transactional(readOnly = true)
-    public ViewAllProcessResponse viewAllProcessAllResponseProcess(ViewAllProcessRequest request, HttpSession session) {
+    public ViewAllProcessResponse viewAllProcess(ViewAllProcessRequest request, HttpSession session) {
 
         validateAllRequest(request, session);
 
@@ -39,7 +39,7 @@ public class ManageAssetRequestProcessUseCase {
                 AllProcessRequest.builder()
                         .requestStatusId(request.getRequestStatusId())
                         .requestTypeId(request.getRequestTypeId())
-                        .approvalStatusId(request.getApprovalStatusId())
+                 //       .approvalStatusId(request.getApprovalStatusId())
                         .offset((pageIndex-1)*PAGE_SIZE)
                         .pageSize(PAGE_SIZE)
                         .build());
@@ -50,7 +50,7 @@ public class ManageAssetRequestProcessUseCase {
                     .filters(FilterAllResponse.builder()
                             .requestStatusId(request.getRequestStatusId())
                             .requestTypeId(request.getRequestTypeId())
-                            .approvalStatusId(request.getApprovalStatusId())
+                        //    .approvalStatusId(request.getApprovalStatusId())
                             .page(pageIndex)
                             .pageSize(PAGE_SIZE)
                             .totalItems(0)
@@ -72,21 +72,23 @@ public class ManageAssetRequestProcessUseCase {
                         allProcessResponses.stream().map(
                                         entity -> AllProcessResponse.builder()
                                                 .requestTypeName(RequestType.of(entity.requestTypeId).getName())
-                                                .requestedBy(Roles.of(entity.requestedBy).getName())
-                                                .requestedDate(entity.requestDate)
+                                                .requestedBy(entity.requestedBy)
+                                                .requestedDate(entity.requestedDate)
                                                 .requestStatusName(RequestStatus.of(entity.requestStatusId).getName())
-                                                .approvalBy(Roles.of(entity.approvalBy).getName())
+                                                .approvalBy(
+                                                        entity.approvalBy != null ? entity.approvalBy : null
+                                                )
                                                 .approvalDate(entity.approvalDate)
                                                 .handoverDate(entity.handoverDate)
                                                 .note(entity.note)
-                                                .createAt(entity.createdAt)
+                                                .createdAt(entity.createdAt)
                                                 .build())
                                 .toList()
                 )
                 .filters(FilterAllResponse.builder()
                         .requestStatusId(request.getRequestStatusId())
                         .requestTypeId(request.getRequestTypeId())
-                        .approvalStatusId(request.getApprovalStatusId())
+                       // .approvalStatusId(request.getApprovalStatusId())
                         .page(pageIndex)
                         .pageSize(PAGE_SIZE)
                         .totalItems(totalItems)

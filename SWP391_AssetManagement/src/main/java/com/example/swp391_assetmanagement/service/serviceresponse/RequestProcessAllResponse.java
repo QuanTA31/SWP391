@@ -17,7 +17,7 @@ public class RequestProcessAllResponse {
     public String requestedBy;
 
     @Column(name = "requested_date")
-    public LocalDate requestDate;
+    public LocalDate requestedDate;
 
     @Column(name = "request_status_id")
     public String requestStatusId;

@@ -26,6 +26,6 @@ public class AllProcessResponse {
 
     private final String note;
 
-    private final LocalDate createAt;
+    private final LocalDate createdAt;
 
 }

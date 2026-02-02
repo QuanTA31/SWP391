@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class MainController {
 
 
-
 //    private final ManagerAssetInternalProcessUsecase managerAssetInternalProcessUsecase;
 //    @GetMapping("/viewRequest")
 //    public String viewRequest(@ModelAttribute ViewInternalProcessRequest request, HttpSession session, Model model){
@@ -32,12 +31,13 @@ public class MainController {
 //    }
 
     private final ManageAssetRequestProcessUseCase manageAssetRequestProcessUseCase;
-    @GetMapping("/viewRequest")
-    public String viewRequest(@ModelAttribute ViewAllProcessRequest request, HttpSession session, Model model){
 
-        ViewAllProcessResponse response = manageAssetRequestProcessUseCase.viewAllProcessAllResponseProcess(request, session);
+    @GetMapping("/viewRequest")
+    public String viewRequest(@ModelAttribute ViewAllProcessRequest request, HttpSession session, Model model) {
+
+        ViewAllProcessResponse response = manageAssetRequestProcessUseCase.viewAllProcess(request, session);
         model.addAttribute("data", response);
 
-        return "RequestList";
+        return "RequestAllList";
     }
 }
