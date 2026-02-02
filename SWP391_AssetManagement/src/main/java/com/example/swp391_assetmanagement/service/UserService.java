@@ -5,6 +5,7 @@ import com.example.swp391_assetmanagement.service.serviceresponse.LocationViewAs
 import com.example.swp391_assetmanagement.service.serviceresponse.UserLoginResponse;
 
 public interface UserService {
+
     UserLoginResponse authenticate(UserLoginRequest request);
 
     LocationViewAssetResponse getLocationViewAsset(String userCode);

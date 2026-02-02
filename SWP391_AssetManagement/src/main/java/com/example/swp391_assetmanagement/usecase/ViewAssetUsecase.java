@@ -72,7 +72,7 @@ public class ViewAssetUsecase {
                         .locationId(request.getLocationId())
                         .assetTypeId(request.getAssetTypeId())
                         .assetStatusId(request.getAssetStatusId())
-                        .searchWord(request.getSearchWord().trim())
+                        .searchWord(ObjectUtils.isEmpty(request.getSearchWord()) ? null : request.getSearchWord().trim())
                         .locationIdList(locationIdList)
                         .offset((pageIndex - 1) * PAGE_SIZE)
                         .pageSize(PAGE_SIZE)
