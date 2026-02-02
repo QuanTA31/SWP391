@@ -102,8 +102,18 @@ public class OptionDetailController {
                 .pageSize(PAGE_SIZE)
                 .build();
 
-        List<OptionDetail> plans = service.getByRequestDetailId(request);
-        int totalItems = service.countByRequestDetailId(request);
+        List<OptionDetail> plans = service.getByRequestDetailId(
+                request.getRequestDetailId(),
+                request.getIsSelected(),
+                request.getOffset(),
+                request.getPageSize()
+        );
+
+        int totalItems = service.countByRequestDetailId(
+                request.getRequestDetailId(),
+                request.getIsSelected()
+        );
+
         int totalPages = Math.max(1, (int) Math.ceil((double) totalItems / PAGE_SIZE));
 
         model.addAttribute("asset_external_request_detail_id", assetExternalRequestDetailId);

@@ -16,13 +16,19 @@ public interface OptionDetailService {
 
     void saveAll(List<OptionDetail> plans);
 
-    List<OptionDetail> getByRequestDetailId(OptionDetailListRequest request);
+    List<OptionDetail> getByRequestDetailId(
+            Long requestDetailId,
+            Boolean isSelected,
+            int offset,
+            int pageSize
+    );
 
-    int countByRequestDetailId(OptionDetailListRequest request);
+    int countByRequestDetailId(
+            Long requestDetailId,
+            Boolean isSelected
+    );
 
     void unselectByRequestDetailId(Long requestDetailId);
 
     void deleteById(Long id);
-
 }
-

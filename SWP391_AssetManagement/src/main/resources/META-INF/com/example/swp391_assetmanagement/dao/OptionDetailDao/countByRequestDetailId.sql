@@ -1,6 +1,6 @@
-select count(1)
-from option_detail
-where asset_external_request_detail_id = /* request.requestDetailId */0
-/*%if request.isSelected != null */
-  and is_selected = /* request.isSelected */false
-/*%end */
+SELECT COUNT(1)
+FROM option_detail
+WHERE asset_external_request_detail_id = /* requestDetailId */0
+/*%if isSelected != null */
+  AND is_selected = /* isSelected */true
+/*%end*/

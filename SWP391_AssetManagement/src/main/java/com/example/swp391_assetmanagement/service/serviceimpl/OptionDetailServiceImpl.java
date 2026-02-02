@@ -33,16 +33,6 @@ public class OptionDetailServiceImpl implements OptionDetailService {
     }
 
     @Override
-    public List<OptionDetail> getByRequestDetailId(OptionDetailListRequest request) {
-        return optionDetailDao.getByRequestDetailId(request);
-    }
-
-    @Override
-    public int countByRequestDetailId(OptionDetailListRequest request) {
-        return optionDetailDao.countByRequestDetailId(request);
-    }
-
-    @Override
     @Transactional
     public void unselectByRequestDetailId(Long requestDetailId) {
         optionDetailDao.unselectByRequestDetailId(requestDetailId);
@@ -65,6 +55,33 @@ public class OptionDetailServiceImpl implements OptionDetailService {
     public void deleteById(Long id) {
         optionDetailDao.deleteById(id);
     }
+
+    @Override
+    public List<OptionDetail> getByRequestDetailId(
+            Long requestDetailId,
+            Boolean isSelected,
+            int offset,
+            int pageSize
+    ) {
+        return optionDetailDao.getByRequestDetailId(
+                requestDetailId,
+                isSelected,
+                offset,
+                pageSize
+        );
+    }
+
+    @Override
+    public int countByRequestDetailId(
+            Long requestDetailId,
+            Boolean isSelected
+    ) {
+        return optionDetailDao.countByRequestDetailId(
+                requestDetailId,
+                isSelected
+        );
+    }
+
 
 
 }

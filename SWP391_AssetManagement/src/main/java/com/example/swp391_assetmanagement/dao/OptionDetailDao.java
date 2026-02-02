@@ -1,10 +1,8 @@
 package com.example.swp391_assetmanagement.dao;
 
 import com.example.swp391_assetmanagement.entity.OptionDetail;
-import com.example.swp391_assetmanagement.service.servicerequest.OptionDetailListRequest;
 import org.seasar.doma.*;
 import org.seasar.doma.boot.ConfigAutowireable;
-
 
 import java.util.List;
 import java.util.Optional;
@@ -23,16 +21,22 @@ public interface OptionDetailDao {
     int update(OptionDetail optionDetail);
 
     @Select
-    List<OptionDetail> getByRequestDetailId(OptionDetailListRequest request);
+    List<OptionDetail> getByRequestDetailId(
+            Long requestDetailId,
+            Boolean isSelected,
+            int offset,
+            int pageSize
+    );
 
     @Select
-    int countByRequestDetailId(OptionDetailListRequest request);
+    int countByRequestDetailId(
+            Long requestDetailId,
+            Boolean isSelected
+    );
 
     @Update(sqlFile = true)
     int unselectByRequestDetailId(Long requestDetailId);
 
     @Delete(sqlFile = true)
     int deleteById(Long id);
-
 }
-

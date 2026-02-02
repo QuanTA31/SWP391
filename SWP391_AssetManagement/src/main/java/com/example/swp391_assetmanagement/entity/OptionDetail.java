@@ -12,6 +12,9 @@ import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import org.seasar.doma.Transient;
+import org.seasar.doma.Column;
+
 
 @Getter
 @Setter
@@ -54,8 +57,9 @@ public class OptionDetail {
     @Column(name = "approver_by")
     public Long approverBy;
 
-    @Column(name = "approver_name")
+    @Column(name = "approver_name", insertable = false, updatable = false)
     public String approverName;
+
 
     @Column(name = "created_at", insertable = false, updatable = false)
     public LocalDateTime createdAt;

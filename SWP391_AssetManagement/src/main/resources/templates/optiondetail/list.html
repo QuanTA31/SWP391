@@ -101,7 +101,7 @@
                                 </form>
                                 <span th:unless="${canApprove}" th:text="${p.isSelected ? 'Selected' : '-'}"></span>
                             </td>
-                            <td th:text="${p.approvedDate != null ? 'Manager01' : ''}"></td>
+                            <td th:text="${p.approverName}"></td>
                             <td th:text="${p.approvedDate != null ? #temporals.format(p.approvedDate, 'yyyy-MM-dd') : ''}"></td>
                             <td>
                                 <button class="btn btn-sm btn-outline-primary mb-1"
