@@ -8,6 +8,12 @@ import org.seasar.doma.Entity;
 @Entity
 public class UserLoginResponse {
 
+    @Column(name = "id")
+    public Long id;
+
+    @Column(name = "username")
+    public String username;
+
     @Column(name = "name")
     public String name;
 
