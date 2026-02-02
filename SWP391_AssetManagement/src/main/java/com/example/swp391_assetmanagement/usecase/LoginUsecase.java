@@ -24,8 +24,9 @@ public class LoginUsecase {
                 .build());
 
         return UserLoginDTOResponse.builder()
-                .name(userLoginResponse.getName())
+                .userName(userLoginResponse.getName())
                 .roleId(userLoginResponse.getRoleId())
+                .userCode(userLoginResponse.getUserCode())
                 .build();
     }
 }

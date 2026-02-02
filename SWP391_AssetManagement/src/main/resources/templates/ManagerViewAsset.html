@@ -40,7 +40,7 @@
                 </div>
 
                 <!-- FILTER -->
-                <form method="get" th:action="@{/manager/viewAsset}">
+                <form method="get" th:action="@{/main/viewAsset}">
                     <div class="toolbar-right">
 
                         <!-- LOCATION -->
@@ -50,8 +50,8 @@
                                     th:value="${loc.value}"
                                     th:text="${loc.name}"
                                     th:selected="${assets.filters != null
-                                  and assets.filters.locationId != null
-                                  and loc.value == assets.filters.locationId}">
+                      and assets.filters.locationId != null
+                      and loc.value == assets.filters.locationId}">
                             </option>
                         </select>
 
@@ -62,8 +62,8 @@
                                     th:value="${type.value}"
                                     th:text="${type.name}"
                                     th:selected="${assets.filters != null
-                                  and assets.filters.assetTypeId != null
-                                  and type.value == assets.filters.assetTypeId}">
+                      and assets.filters.assetTypeId != null
+                      and type.value == assets.filters.assetTypeId}">
                             </option>
                         </select>
 
@@ -74,10 +74,18 @@
                                     th:value="${status.value}"
                                     th:text="${status.name}"
                                     th:selected="${assets.filters != null
-                                  and assets.filters.assetStatusId != null
-                                  and status.value == assets.filters.assetStatusId}">
+                      and assets.filters.assetStatusId != null
+                      and status.value == assets.filters.assetStatusId}">
                             </option>
                         </select>
+
+                        <!-- SEARCH ASSET ID -->
+                        <input type="text"
+                               name="searchWord"
+                               class="form-control form-control-sm"
+                               placeholder="Search Asset Code"
+                               th:value="${(assets.filters != null
+                               and assets.filters.searchWord != null) ? assets.filters.searchWord : ''}">
 
                         <button class="btn btn-sm btn-save-draft" type="submit">
                             Apply Filter
@@ -119,8 +127,8 @@
                             <td th:text="${asset.assetCode}"></td>
 
                             <td class="text-multiline"
-                                th:title="${asset.description}"
-                                th:text="${asset.description}">
+                                th:title="${asset.describe}"
+                                th:text="${asset.describe}">
                             </td>
 
                             <td th:text="${#numbers.formatDecimal(asset.originalPrice, 0, 'COMMA', 0, 'POINT')}"></td>
@@ -160,11 +168,12 @@
                     <li class="page-item"
                         th:classappend="${!assets.filters.hasPreviousPage} ? 'disabled'">
                         <a class="page-link"
-                           th:href="@{/manager/viewAsset(
+                           th:href="@{/main/viewAsset(
                    pageIndex=${assets.filters.page - 1},
                    locationId=${assets.filters.locationId},
                    assetTypeId=${assets.filters.assetTypeId},
-                   assetStatusId=${assets.filters.assetStatusId}
+                   assetStatusId=${assets.filters.assetStatusId},
+                   searchWord=${assets.filters.searchWord}
                )}">
                             «
                         </a>
@@ -178,11 +187,12 @@
                             th:classappend="${i +1 == assets.filters.page} ? 'active'">
                             <a class="page-link"
                                th:text="${i + 1}"
-                               th:href="@{/manager/viewAsset(
+                               th:href="@{/main/viewAsset(
                pageIndex=${i},
                locationId=${assets.filters.locationId},
                assetTypeId=${assets.filters.assetTypeId},
-               assetStatusId=${assets.filters.assetStatusId}
+               assetStatusId=${assets.filters.assetStatusId},
+               searchWord=${assets.filters.searchWord}
            )}">
                             </a>
                         </li>
@@ -199,11 +209,12 @@
                     <li class="page-item"
                         th:classappend="${!assets.filters.hasNextPage} ? 'disabled'">
                         <a class="page-link"
-                           th:href="@{/manager/viewAsset(
+                           th:href="@{/main/viewAsset(
                    pageIndex=${assets.filters.page + 1},
                    locationId=${assets.filters.locationId},
                    assetTypeId=${assets.filters.assetTypeId},
-                   assetStatusId=${assets.filters.assetStatusId}
+                   assetStatusId=${assets.filters.assetStatusId},
+                   searchWord=${assets.filters.searchWord}
                )}">
                             »
                         </a>

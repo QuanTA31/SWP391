@@ -3,6 +3,7 @@ package com.example.swp391_assetmanagement.service.serviceimpl;
 import com.example.swp391_assetmanagement.dao.UserDAO;
 import com.example.swp391_assetmanagement.service.UserService;
 import com.example.swp391_assetmanagement.service.servicerequest.UserLoginRequest;
+import com.example.swp391_assetmanagement.service.serviceresponse.LocationViewAssetResponse;
 import com.example.swp391_assetmanagement.service.serviceresponse.UserLoginResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,5 +23,10 @@ public class UserServiceImpl implements UserService {
             return userDAOResponse;
         }
         return null;
+    }
+
+    @Override
+    public LocationViewAssetResponse getLocationViewAsset(String userCode) {
+        return userDAO.findLocationByAssetCode(userCode);
     }
 }

@@ -7,7 +7,9 @@ import lombok.Getter;
 @Builder
 public class UserLoginDTOResponse {
 
-    public String name;
+    public String userName;
+
+    public String userCode;
 
     public String roleId;
 }

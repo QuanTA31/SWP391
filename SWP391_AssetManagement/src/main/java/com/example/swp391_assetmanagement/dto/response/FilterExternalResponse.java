@@ -5,15 +5,13 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class FiltersDTOResponse {
+public class FilterExternalResponse {
 
-    private final String locationId;
+    private String requestStatusId;
 
-    private final String assetTypeId;
+    private String requestTypeId;
 
-    private final String assetStatusId;
-
-    private final String searchWord;
+    private String approvalStatusId;
 
     private final Integer page;
 
@@ -26,4 +24,5 @@ public class FiltersDTOResponse {
     private boolean hasNextPage;
 
     private boolean hasPreviousPage;
+
 }
