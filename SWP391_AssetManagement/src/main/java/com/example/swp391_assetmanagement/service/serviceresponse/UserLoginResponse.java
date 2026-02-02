@@ -13,4 +13,7 @@ public class UserLoginResponse {
 
     @Column(name = "role_id")
     public String roleId;
+
+    @Column(name = "user_code")
+    public String userCode;
 }
