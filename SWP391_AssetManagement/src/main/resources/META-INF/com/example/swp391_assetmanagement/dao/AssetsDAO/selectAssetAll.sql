@@ -1,5 +1,5 @@
 SELECT asset_code,
-       description,
+       `describe`,
        original_price,
        warranty_period,
        received_date,
@@ -10,7 +10,7 @@ SELECT asset_code,
        COUNT(1) OVER() AS total_items
 FROM assets
 
-WHERE 1 = 1
+WHERE location_id IN /* request.locationIdList */()
 /*%if request.locationId != null && request.locationId != "" */
   AND location_id = /* request.locationId */0
 /*%end */
@@ -19,6 +19,9 @@ WHERE 1 = 1
 /*%end */
 /*%if request.assetStatusId != null && request.assetStatusId != "" */
   AND asset_status_id = /* request.assetStatusId */''
+/*%end */
+/*%if request.searchWord != null && request.searchWord != "" */
+  AND asset_code LIKE CONCAT('%', /* request.searchWord */'', '%')
 /*%end */
 
 LIMIT /* request.pageSize */0
