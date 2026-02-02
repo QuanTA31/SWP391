@@ -16,8 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +35,46 @@ public class ManageAssetRequestProcessUseCase {
         validateAllRequest(request, session);
 
         int pageIndex = (request.getPageIndex() != null && request.getPageIndex() != 0)  ? request.getPageIndex() : 1;
+
+        List<String> requestTypeIdList = new ArrayList<>();
+
+        String role = session.getAttribute("ROLE").toString();
+
+        if (Objects.equals(role, Roles.MANAGER.getValue())) {
+            requestTypeIdList.addAll(
+                    List.of(
+                            RequestType.ALLOCATION.getValue(),
+                            RequestType.RETRIEVAL.getValue(),
+                            RequestType.PROCUREMENT.getValue(),
+                            RequestType.MAINTENANCE.getValue(),
+                            RequestType.LIQUIDATION.getValue()
+                    )
+            );
+        }
+        else if (Objects.equals(role, Roles.WAREHOUSE.getValue())) {
+            requestTypeIdList.addAll(
+                    List.of(
+                            RequestType.PROCUREMENT.getValue(),
+                            RequestType.RETRIEVAL.getValue(),
+                            RequestType.ALLOCATION.getValue()
+                    )
+            );
+        }
+        else if (Objects.equals(role, Roles.PURCHASING.getValue())) {
+            requestTypeIdList.addAll(
+                    List.of(
+                            RequestType.PROCUREMENT.getValue(),
+                            RequestType.LIQUIDATION.getValue(),
+                            RequestType.MAINTENANCE.getValue()
+                    )
+            );
+        }else if(Objects.equals(role, Roles.DEPARTMENT_MANAGER.getValue())){
+            requestTypeIdList.add(RequestType.ALLOCATION.getValue());
+        }
+        else {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+
 
         // Get data from database
         List<RequestProcessAllResponse> allProcessResponses = assetAllProcessService.viewAllProcess(
@@ -102,10 +144,12 @@ public class ManageAssetRequestProcessUseCase {
 
     private void validateAllRequest(ViewAllProcessRequest request, HttpSession session) {
 
-        // Check role
-//        if (!Objects.equals(session.getAttribute("ROLE"), Roles.MANAGER.getValue())) {
-//            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền truy cập vào trang này !");
-//        }
+         //Check role
+        if (!Objects.equals(session.getAttribute("ROLE"), Roles.ADMIN.getValue())
+        || Objects.equals(session.getAttribute("ROLE"), Roles.DEPARTMENT_MANAGER.getValue())
+        || Objects.equals(session.getAttribute("ROLE"), Roles.CLIENT.getValue())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền truy cập vào trang này !");
+        }
 
         //Check enums
         if (!ObjectUtils.isEmpty(request.getRequestStatusId()) && !RequestStatus.hasValue(request.getRequestStatusId())) {

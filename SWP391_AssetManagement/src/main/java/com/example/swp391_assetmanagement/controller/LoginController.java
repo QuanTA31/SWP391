@@ -30,7 +30,8 @@ public class LoginController {
             session.setAttribute("USER_NAME", userResponse.userName);
             session.setAttribute("ROLE", userResponse.getRoleId());
             session.setAttribute("USER_CODE", userResponse.getUserCode());
-            return "redirect:/ManagerViewAsset";
+          return "redirect:/ManagerViewAsset";
+//            return "redirect:/RequestAllList";
         }
         else {
             model.addAttribute("error", "Incorrect username or password");
