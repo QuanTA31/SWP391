@@ -14,8 +14,8 @@ public class AssetViewAllResponse {
     @Column(name = "asset_code")
     public String assetCode;
 
-    @Column(name = "description")
-    public String description;
+    @Column(name = "describe")
+    public String describe;
 
     @Column(name = "original_price")
     public BigDecimal originalPrice;

@@ -12,7 +12,7 @@ public class AssetDTOResponse {
 
     private final String assetCode;
 
-    private final String description;
+    private final String describe;
 
     private final BigDecimal originalPrice;
 

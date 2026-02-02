@@ -1,11 +1,11 @@
 package com.example.swp391_assetmanagement.controller;
 
 import com.example.swp391_assetmanagement.dto.request.ViewAllProcessRequest;
-import com.example.swp391_assetmanagement.dto.request.ViewInternalProcessRequest;
+import com.example.swp391_assetmanagement.dto.request.ViewAssetDTORequest;
+import com.example.swp391_assetmanagement.dto.response.ViewAllAssetDTOResponse;
 import com.example.swp391_assetmanagement.dto.response.ViewAllProcessResponse;
-import com.example.swp391_assetmanagement.dto.response.ViewInternalProcessAllResponse;
+import com.example.swp391_assetmanagement.usecase.ViewAssetUsecase;
 import com.example.swp391_assetmanagement.usecase.ManageAssetRequestProcessUseCase;
-import com.example.swp391_assetmanagement.usecase.ManagerAssetInternalProcessUsecase;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 public class MainController {
 
+    private final ViewAssetUsecase viewAssetUsecase;
 
 
 //    private final ManagerAssetInternalProcessUsecase managerAssetInternalProcessUsecase;
@@ -39,5 +40,14 @@ public class MainController {
         model.addAttribute("data", response);
 
         return "RequestList";
+    }
+
+    @GetMapping("/viewAsset")
+    public String viewAsset(@ModelAttribute ViewAssetDTORequest request, HttpSession session, Model model){
+
+        ViewAllAssetDTOResponse response = viewAssetUsecase.viewAsset(request, session);
+        model.addAttribute("assets", response);
+
+        return "ManagerViewAsset";
     }
 }
