@@ -1,4 +1,6 @@
-SELECT ud.name,
+SELECT u.id,
+       u.username,
+       ud.name,
        u.user_code,
        u.role_id
 FROM users AS u
