@@ -1,6 +1,7 @@
 package com.example.swp391_assetmanagement.dao;
 
 import com.example.swp391_assetmanagement.service.servicerequest.UserLoginRequest;
+import com.example.swp391_assetmanagement.service.serviceresponse.LocationViewAssetResponse;
 import com.example.swp391_assetmanagement.service.serviceresponse.UserLoginResponse;
 import org.seasar.doma.Dao;
 import org.seasar.doma.Select;
@@ -12,4 +13,7 @@ public interface UserDAO {
 
     @Select
     UserLoginResponse findByUsername(UserLoginRequest userDAORequest);
+
+    @Select
+    LocationViewAssetResponse findLocationByAssetCode(String asserCode);
 }

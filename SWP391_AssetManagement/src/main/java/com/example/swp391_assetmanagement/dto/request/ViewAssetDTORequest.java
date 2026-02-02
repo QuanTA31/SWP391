@@ -13,5 +13,7 @@ public class ViewAssetDTORequest {
 
     private String assetStatusId;
 
+    private String searchWord;
+
     private Integer pageIndex;
 }

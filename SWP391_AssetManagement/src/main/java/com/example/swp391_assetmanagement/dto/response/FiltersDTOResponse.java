@@ -13,6 +13,8 @@ public class FiltersDTOResponse {
 
     private final String assetStatusId;
 
+    private final String searchWord;
+
     private final Integer page;
 
     private final Integer pageSize;
