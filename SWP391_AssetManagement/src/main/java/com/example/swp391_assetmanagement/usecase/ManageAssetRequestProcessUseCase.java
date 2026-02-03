@@ -145,8 +145,8 @@ public class ManageAssetRequestProcessUseCase {
     private void validateAllRequest(ViewAllProcessRequest request, HttpSession session) {
 
          //Check role
-        if (!Objects.equals(session.getAttribute("ROLE"), Roles.ADMIN.getValue())
-        || Objects.equals(session.getAttribute("ROLE"), Roles.DEPARTMENT_MANAGER.getValue())
+        if (Objects.equals(session.getAttribute("ROLE"), Roles.ADMIN.getValue())
+//        || Objects.equals(session.getAttribute("ROLE"), Roles.DEPARTMENT_MANAGER.getValue())
         || Objects.equals(session.getAttribute("ROLE"), Roles.CLIENT.getValue())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền truy cập vào trang này !");
         }

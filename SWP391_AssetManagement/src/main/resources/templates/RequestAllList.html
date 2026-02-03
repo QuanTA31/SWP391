@@ -159,6 +159,21 @@
             </a>
           </li>
 
+
+          <!-- PAGE NUMBERS -->
+          <li class="page-item"
+              th:each="i : ${#numbers.sequence(1, data.filters.totalPages)}"
+              th:classappend="${i == data.filters.page} ? 'active'">
+            <a class="page-link"
+               th:text="${i}"
+               th:href="@{/main/viewRequest(
+                               pageIndex=${i},
+                               requestStatusId=${data.filters.requestStatusId},
+                               requestTypeId=${data.filters.requestTypeId}
+                           )}">
+            </a>
+          </li>
+
           <!-- NEXT -->
           <li class="page-item"
               th:classappend="${!data.filters.hasNextPage} ? 'disabled'">
