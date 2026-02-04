@@ -3,7 +3,7 @@ package com.example.swp391_assetmanagement.service.serviceimpl;
 import com.example.swp391_assetmanagement.dao.OptionDetailDao;
 import com.example.swp391_assetmanagement.entity.OptionDetail;
 import com.example.swp391_assetmanagement.service.OptionDetailService;
-import com.example.swp391_assetmanagement.service.servicerequest.OptionDetailListRequest;
+import com.example.swp391_assetmanagement.dto.request.OptionDetailListRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -81,6 +81,25 @@ public class OptionDetailServiceImpl implements OptionDetailService {
                 isSelected
         );
     }
+
+    @Override
+    public List<OptionDetail> getList(OptionDetailListRequest request) {
+        return optionDetailDao.getByRequestDetailId(
+                request.getRequestDetailId(),
+                request.getIsSelected(),
+                request.getOffset(),
+                request.getPageSize()
+        );
+    }
+
+    @Override
+    public int count(OptionDetailListRequest request) {
+        return optionDetailDao.countByRequestDetailId(
+                request.getRequestDetailId(),
+                request.getIsSelected()
+        );
+    }
+
 
 
 

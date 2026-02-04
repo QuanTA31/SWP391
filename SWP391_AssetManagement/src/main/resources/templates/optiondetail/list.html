@@ -1,4 +1,4 @@
-﻿﻿<!doctype html>
+﻿<!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
@@ -84,7 +84,7 @@
                         </tr>
                         <tr th:each="p : ${plans}">
                             <td th:text="${p.merchant}"></td>
-                            <td class="text-multiline" th:text="${p.description}"></td>
+                            <td th:text="${p.description}"></td>
                             <td th:text="${p.unitPrice}"></td>
                             <td>
                                 <span th:text="${p.warrantyPeriod != null ? #temporals.format(p.warrantyPeriod, 'yyyy-MM-dd') : ''}"></span>
