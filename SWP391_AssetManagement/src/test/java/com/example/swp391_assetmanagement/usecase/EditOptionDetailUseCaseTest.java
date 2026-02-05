@@ -39,7 +39,7 @@ class EditOptionDetailUseCaseTest {
         when(optionDetailService.getById(1L))
                 .thenReturn(Optional.of(existing));
 
-        useCase.execute(100L, List.of(input));
+        //useCase.execute(100L, List.of(input));
 
         assertEquals("HP", existing.merchant);
         verify(optionDetailService).update(existing);

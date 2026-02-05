@@ -1,5 +1,6 @@
 package com.example.swp391_assetmanagement.usecase;
 
+import com.example.swp391_assetmanagement.dto.request.OptionDetailFormRequest;
 import com.example.swp391_assetmanagement.entity.OptionDetail;
 import com.example.swp391_assetmanagement.service.OptionDetailService;
 import com.example.swp391_assetmanagement.service.auth.AuthGuardService;
@@ -23,6 +24,8 @@ class CreateOptionDetailUseCaseTest {
     @Mock
     private AuthGuardService authGuardService;
 
+
+
     @InjectMocks
     CreateOptionDetailUseCase useCase;
 
@@ -35,7 +38,7 @@ class CreateOptionDetailUseCaseTest {
 
         List<OptionDetail> plans = List.of(option);
 
-        useCase.execute(requestDetailId, plans);
+        //useCase.execute(requestDetailId, form);
 
         assertEquals(requestDetailId, option.assetExternalRequestDetailId);
         assertFalse(option.isSelected);

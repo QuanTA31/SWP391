@@ -14,6 +14,7 @@ public class OptionDetailListResponse {
 
     private Long requestDetailId;
     private List<OptionDetail> plans;
+    //private final OptionDetailService optionDetailService;
 
     private String status;
     private int page;
@@ -25,6 +26,7 @@ public class OptionDetailListResponse {
     private boolean hasNextPage;
     private boolean canApprove;
     private boolean canManage;
+    private boolean hasAnySelected;
 
     public Map<String, Object> toModel() {
         Map<String, Object> model = new HashMap<>();
@@ -39,6 +41,7 @@ public class OptionDetailListResponse {
         model.put("hasNextPage", hasNextPage);
         model.put("canApprove", canApprove);
         model.put("canManage", canManage);
+        model.put("hasAnySelected", hasAnySelected);
         return model;
     }
 }

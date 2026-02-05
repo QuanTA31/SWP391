@@ -1,12 +1,13 @@
 package com.example.swp391_assetmanagement.usecase;
 
+import com.example.swp391_assetmanagement.dto.request.OptionDetailFormRequest;
 import com.example.swp391_assetmanagement.entity.OptionDetail;
 import com.example.swp391_assetmanagement.service.OptionDetailService;
 import com.example.swp391_assetmanagement.service.auth.AuthGuardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
+import org.springframework.web.server.ResponseStatusException;
 
 @Component
 @RequiredArgsConstructor
@@ -17,37 +18,49 @@ public class EditOptionDetailUseCase {
 
     public void execute(
             Long requestDetailId,
-            List<OptionDetail> plans
+            OptionDetailFormRequest form
     ) {
         authGuardService.checkAuthenticated();
         authGuardService.checkCanAccessRequest(requestDetailId);
 
-        for (OptionDetail row : plans) {
+        validate(form);
 
-            if (row.id != null) {
-                OptionDetail existing = optionDetailService
-                        .getById(row.id)
-                        .orElse(null);
+        OptionDetail option = optionDetailService.getById(form.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-                if (existing == null) {
-                    continue;
-                }
+        option.setMerchant(form.getMerchant());
+        option.setDescription(form.getDescription());
+        option.setUnitPrice(form.getUnitPrice());
+        option.setWarrantyPeriod(form.getWarrantyPeriod());
 
-                existing.merchant = row.merchant;
-                existing.description = row.description;
-                existing.unitPrice = row.unitPrice;
-                existing.warrantyPeriod = row.warrantyPeriod;
+        optionDetailService.update(option);
+    }
 
-                optionDetailService.update(existing);
+    private void validate(OptionDetailFormRequest form) {
+        if (form == null) {
+            throw new IllegalArgumentException("Form must not be null");
+        }
 
-            } else {
-                row.assetExternalRequestDetailId = requestDetailId;
-                row.isSelected = false;
-                row.approvedDate = null;
-                row.approverBy = null;
+        if (form.getMerchant() == null || form.getMerchant().trim().isEmpty()) {
+            throw new IllegalArgumentException("Merchant is required");
+        }
 
-                optionDetailService.create(row);
-            }
+        if (form.getDescription() == null || form.getDescription().trim().isEmpty()) {
+            throw new IllegalArgumentException("Description is required");
+        }
+
+        if (form.getUnitPrice() == null) {
+            throw new IllegalArgumentException("Unit price is required");
+        }
+
+        if (form.getUnitPrice().signum() <= 0) {
+            throw new IllegalArgumentException("Unit price must be greater than 0");
+        }
+
+        if (form.getWarrantyPeriod() != null
+                && form.getWarrantyPeriod().isBefore(java.time.LocalDate.now())) {
+            throw new IllegalArgumentException("Warranty period must be in the future");
         }
     }
 }
+

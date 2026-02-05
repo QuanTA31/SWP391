@@ -4,22 +4,15 @@ import lombok.Getter;
 import lombok.Setter;
 import org.seasar.doma.*;
 
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import org.seasar.doma.Transient;
 import org.seasar.doma.Column;
 
-
-@Getter
-@Setter
 @Entity
 @Table(name = "option_detail")
+@Getter
+@Setter
 public class OptionDetail {
 
     @Id
@@ -30,19 +23,12 @@ public class OptionDetail {
     public Long assetExternalRequestDetailId;
 
     @Column(name = "unit_price")
-    @NotNull
-    @DecimalMin(value = "0.01")
-    @Digits(integer = 12, fraction = 2)
     public BigDecimal unitPrice;
 
     @Column(name = "describe")
-    @NotBlank
-    @Size(max = 255)
     public String description;
 
     @Column(name = "merchant")
-    @NotBlank
-    @Size(max = 120)
     public String merchant;
 
     @Column(name = "warranty_period")
@@ -60,8 +46,6 @@ public class OptionDetail {
     @Column(name = "approver_name", insertable = false, updatable = false)
     public String approverName;
 
-
     @Column(name = "created_at", insertable = false, updatable = false)
     public LocalDateTime createdAt;
 }
-

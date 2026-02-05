@@ -8,12 +8,16 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-public class OptionDetailItemRequest {
+public class OptionDetailFormRequest {
+
+    private Long id; // dùng cho edit
+
+    private String merchant;
+
+    private String description;
 
     private BigDecimal unitPrice;
-    private String description;
-    private String merchant;
+
     private LocalDate warrantyPeriod;
 }
-
 

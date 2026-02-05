@@ -100,8 +100,10 @@ public class OptionDetailServiceImpl implements OptionDetailService {
         );
     }
 
-
-
+    @Override
+    public boolean existsRequestDetail(Long requestDetailId) {
+        return optionDetailDao.countByRequestDetailId(requestDetailId, null) > 0;
+    }
 
 }
 

@@ -36,5 +36,6 @@ public interface OptionDetailService {
 
     int count(OptionDetailListRequest request);
 
+    boolean existsRequestDetail(Long requestDetailId);
 
 }
