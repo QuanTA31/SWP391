@@ -1,7 +1,7 @@
 package com.example.swp391_assetmanagement.service;
 
 import com.example.swp391_assetmanagement.entity.OptionDetail;
-import com.example.swp391_assetmanagement.service.servicerequest.OptionDetailListRequest;
+import com.example.swp391_assetmanagement.dto.request.OptionDetailListRequest;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,4 +31,11 @@ public interface OptionDetailService {
     void unselectByRequestDetailId(Long requestDetailId);
 
     void deleteById(Long id);
+
+    List<OptionDetail> getList(OptionDetailListRequest request);
+
+    int count(OptionDetailListRequest request);
+
+    boolean existsRequestDetail(Long requestDetailId);
+
 }
