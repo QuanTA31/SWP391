@@ -102,15 +102,54 @@ public class ManagerAssetInternalProcessUsecase {
                 .build();
     }
 
+
+    // -----------------Lấy details của từng request----
+    @Transactional(readOnly = true)
+    public ViewInternalProcessAllResponse getDetailById(Long requestId) {
+
+        // Gọi Service lấy dữ liệu, truyền requestId vào
+        List<InternalProcessAllResponse> details = assetInternalProcessService.viewInternalProcess(
+                InternalProcessRequest.builder()
+                        .requestId(requestId) // Lọc theo ID phiếu
+                        .offset(0)
+                        .pageSize(100) // Lấy hết các tài sản trong phiếu (max 100)
+                        .build());
+
+        if (details.isEmpty()) {
+            return ViewInternalProcessAllResponse.builder()
+                    .internalProcessResponses(Collections.emptyList())
+                    .build();
+        }
+
+        // Convert sang DTO Response
+        return ViewInternalProcessAllResponse.builder()
+                .internalProcessResponses(
+                        details.stream().map(entity -> InternalProcessResponse.builder()
+                                .assetId(entity.assetId)
+                                .assetRequestName(entity.assetRequestId)
+                                .assetTypeName(AssetType.of(entity.assetTypeId).getName())
+                                .quantity(entity.quantity)
+                                .fromLocationName(Location.of(entity.fromLocationId).getName())
+                                .toLocationName(Location.of(entity.toLocationId).getName())
+                                .fromUserName(entity.fromUserId)
+                                .toUserName(entity.toUserId)
+                                .note(entity.note)
+                                .createdAt(entity.createdAt)
+                                .build()
+                        ).toList()
+                )
+                .build();
+    }
+
     private void validateInternalRequest(ViewInternalProcessRequest request, HttpSession session) {
 
        //  Check role
-//        if (!Objects.equals(session.getAttribute("ROLE"), Roles.ADMIN.getValue())
-//        || !Objects.equals(session.getAttribute("ROLE"), Roles.CLIENT.getValue())
-//        || !Objects.equals(session.getAttribute("ROLE"), Roles.DEPARTMENT_MANAGER.getValue())
-//        || !Objects.equals(session.getAttribute("ROLE"), Roles.PURCHASING.getValue())) {
-//            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền truy cập vào trang này !");
-//        }
+        if (!Objects.equals(session.getAttribute("ROLE"), Roles.ADMIN.getValue())
+        || !Objects.equals(session.getAttribute("ROLE"), Roles.CLIENT.getValue())
+        || !Objects.equals(session.getAttribute("ROLE"), Roles.DEPARTMENT_MANAGER.getValue())
+        || !Objects.equals(session.getAttribute("ROLE"), Roles.PURCHASING.getValue())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền truy cập vào trang này !");
+        }
 
         //Check enums
         if (!ObjectUtils.isEmpty(request.getRequestStatusId()) && !RequestStatus.hasValue(request.getRequestStatusId())) {

@@ -103,14 +103,48 @@ public class ManagerAssetExternalProcessUsecase {
                 .build();
     }
 
+    // -----------------Lấy details của từng request----
+    @Transactional(readOnly = true)
+    public ViewExternalProcessAllResponse getDetailById(Long requestId) {
+
+        // Gọi Service lấy danh sách các item trong phiếu External này
+        List<ExternalProcessAllResponse> details = assetExternalProcessService.viewExternalProcess(
+                ExternalProcessRequest.builder()
+                        .requestId(requestId) // Lọc theo ID phiếu
+                        .offset(0)
+                        .pageSize(100) // Lấy tối đa 100 dòng
+                        .build());
+
+        if (details.isEmpty()) {
+            return ViewExternalProcessAllResponse.builder()
+                    .externalProcessResponses(Collections.emptyList())
+                    .build();
+        }
+
+        // Map sang DTO Response
+        return ViewExternalProcessAllResponse.builder()
+                .externalProcessResponses(
+                        details.stream().map(entity -> ExternalProcessResponse.builder()
+                                .assetRequestName(entity.assetRequestId)
+                                .assetTypeName(AssetType.of(entity.assetTypeId).getName())
+                                .externalStatusName(entity.externalStatusId) // Bạn có thể map Enum ExternalStatus ở đây nếu có
+                                .quantity(entity.quantity)
+                                .note(entity.note)
+                                .createdAt(entity.createdAt)
+                                .build()
+                        ).toList()
+                )
+                .build();
+    }
+
     private void validateExternalRequest(ViewExternalProcessRequest request, HttpSession session) {
 
         //  Check role
-//        if (!Objects.equals(session.getAttribute("ROLE"), Roles.ADMIN.getValue())
-//        || !Objects.equals(session.getAttribute("ROLE"), Roles.CLIENT.getValue())
-//        || !Objects.equals(session.getAttribute("ROLE"), Roles.WAREHOUSE.getValue())) {
-//            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền truy cập vào trang này !");
-//        }
+        if (!Objects.equals(session.getAttribute("ROLE"), Roles.ADMIN.getValue())
+        || !Objects.equals(session.getAttribute("ROLE"), Roles.CLIENT.getValue())
+        || !Objects.equals(session.getAttribute("ROLE"), Roles.WAREHOUSE.getValue())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền truy cập vào trang này !");
+        }
 
         //Check enums
         if (!ObjectUtils.isEmpty(request.getRequestStatusId()) && !RequestStatus.hasValue(request.getRequestStatusId())) {

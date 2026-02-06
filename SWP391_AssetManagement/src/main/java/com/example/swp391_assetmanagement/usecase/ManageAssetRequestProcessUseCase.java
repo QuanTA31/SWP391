@@ -36,41 +36,52 @@ public class ManageAssetRequestProcessUseCase {
 
         int pageIndex = (request.getPageIndex() != null && request.getPageIndex() != 0)  ? request.getPageIndex() : 1;
 
-        List<String> requestTypeIdList = new ArrayList<>();
+        ArrayList<String> requestTypeIdList = new ArrayList<>();
 
-        String role = session.getAttribute("ROLE").toString();
+        String role = (String) session.getAttribute("ROLE");
 
+        if (role == null) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+
+// MANAGER: xem tất cả request
         if (Objects.equals(role, Roles.MANAGER.getValue())) {
-            requestTypeIdList.addAll(
-                    List.of(
-                            RequestType.ALLOCATION.getValue(),
-                            RequestType.RETRIEVAL.getValue(),
-                            RequestType.PROCUREMENT.getValue(),
-                            RequestType.MAINTENANCE.getValue(),
-                            RequestType.LIQUIDATION.getValue()
-                    )
-            );
+
+            requestTypeIdList.addAll(List.of(
+                    RequestType.ALLOCATION.getValue(),
+                    RequestType.RETRIEVAL.getValue(),
+                    RequestType.PROCUREMENT.getValue(),
+                    RequestType.MAINTENANCE.getValue(),
+                    RequestType.LIQUIDATION.getValue()
+            ));
+
         }
+// WAREHOUSE
         else if (Objects.equals(role, Roles.WAREHOUSE.getValue())) {
-            requestTypeIdList.addAll(
-                    List.of(
-                            RequestType.PROCUREMENT.getValue(),
-                            RequestType.RETRIEVAL.getValue(),
-                            RequestType.ALLOCATION.getValue()
-                    )
-            );
+
+            requestTypeIdList.addAll(List.of(
+                    RequestType.PROCUREMENT.getValue(),
+                    RequestType.RETRIEVAL.getValue(),
+                    RequestType.ALLOCATION.getValue()
+            ));
+
         }
+// PURCHASING
         else if (Objects.equals(role, Roles.PURCHASING.getValue())) {
-            requestTypeIdList.addAll(
-                    List.of(
-                            RequestType.PROCUREMENT.getValue(),
-                            RequestType.LIQUIDATION.getValue(),
-                            RequestType.MAINTENANCE.getValue()
-                    )
-            );
-        }else if(Objects.equals(role, Roles.DEPARTMENT_MANAGER.getValue())){
-            requestTypeIdList.add(RequestType.ALLOCATION.getValue());
+
+            requestTypeIdList.addAll(List.of(
+                    RequestType.MAINTENANCE.getValue(),
+                    RequestType.LIQUIDATION.getValue()
+            ));
+
         }
+// DEPARTMENT_MANAGER
+        else if (Objects.equals(role, Roles.DEPARTMENT_MANAGER.getValue())) {
+
+            requestTypeIdList.add(RequestType.ALLOCATION.getValue());
+
+        }
+// ROLE KHÁC → CẤM
         else {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
@@ -82,6 +93,7 @@ public class ManageAssetRequestProcessUseCase {
                         .requestStatusId(request.getRequestStatusId())
                         .requestTypeId(request.getRequestTypeId())
                  //       .approvalStatusId(request.getApprovalStatusId())
+                        .requestTypeIdList(requestTypeIdList)
                         .offset((pageIndex-1)*PAGE_SIZE)
                         .pageSize(PAGE_SIZE)
                         .build());
@@ -112,20 +124,31 @@ public class ManageAssetRequestProcessUseCase {
         return ViewAllProcessResponse.builder()
                 .allProcessResponses(
                         allProcessResponses.stream().map(
-                                        entity -> AllProcessResponse.builder()
-                                                .requestTypeName(RequestType.of(entity.requestTypeId).getName())
-                                                .requestedBy(entity.requestedBy)
-                                                .requestedDate(entity.requestedDate)
-                                                .requestStatusName(RequestStatus.of(entity.requestStatusId).getName())
-                                                .approvalBy(
-                                                        entity.approvalBy != null ? entity.approvalBy : null
-                                                )
-                                                .approvalDate(entity.approvalDate)
-                                                .handoverDate(entity.handoverDate)
-                                                .note(entity.note)
-                                                .createdAt(entity.createdAt)
-                                                .build())
-                                .toList()
+                                        entity -> {  // <--- 1. Thêm dấu mở khối {
+
+                                            // --- Logic tính toán chèn vào ---
+                                            // (Kiểm tra xem requestType có phải là Internal không)
+                                            boolean isInternal = Objects.equals(entity.requestTypeId, RequestType.ALLOCATION.getValue())
+                                                    || Objects.equals(entity.requestTypeId, RequestType.RETRIEVAL.getValue());
+
+                                            // --- 2. Bắt buộc phải có từ khóa RETURN ở đây ---
+                                            return AllProcessResponse.builder()
+                                                    .id(entity.requestId)    //lấy mã định danh từng phiếu để detail từng request
+
+                                                    .isInternal(isInternal) //  đánh dấu xem internal hay external(boolean)
+
+                                                    .requestTypeName(RequestType.of(entity.requestTypeId).getName())
+                                                    .requestedBy(entity.requestedBy)
+                                                    .requestedDate(entity.requestedDate)
+                                                    .requestStatusName(RequestStatus.of(entity.requestStatusId).getName())
+                                                    .approvalBy(entity.approvalBy != null ? entity.approvalBy : null)
+                                                    .approvalDate(entity.approvalDate)
+                                                    .handoverDate(entity.handoverDate)
+                                                    .note(entity.note)
+                                                    .createdAt(entity.createdAt)
+                                                    .build();
+
+                                        }).toList()
                 )
                 .filters(FilterAllResponse.builder()
                         .requestStatusId(request.getRequestStatusId())

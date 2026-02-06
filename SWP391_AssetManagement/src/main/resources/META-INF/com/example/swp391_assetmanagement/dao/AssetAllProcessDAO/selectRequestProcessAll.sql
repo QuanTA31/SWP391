@@ -1,4 +1,5 @@
 SELECT
+    ar.id             AS request_id,
     ar.request_type_id,
     ru.username       AS requested_by,
     ar.requested_date,
@@ -19,6 +20,10 @@ FROM asset_request ar
          LEFT JOIN request_status rs
                     ON ar.request_status_id = rs.id
 WHERE 1 = 1
+
+/*%if request.requestTypeIdList != null && !request.requestTypeIdList.isEmpty() */
+  AND ar.request_type_id IN /* request.requestTypeIdList */('01')
+/*%end */
 
 /*%if request.requestTypeId != null && request.requestTypeId != "" */
   AND ar.request_type_id = /* request.requestTypeId */''

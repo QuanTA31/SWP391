@@ -7,6 +7,8 @@ import lombok.Getter;
 @Builder
 public class InternalProcessRequest {
 
+    private Long requestId;
+
     private String requestStatusId;
 
     private String requestTypeId;

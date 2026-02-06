@@ -10,6 +10,9 @@ import java.time.LocalDate;
 @Getter
 public class RequestProcessAllResponse {
 
+    @Column(name = "request_id")
+    public Long requestId;
+
     @Column(name = "request_type_id")
     public String requestTypeId;
 

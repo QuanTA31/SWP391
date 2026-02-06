@@ -19,6 +19,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/main")
@@ -58,6 +59,30 @@ public class MainController {
         model.addAttribute("external", response);
 
         return "RequestExternalList";
+    }
+
+    // 1. Xem chi tiết Internal
+    @GetMapping("/viewInternalRequest/detail")
+    public String viewInternalDetail(@RequestParam("id") Long id, Model model) {
+
+        ViewInternalProcessAllResponse detailData = managerAssetInternalProcessUsecase.getDetailById(id);
+
+        model.addAttribute("detailData", detailData);
+        model.addAttribute("requestId", id);
+
+        return "RequestInternalDetail";
+    }
+
+    // 2. Xem chi tiết External
+    @GetMapping("/viewExternalRequest/detail")
+    public String viewExternalDetail(@RequestParam("id") Long id, Model model) {
+
+        ViewExternalProcessAllResponse detailData = managerAssetExternalProcessUsecase.getDetailById(id);
+
+        model.addAttribute("detailData", detailData);
+        model.addAttribute("requestId", id);
+
+        return "RequestExternalDetail";
     }
 
     @GetMapping("/viewAsset")
