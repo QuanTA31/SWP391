@@ -1,43 +1,51 @@
 package com.example.swp391_assetmanagement.entity;
 
+import lombok.Getter;
 import lombok.Setter;
 import org.seasar.doma.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
+import org.seasar.doma.Column;
 
-@Setter
 @Entity
 @Table(name = "option_detail")
+@Getter
+@Setter
 public class OptionDetail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
-    @Column(name = "asset_external_request_detail")
-    public Long assetExternalRequestDetail;
+    @Column(name = "asset_external_request_detail_id")
+    public Long assetExternalRequestDetailId;
 
-    @Column(name = "total_amount")
-    public BigDecimal totalAmount;
+    @Column(name = "unit_price")
+    public BigDecimal unitPrice;
 
     @Column(name = "describe")
-    public String describe;
+    public String description;
 
     @Column(name = "merchant")
     public String merchant;
+
+    @Column(name = "warranty_period")
+    public LocalDate warrantyPeriod;
 
     @Column(name = "is_selected")
     public Boolean isSelected;
 
     @Column(name = "approved_date")
-    public Date approvedDate;
+    public LocalDate approvedDate;
 
     @Column(name = "approver_by")
     public Long approverBy;
 
-    @Column(name = "created_at")
-    public LocalDateTime approvedAt;
-}
+    @Column(name = "approver_name", insertable = false, updatable = false)
+    public String approverName;
 
+    @Column(name = "created_at", insertable = false, updatable = false)
+    public LocalDateTime createdAt;
+}

@@ -1,8 +1,11 @@
 package com.example.swp391_assetmanagement.controller;
 
-import com.example.swp391_assetmanagement.dto.request.ViewInternalProcessRequest;
-import com.example.swp391_assetmanagement.dto.response.ViewInternalProcessAllResponse;
-import com.example.swp391_assetmanagement.usecase.ManagerAssetInternalProcessUsecase;
+import com.example.swp391_assetmanagement.dto.request.ViewAllProcessRequest;
+import com.example.swp391_assetmanagement.dto.request.ViewAssetDTORequest;
+import com.example.swp391_assetmanagement.dto.response.ViewAllAssetDTOResponse;
+import com.example.swp391_assetmanagement.dto.response.ViewAllProcessResponse;
+import com.example.swp391_assetmanagement.usecase.ViewAssetUsecase;
+import com.example.swp391_assetmanagement.usecase.ManageAssetRequestProcessUseCase;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -16,14 +19,35 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 public class MainController {
 
-    private final ManagerAssetInternalProcessUsecase managerAssetInternalProcessUsecase;
+    private final ViewAssetUsecase viewAssetUsecase;
 
+
+//    private final ManagerAssetInternalProcessUsecase managerAssetInternalProcessUsecase;
+//    @GetMapping("/viewRequest")
+//    public String viewRequest(@ModelAttribute ViewInternalProcessRequest request, HttpSession session, Model model){
+//
+//        ViewInternalProcessAllResponse response = managerAssetInternalProcessUsecase.viewInternalProcess(request, session);
+//        model.addAttribute("data", response);
+//
+//        return "RequestInternalList";
+//    }
+
+    private final ManageAssetRequestProcessUseCase manageAssetRequestProcessUseCase;
     @GetMapping("/viewRequest")
-    public String viewRequest(@ModelAttribute ViewInternalProcessRequest request, HttpSession session, Model model){
+    public String viewRequest(@ModelAttribute ViewAllProcessRequest request, HttpSession session, Model model){
 
-        ViewInternalProcessAllResponse response = managerAssetInternalProcessUsecase.viewInternalProcess(request, session);
+        ViewAllProcessResponse response = manageAssetRequestProcessUseCase.viewAllProcessAllResponseProcess(request, session);
         model.addAttribute("data", response);
 
-        return "RequestInternalList";
+        return "RequestList";
+    }
+
+    @GetMapping("/viewAsset")
+    public String viewAsset(@ModelAttribute ViewAssetDTORequest request, HttpSession session, Model model){
+
+        ViewAllAssetDTOResponse response = viewAssetUsecase.viewAsset(request, session);
+        model.addAttribute("assets", response);
+
+        return "ManagerViewAsset";
     }
 }

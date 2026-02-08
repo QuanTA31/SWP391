@@ -25,11 +25,11 @@ public enum ExternalStatus implements EnumBase<RequestType> {
         return name;
     }
 
-    public static RequestType of(String key) {
-        return EnumBase.of(RequestType.class, key);
+    public static ExternalStatus of(String key) {
+        return EnumBase.of(ExternalStatus.class, key);
     }
 
     public static boolean hasValue(String key) {
-        return EnumBase.hasValue(RequestType.class, key);
+        return EnumBase.hasValue(ExternalStatus.class, key);
     }
 }

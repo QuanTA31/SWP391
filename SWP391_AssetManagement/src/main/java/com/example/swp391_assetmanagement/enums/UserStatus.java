@@ -24,11 +24,11 @@ public enum UserStatus implements EnumBase<UserStatus> {
         return name;
     }
 
-    public static Roles of(String key) {
-        return EnumBase.of(Roles.class, key);
+    public static UserStatus of(String key) {
+        return EnumBase.of(UserStatus.class, key);
     }
 
     public static boolean hasValue(String key) {
-        return EnumBase.hasValue(Roles.class, key);
+        return EnumBase.hasValue(UserStatus.class, key);
     }
 }
