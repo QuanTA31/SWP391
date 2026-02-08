@@ -11,7 +11,7 @@ public class ViewExternalProcessRequest {
 
     private String requestTypeId;
 
-    private String approvalStatusId;
+//    private String approvalStatusId;
 
     private Integer pageIndex;
 

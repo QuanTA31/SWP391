@@ -10,7 +10,11 @@ import java.time.LocalDateTime;
 @Builder
 public class AllProcessResponse {
 
+    private final Long id;
+
     private final String requestTypeName;
+
+    private final boolean isInternal;
 
     private final String requestedBy;
 
@@ -26,6 +30,6 @@ public class AllProcessResponse {
 
     private final String note;
 
-    private final LocalDate createAt;
+    private final LocalDate createdAt;
 
 }

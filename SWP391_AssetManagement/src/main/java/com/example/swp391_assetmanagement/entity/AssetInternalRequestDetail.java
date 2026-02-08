@@ -18,7 +18,10 @@ public class AssetInternalRequestDetail {
     public Long assetId;
 
     @Column(name = "asset_request_id")
-    public String assetRequestId;
+    public Long assetRequestId;
+
+    @Column(name = "asset_type_id")
+    public String assetTypeId;
 
     @Column(name = "quantity")
     public Integer quantity;

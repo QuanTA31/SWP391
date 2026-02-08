@@ -16,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +38,7 @@ public class ManagerAssetInternalProcessUsecase {
                 InternalProcessRequest.builder()
                         .requestStatusId(request.getRequestStatusId())
                         .requestTypeId(request.getRequestTypeId())
-                        .approvalStatusId(request.getApprovalStatusId())
+//                        .approvalStatusId(request.getApprovalStatusId())
                         .offset((pageIndex-1)*PAGE_SIZE)
                         .pageSize(PAGE_SIZE)
                         .build());
@@ -48,7 +49,7 @@ public class ManagerAssetInternalProcessUsecase {
                     .filters(FilterInternalResponse.builder()
                             .requestStatusId(request.getRequestStatusId())
                             .requestTypeId(request.getRequestTypeId())
-                            .approvalStatusId(request.getApprovalStatusId())
+//                            .approvalStatusId(request.getApprovalStatusId())
                             .page(pageIndex)
                             .pageSize(PAGE_SIZE)
                             .totalItems(0)
@@ -70,21 +71,27 @@ public class ManagerAssetInternalProcessUsecase {
                         internalProcessResponses.stream().map(
                                         entity -> InternalProcessResponse.builder()
                                                 .assetId(entity.assetId)
-                                                .requestStatusName(RequestStatus.of(entity.requestStatusId).getName())
-                                                .requestTypeName(RequestType.of(entity.requestTypeId).getName())
-                                                .fromUserId(entity.fromUserId)
-                                                .toUserId(entity.toUserId)
-                                                .dateOfExecution(entity.dateOfExecution)
-                                                .handoverDate(entity.handoverDate)
+                                                .assetRequestName(entity.assetRequestId)
+                                                .assetTypeName(AssetType.of(entity.assetTypeId).getName())
+                                                .quantity(entity.quantity)
+                                                .fromLocationName(Location.of(entity.fromLocationId).getName())
+                                                .toLocationName(Location.of(entity.toLocationId).getName())
+//                                                .requestStatusName(RequestStatus.of(entity.requestStatusId).getName())
+//                                                .requestTypeName(RequestType.of(entity.requestTypeId).getName())
+                                                .fromUserName(entity.fromUserId)
+                                                .toUserName(entity.toUserId)
+//                                                .dateOfExecution(entity.dateOfExecution)
+//                                                .handoverDate(entity.handoverDate)
                                                 .note(entity.note)
 //                                                .approvalStatusName(ApprovalStatus.of(entity.approvalStatusId).getName())
+                                                .createdAt(entity.createdAt)
                                                 .build())
                                 .toList()
                 )
                 .filters(FilterInternalResponse.builder()
                         .requestStatusId(request.getRequestStatusId())
                         .requestTypeId(request.getRequestTypeId())
-                        .approvalStatusId(request.getApprovalStatusId())
+//                        .approvalStatusId(request.getApprovalStatusId())
                         .page(pageIndex)
                         .pageSize(PAGE_SIZE)
                         .totalItems(totalItems)
@@ -95,12 +102,54 @@ public class ManagerAssetInternalProcessUsecase {
                 .build();
     }
 
+
+    // -----------------Lấy details của từng request----
+    @Transactional(readOnly = true)
+    public ViewInternalProcessAllResponse getDetailById(Long requestId) {
+
+        // Gọi Service lấy dữ liệu, truyền requestId vào
+        List<InternalProcessAllResponse> details = assetInternalProcessService.viewInternalProcess(
+                InternalProcessRequest.builder()
+                        .requestId(requestId) // Lọc theo ID phiếu
+                        .offset(0)
+                        .pageSize(100) // Lấy hết các tài sản trong phiếu (max 100)
+                        .build());
+
+        if (details.isEmpty()) {
+            return ViewInternalProcessAllResponse.builder()
+                    .internalProcessResponses(Collections.emptyList())
+                    .build();
+        }
+
+        // Convert sang DTO Response
+        return ViewInternalProcessAllResponse.builder()
+                .internalProcessResponses(
+                        details.stream().map(entity -> InternalProcessResponse.builder()
+                                .assetId(entity.assetId)
+                                .assetRequestName(entity.assetRequestId)
+                                .assetTypeName(AssetType.of(entity.assetTypeId).getName())
+                                .quantity(entity.quantity)
+                                .fromLocationName(Location.of(entity.fromLocationId).getName())
+                                .toLocationName(Location.of(entity.toLocationId).getName())
+                                .fromUserName(entity.fromUserId)
+                                .toUserName(entity.toUserId)
+                                .note(entity.note)
+                                .createdAt(entity.createdAt)
+                                .build()
+                        ).toList()
+                )
+                .build();
+    }
+
     private void validateInternalRequest(ViewInternalProcessRequest request, HttpSession session) {
 
-        // Check role
-//        if (!Objects.equals(session.getAttribute("ROLE"), Roles.MANAGER.getValue())) {
-//            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền truy cập vào trang này !");
-//        }
+       //  Check role
+        if (!Objects.equals(session.getAttribute("ROLE"), Roles.ADMIN.getValue())
+        || !Objects.equals(session.getAttribute("ROLE"), Roles.CLIENT.getValue())
+        || !Objects.equals(session.getAttribute("ROLE"), Roles.DEPARTMENT_MANAGER.getValue())
+        || !Objects.equals(session.getAttribute("ROLE"), Roles.PURCHASING.getValue())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền truy cập vào trang này !");
+        }
 
         //Check enums
         if (!ObjectUtils.isEmpty(request.getRequestStatusId()) && !RequestStatus.hasValue(request.getRequestStatusId())) {
