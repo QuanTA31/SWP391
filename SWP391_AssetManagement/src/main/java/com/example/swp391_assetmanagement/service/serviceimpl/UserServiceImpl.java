@@ -23,7 +23,9 @@ public class UserServiceImpl implements UserService {
         if(userDAOResponse.isPresent()){
             return userDAOResponse.get();
         }
-        return null;
+        else{
+            return null;
+        }
     }
 
     @Override
