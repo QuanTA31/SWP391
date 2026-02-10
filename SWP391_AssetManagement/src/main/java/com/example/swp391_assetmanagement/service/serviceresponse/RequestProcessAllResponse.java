@@ -10,6 +10,9 @@ import java.time.LocalDate;
 @Getter
 public class RequestProcessAllResponse {
 
+    @Column(name = "request_id")
+    public Long requestId;
+
     @Column(name = "request_type_id")
     public String requestTypeId;
 
@@ -17,7 +20,7 @@ public class RequestProcessAllResponse {
     public String requestedBy;
 
     @Column(name = "requested_date")
-    public LocalDate requestDate;
+    public LocalDate requestedDate;
 
     @Column(name = "request_status_id")
     public String requestStatusId;

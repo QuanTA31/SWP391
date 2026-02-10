@@ -16,8 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -28,18 +30,70 @@ public class ManageAssetRequestProcessUseCase {
     private final AssetAllProcessService assetAllProcessService;
 
     @Transactional(readOnly = true)
-    public ViewAllProcessResponse viewAllProcessAllResponseProcess(ViewAllProcessRequest request, HttpSession session) {
+    public ViewAllProcessResponse viewAllProcess(ViewAllProcessRequest request, HttpSession session) {
 
         validateAllRequest(request, session);
 
         int pageIndex = (request.getPageIndex() != null && request.getPageIndex() != 0)  ? request.getPageIndex() : 1;
+
+        ArrayList<String> requestTypeIdList = new ArrayList<>();
+
+        String role = (String) session.getAttribute("ROLE");
+
+        if (role == null) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+
+// MANAGER: xem tất cả request
+        if (Objects.equals(role, Roles.MANAGER.getValue())) {
+
+            requestTypeIdList.addAll(List.of(
+                    RequestType.ALLOCATION.getValue(),
+                    RequestType.RETRIEVAL.getValue(),
+                    RequestType.PROCUREMENT.getValue(),
+                    RequestType.MAINTENANCE.getValue(),
+                    RequestType.LIQUIDATION.getValue()
+            ));
+
+        }
+// WAREHOUSE
+        else if (Objects.equals(role, Roles.WAREHOUSE.getValue())) {
+
+            requestTypeIdList.addAll(List.of(
+                    RequestType.PROCUREMENT.getValue(),
+                    RequestType.RETRIEVAL.getValue(),
+                    RequestType.ALLOCATION.getValue()
+            ));
+
+        }
+// PURCHASING
+        else if (Objects.equals(role, Roles.PURCHASING.getValue())) {
+
+            requestTypeIdList.addAll(List.of(
+                    RequestType.MAINTENANCE.getValue(),
+                    RequestType.LIQUIDATION.getValue()
+            ));
+
+        }
+// DEPARTMENT_MANAGER
+        else if (Objects.equals(role, Roles.DEPARTMENT_MANAGER.getValue())) {
+
+            requestTypeIdList.add(RequestType.ALLOCATION.getValue());
+
+        }
+// ROLE KHÁC → CẤM
+        else {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+
 
         // Get data from database
         List<RequestProcessAllResponse> allProcessResponses = assetAllProcessService.viewAllProcess(
                 AllProcessRequest.builder()
                         .requestStatusId(request.getRequestStatusId())
                         .requestTypeId(request.getRequestTypeId())
-                        .approvalStatusId(request.getApprovalStatusId())
+                 //       .approvalStatusId(request.getApprovalStatusId())
+                        .requestTypeIdList(requestTypeIdList)
                         .offset((pageIndex-1)*PAGE_SIZE)
                         .pageSize(PAGE_SIZE)
                         .build());
@@ -50,7 +104,7 @@ public class ManageAssetRequestProcessUseCase {
                     .filters(FilterAllResponse.builder()
                             .requestStatusId(request.getRequestStatusId())
                             .requestTypeId(request.getRequestTypeId())
-                            .approvalStatusId(request.getApprovalStatusId())
+                        //    .approvalStatusId(request.getApprovalStatusId())
                             .page(pageIndex)
                             .pageSize(PAGE_SIZE)
                             .totalItems(0)
@@ -70,23 +124,36 @@ public class ManageAssetRequestProcessUseCase {
         return ViewAllProcessResponse.builder()
                 .allProcessResponses(
                         allProcessResponses.stream().map(
-                                        entity -> AllProcessResponse.builder()
-                                                .requestTypeName(RequestType.of(entity.requestTypeId).getName())
-                                                .requestedBy(Roles.of(entity.requestedBy).getName())
-                                                .requestedDate(entity.requestDate)
-                                                .requestStatusName(RequestStatus.of(entity.requestStatusId).getName())
-                                                .approvalBy(Roles.of(entity.approvalBy).getName())
-                                                .approvalDate(entity.approvalDate)
-                                                .handoverDate(entity.handoverDate)
-                                                .note(entity.note)
-                                                .createAt(entity.createdAt)
-                                                .build())
-                                .toList()
+                                        entity -> {  // <--- 1. Thêm dấu mở khối {
+
+                                            // --- Logic tính toán chèn vào ---
+                                            // (Kiểm tra xem requestType có phải là Internal không)
+                                            boolean isInternal = Objects.equals(entity.requestTypeId, RequestType.ALLOCATION.getValue())
+                                                    || Objects.equals(entity.requestTypeId, RequestType.RETRIEVAL.getValue());
+
+                                            // --- 2. Bắt buộc phải có từ khóa RETURN ở đây ---
+                                            return AllProcessResponse.builder()
+                                                    .id(entity.requestId)    //lấy mã định danh từng phiếu để detail từng request
+
+                                                    .isInternal(isInternal) //  đánh dấu xem internal hay external(boolean)
+
+                                                    .requestTypeName(RequestType.of(entity.requestTypeId).getName())
+                                                    .requestedBy(entity.requestedBy)
+                                                    .requestedDate(entity.requestedDate)
+                                                    .requestStatusName(RequestStatus.of(entity.requestStatusId).getName())
+                                                    .approvalBy(entity.approvalBy != null ? entity.approvalBy : null)
+                                                    .approvalDate(entity.approvalDate)
+                                                    .handoverDate(entity.handoverDate)
+                                                    .note(entity.note)
+                                                    .createdAt(entity.createdAt)
+                                                    .build();
+
+                                        }).toList()
                 )
                 .filters(FilterAllResponse.builder()
                         .requestStatusId(request.getRequestStatusId())
                         .requestTypeId(request.getRequestTypeId())
-                        .approvalStatusId(request.getApprovalStatusId())
+                       // .approvalStatusId(request.getApprovalStatusId())
                         .page(pageIndex)
                         .pageSize(PAGE_SIZE)
                         .totalItems(totalItems)
@@ -100,10 +167,12 @@ public class ManageAssetRequestProcessUseCase {
 
     private void validateAllRequest(ViewAllProcessRequest request, HttpSession session) {
 
-        // Check role
-//        if (!Objects.equals(session.getAttribute("ROLE"), Roles.MANAGER.getValue())) {
-//            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền truy cập vào trang này !");
-//        }
+         //Check role
+        if (Objects.equals(session.getAttribute("ROLE"), Roles.ADMIN.getValue())
+//        || Objects.equals(session.getAttribute("ROLE"), Roles.DEPARTMENT_MANAGER.getValue())
+        || Objects.equals(session.getAttribute("ROLE"), Roles.CLIENT.getValue())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền truy cập vào trang này !");
+        }
 
         //Check enums
         if (!ObjectUtils.isEmpty(request.getRequestStatusId()) && !RequestStatus.hasValue(request.getRequestStatusId())) {
