@@ -1,7 +1,7 @@
 package com.example.swp391_assetmanagement.controller;
 
 import com.example.swp391_assetmanagement.dto.request.LoginDTORequest;
-import com.example.swp391_assetmanagement.dto.response.UserLoginDTOResponse;
+import com.example.swp391_assetmanagement.dto.response.LoginDTOResponse;
 import com.example.swp391_assetmanagement.usecase.LoginUsecase;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -24,13 +24,12 @@ public class LoginController {
 
     @PostMapping("/login")
     public String login(@ModelAttribute LoginDTORequest request, HttpSession session, Model model) {
-        UserLoginDTOResponse userResponse = loginUsecase.executeLogin(request);
+        LoginDTOResponse userResponse = loginUsecase.executeLogin(request);
 
         if(userResponse != null){
-            session.setAttribute("USER_NAME", userResponse.userName);
+            session.setAttribute("USER_NAME", userResponse.getUserName());
             session.setAttribute("ROLE", userResponse.getRoleId());
             session.setAttribute("USER_CODE", userResponse.getUserCode());
-            session.setAttribute("USER_ID", userResponse.getUserId());
             return "redirect:/ManagerViewAsset";
         }
         else {

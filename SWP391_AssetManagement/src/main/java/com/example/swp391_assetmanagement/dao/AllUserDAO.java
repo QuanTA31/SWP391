@@ -11,6 +11,6 @@ import java.util.List;
 @Dao
 @ConfigAutowireable
 public interface AllUserDAO {
-    @Select
-    List<ViewAllUserResponse> selectAllUser(ViewAllUserRequest request);
+//    @Select
+//    List<ViewAllUserResponse> selectAllUser(ViewAllUserRequest request);
 }
