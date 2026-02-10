@@ -7,7 +7,8 @@ import com.example.swp391_assetmanagement.service.serviceresponse.LocationViewAs
 import com.example.swp391_assetmanagement.service.serviceresponse.LoginResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,9 +19,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public LoginResponse authenticate(LoginRequest request){
 
-        LoginResponse userDAOResponse = userDAO.findByUsername(request);
-        if(!ObjectUtils.isEmpty(userDAOResponse)){
-            return userDAOResponse;
+        Optional<LoginResponse> userDAOResponse = userDAO.findByUsername(request);
+        if(userDAOResponse.isPresent()){
+            return userDAOResponse.get();
         }
         return null;
     }

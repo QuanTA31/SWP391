@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class LoginUsecase {
 
-    private UserService userService; // Gọi Service
+    private final UserService userService; // Gọi Service
 
     @Transactional(readOnly = true)
     public LoginDTOResponse executeLogin(LoginDTORequest request) {
@@ -23,11 +23,15 @@ public class LoginUsecase {
                         .password(request.getPassword())
                 .build());
 
-        return LoginDTOResponse.builder()
-                .userId(loginResponse.getId())
-                .userName(loginResponse.getName())
-                .roleId(loginResponse.getRoleId())
-                .userCode(loginResponse.getUserCode())
-                .build();
+        if(loginResponse != null) {
+            return LoginDTOResponse.builder()
+                    .userId(loginResponse.getId())
+                    .userName(loginResponse.getName())
+                    .roleId(loginResponse.getRoleId())
+                    .userCode(loginResponse.getUserCode())
+                    .build();
+        }else {
+            return null;
+        }
     }
 }

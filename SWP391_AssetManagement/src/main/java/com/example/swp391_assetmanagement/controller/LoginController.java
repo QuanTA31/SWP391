@@ -26,13 +26,12 @@ public class LoginController {
     public String login(@ModelAttribute LoginDTORequest request, HttpSession session, Model model) {
         LoginDTOResponse userResponse = loginUsecase.executeLogin(request);
 
-        if(userResponse != null){
+        if (userResponse != null) {
             session.setAttribute("USER_NAME", userResponse.getUserName());
             session.setAttribute("ROLE", userResponse.getRoleId());
             session.setAttribute("USER_CODE", userResponse.getUserCode());
             return "redirect:/ManagerViewAsset";
-        }
-        else {
+        } else {
             model.addAttribute("error", "Incorrect username or password");
             return "login";
         }
