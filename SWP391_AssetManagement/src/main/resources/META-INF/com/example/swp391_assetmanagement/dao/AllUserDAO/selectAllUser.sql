@@ -1,15 +1,16 @@
-SELECT ud.user_code, /*sai o day ch nghi duoc*/
+SELECT u.id,
        u.username,
        u.password,
        u.role_id,
-       u.user_status,
-       u.user_location_id,
+       u.status_id,
+       ud.location_id,
        ud.name,
        ud.phone,
        ud.email,
+       ud.created_at
        COUNT(1) OVER() AS total_items
-FROM users as u
-inner join user_detail as ud into u.id = ud.user_id
+FROM users AS u
+INNER JOIN user_detail AS ud INTO u.id = ud.user_id
 
 WHERE 1 = 1
 /*%if request.locationId != null && request.locationId != "" */

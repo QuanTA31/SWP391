@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Getter
 public class ViewAllUserResponse {
 
-    @Column(name = "user_code")
+    @Column(name = "id")
     public String userCode;
 
     @Column(name = "username")
@@ -23,10 +23,10 @@ public class ViewAllUserResponse {
     @Column(name = "role_id")
     public String roleId;
 
-    @Column(name = "user_status")
+    @Column(name = "status_id")
     public String userStatus;
 
-    @Column(name = "user_location_id")
+    @Column(name = "location_id")
     public String locationId;
 
     @Column(name = "name")
@@ -37,4 +37,11 @@ public class ViewAllUserResponse {
 
     @Column(name = "email")
     public String email;
+
+    @Column(name = "create_at")
+    public LocalDate createAt;
+
+    //optional
+    @Column(name = "total_user")
+    public Integer totalUser;
 }

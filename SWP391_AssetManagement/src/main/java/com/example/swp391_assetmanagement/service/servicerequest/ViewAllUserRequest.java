@@ -1,10 +1,17 @@
 package com.example.swp391_assetmanagement.service.servicerequest;
 
+import lombok.Builder;
+import lombok.Getter;
+
+@Getter
+@Builder
 public class ViewAllUserRequest {
 
     private String locationId;
 
     private String roleID;
+
+    private String userStatus;
 
     private String name;
 

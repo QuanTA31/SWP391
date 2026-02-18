@@ -11,7 +11,6 @@ import java.util.List;
 @Dao
 @ConfigAutowireable
 public interface AssetAllProcessDAO {
-
     @Select
     List<RequestProcessAllResponse> selectRequestProcessAll(AllProcessRequest request);
 
