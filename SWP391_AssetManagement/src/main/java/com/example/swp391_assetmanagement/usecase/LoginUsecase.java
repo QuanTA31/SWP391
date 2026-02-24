@@ -3,8 +3,8 @@ package com.example.swp391_assetmanagement.usecase;
 import com.example.swp391_assetmanagement.dto.request.LoginDTORequest;
 import com.example.swp391_assetmanagement.dto.response.LoginDTOResponse;
 import com.example.swp391_assetmanagement.service.UserService;
-import com.example.swp391_assetmanagement.service.servicerequest.LoginRequest;
-import com.example.swp391_assetmanagement.service.serviceresponse.LoginResponse;
+import com.example.swp391_assetmanagement.service.servicerequest.LoginServiceRequest;
+import com.example.swp391_assetmanagement.service.serviceresponse.LoginServiceResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +18,7 @@ public class LoginUsecase {
     @Transactional(readOnly = true)
     public LoginDTOResponse executeLogin(LoginDTORequest request) {
 
-        LoginResponse loginResponse =  userService.authenticate(LoginRequest.builder()
+        LoginServiceResponse loginResponse =  userService.authenticate(LoginServiceRequest.builder()
                         .username(request.getUsername())
                         .password(request.getPassword())
                 .build());

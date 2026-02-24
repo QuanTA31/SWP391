@@ -3,8 +3,8 @@ package com.example.swp391_assetmanagement.service.serviceimpl;
 
 import com.example.swp391_assetmanagement.dao.AssetExternalProcessDAO;
 import com.example.swp391_assetmanagement.service.AssetExternalProcessService;
-import com.example.swp391_assetmanagement.service.servicerequest.ExternalProcessRequest;
-import com.example.swp391_assetmanagement.service.serviceresponse.ExternalProcessAllResponse;
+import com.example.swp391_assetmanagement.service.servicerequest.ExternalProcessServiceRequest;
+import com.example.swp391_assetmanagement.service.serviceresponse.ExternalProcessAllServiceResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +17,7 @@ public class AssetExternalProcessServiceImpl implements AssetExternalProcessServ
     private final AssetExternalProcessDAO assetExternalProcessDAO;
 
     @Override
-    public List<ExternalProcessAllResponse> viewExternalProcess(ExternalProcessRequest assetRequest) {
+    public List<ExternalProcessAllServiceResponse> viewExternalProcess(ExternalProcessServiceRequest assetRequest) {
         return assetExternalProcessDAO.selectExternalProcessAll(assetRequest);
     }
 

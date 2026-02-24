@@ -1,7 +1,7 @@
 package com.example.swp391_assetmanagement.dao;
 
-import com.example.swp391_assetmanagement.service.servicerequest.AssetViewAllRequest;
-import com.example.swp391_assetmanagement.service.serviceresponse.AssetViewAllResponse;
+import com.example.swp391_assetmanagement.service.servicerequest.AssetViewAllServiceRequest;
+import com.example.swp391_assetmanagement.service.serviceresponse.AssetViewAllServiceResponse;
 import org.seasar.doma.Dao;
 import org.seasar.doma.Select;
 import org.seasar.doma.boot.ConfigAutowireable;
@@ -13,7 +13,7 @@ import java.util.List;
 public interface AssetsDAO {
 
     @Select
-    List<AssetViewAllResponse> selectAssetAll(AssetViewAllRequest request);
+    List<AssetViewAllServiceResponse> selectAssetAll(AssetViewAllServiceRequest request);
 
 //    @Update(sqlFile = true)
 //    int updateById(AssetsDaoResponse assetsDaoResponse);

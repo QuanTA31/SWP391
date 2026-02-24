@@ -1,6 +1,5 @@
 package com.example.swp391_assetmanagement.usecase;
 
-import com.example.swp391_assetmanagement.dto.request.OptionDetailFormRequest;
 import com.example.swp391_assetmanagement.entity.OptionDetail;
 import com.example.swp391_assetmanagement.service.OptionDetailService;
 import com.example.swp391_assetmanagement.service.auth.AuthGuardService;
@@ -27,7 +26,7 @@ class CreateOptionDetailUseCaseTest {
 
 
     @InjectMocks
-    CreateOptionDetailUseCase useCase;
+    CreateOptionDetailUsecase useCase;
 
     @Test
     void should_set_default_fields_and_save_all() {

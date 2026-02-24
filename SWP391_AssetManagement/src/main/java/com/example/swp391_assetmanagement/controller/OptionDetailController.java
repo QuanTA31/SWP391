@@ -1,7 +1,7 @@
 package com.example.swp391_assetmanagement.controller;
 import com.example.swp391_assetmanagement.dto.request.OptionDetailFormRequest;
 import com.example.swp391_assetmanagement.usecase.*;
-import com.example.swp391_assetmanagement.dto.response.OptionDetailListResponse;
+import com.example.swp391_assetmanagement.dto.response.OptionDetailListDTOResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,11 +11,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequiredArgsConstructor
 @RequestMapping("/option-detail")
 public class OptionDetailController {
-    private final CreateOptionDetailUseCase createUseCase;
-    private final EditOptionDetailUseCase editUseCase;
-    private final ApproveOptionDetailUseCase approveUseCase;
-    private final DeleteOptionDetailUseCase deleteUseCase;
-    private final GetOptionDetailListUseCase getOptionDetailListUseCase;
+
+    private final CreateOptionDetailUsecase createUseCase;
+    private final EditOptionDetailUsecase editUseCase;
+    private final ApproveOptionDetailUsecase approveUseCase;
+    private final DeleteOptionDetailUsecase deleteUseCase;
+    private final GetOptionDetailListUsecase getOptionDetailListUseCase;
 
     @PostMapping("/create")
     public String create(
@@ -41,7 +42,7 @@ public class OptionDetailController {
             @RequestParam(value = "page", required = false) Integer page,
             Model model
     ) {
-        OptionDetailListResponse result =
+        OptionDetailListDTOResponse result =
                 getOptionDetailListUseCase.execute(requestDetailId, status, page);
         model.addAllAttributes(result.toModel());
         if (!model.containsAttribute("createForm")) {

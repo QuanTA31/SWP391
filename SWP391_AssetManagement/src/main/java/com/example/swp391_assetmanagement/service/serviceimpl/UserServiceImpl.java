@@ -2,9 +2,9 @@ package com.example.swp391_assetmanagement.service.serviceimpl;
 
 import com.example.swp391_assetmanagement.dao.UserDAO;
 import com.example.swp391_assetmanagement.service.UserService;
-import com.example.swp391_assetmanagement.service.servicerequest.LoginRequest;
-import com.example.swp391_assetmanagement.service.serviceresponse.LocationViewAssetResponse;
-import com.example.swp391_assetmanagement.service.serviceresponse.LoginResponse;
+import com.example.swp391_assetmanagement.service.servicerequest.LoginServiceRequest;
+import com.example.swp391_assetmanagement.service.serviceresponse.LocationViewAssetServiceResponse;
+import com.example.swp391_assetmanagement.service.serviceresponse.LoginServiceResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,10 +17,10 @@ public class UserServiceImpl implements UserService {
     private final UserDAO userDAO;
 
     @Override
-    public LoginResponse authenticate(LoginRequest request){
+    public LoginServiceResponse authenticate(LoginServiceRequest request){
 
-        Optional<LoginResponse> userDAOResponse = userDAO.findByUsername(request);
-        if(userDAOResponse.isPresent()){
+        Optional<LoginServiceResponse> userDAOResponse = userDAO.findByUsername(request);
+        if (userDAOResponse.isPresent()) {
             return userDAOResponse.get();
         }
         else{
@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public LocationViewAssetResponse getLocationViewAsset(String userCode) {
+    public LocationViewAssetServiceResponse getLocationViewAsset(String userCode) {
         return userDAO.findLocationByAssetCode(userCode);
     }
 }

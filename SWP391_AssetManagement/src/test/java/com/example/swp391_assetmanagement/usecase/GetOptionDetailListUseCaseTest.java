@@ -4,7 +4,7 @@ import com.example.swp391_assetmanagement.entity.OptionDetail;
 import com.example.swp391_assetmanagement.service.OptionDetailService;
 import com.example.swp391_assetmanagement.service.auth.AuthGuardService;
 import com.example.swp391_assetmanagement.dto.request.OptionDetailListRequest;
-import com.example.swp391_assetmanagement.dto.response.OptionDetailListResponse;
+import com.example.swp391_assetmanagement.dto.response.OptionDetailListDTOResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -27,7 +27,7 @@ class GetOptionDetailListUseCaseTest {
     AuthGuardService authGuardService;
 
     @InjectMocks
-    GetOptionDetailListUseCase useCase;
+    GetOptionDetailListUsecase useCase;
 
     @Test
     void should_return_first_page_with_all_status() {
@@ -44,7 +44,7 @@ class GetOptionDetailListUseCaseTest {
                 .thenReturn(2);
 
         // when
-        OptionDetailListResponse result =
+        OptionDetailListDTOResponse result =
                 useCase.execute(requestDetailId, status, page);
 
         // then
@@ -83,7 +83,7 @@ class GetOptionDetailListUseCaseTest {
                 .thenReturn(11);
 
         // when
-        OptionDetailListResponse result =
+        OptionDetailListDTOResponse result =
                 useCase.execute(requestDetailId, status, page);
 
         // then
