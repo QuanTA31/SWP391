@@ -6,7 +6,7 @@ import org.seasar.doma.Entity;
 
 @Getter
 @Entity
-public class UserLoginResponse {
+public class LoginResponse {
 
     @Column(name = "id")
     public Long id;

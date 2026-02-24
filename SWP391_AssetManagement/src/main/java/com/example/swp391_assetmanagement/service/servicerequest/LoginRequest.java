@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class UserLoginRequest {
+public class LoginRequest {
 
     private String username;
 
