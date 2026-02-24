@@ -1,10 +1,9 @@
 package com.example.swp391_assetmanagement.service.serviceimpl;
 
 import com.example.swp391_assetmanagement.dao.AssetAllProcessDAO;
-import com.example.swp391_assetmanagement.dao.AssetInternalProcessDAO;
 import com.example.swp391_assetmanagement.service.AssetAllProcessService;
-import com.example.swp391_assetmanagement.service.servicerequest.AllProcessRequest;
-import com.example.swp391_assetmanagement.service.serviceresponse.RequestProcessAllResponse;
+import com.example.swp391_assetmanagement.service.servicerequest.AllProcessServiceRequest;
+import com.example.swp391_assetmanagement.service.serviceresponse.RequestProcessAllServiceResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +16,7 @@ public class AssetAllProcessServiceImpl implements AssetAllProcessService {
     private final AssetAllProcessDAO assetAllProcessDAO;
 
     @Override
-    public List<RequestProcessAllResponse> viewAllProcess(AllProcessRequest assetRequest) {
+    public List<RequestProcessAllServiceResponse> viewAllProcess(AllProcessServiceRequest assetRequest) {
         return assetAllProcessDAO.selectRequestProcessAll(assetRequest);
     }
 

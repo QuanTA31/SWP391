@@ -1,4 +1,5 @@
 SELECT
+    ar.id             AS request_id,
     ar.request_type_id,
     ru.username       AS requested_by,
     ar.requested_date,
@@ -10,15 +11,19 @@ SELECT
     ar.created_at,
     COUNT(1) OVER()   AS total_items
 FROM asset_request ar
-         INNER JOIN users ru
+         LEFT JOIN users ru
                     ON ar.requested_by = ru.id
          LEFT JOIN users au
                    ON ar.approved_by = au.id
-         INNER JOIN request_type rt
+         LEFT JOIN request_type rt
                     ON ar.request_type_id = rt.id
-         INNER JOIN request_status rs
+         LEFT JOIN request_status rs
                     ON ar.request_status_id = rs.id
 WHERE 1 = 1
+
+/*%if request.requestTypeIdList != null && !request.requestTypeIdList.isEmpty() */
+  AND ar.request_type_id IN /* request.requestTypeIdList */('01')
+/*%end */
 
 /*%if request.requestTypeId != null && request.requestTypeId != "" */
   AND ar.request_type_id = /* request.requestTypeId */''
@@ -33,5 +38,5 @@ WHERE 1 = 1
 -- /*%end */
 
 ORDER BY ar.created_at DESC
-    LIMIT /* request.pageSize */0
+    LIMIT /* request.pageSize */15
 OFFSET /* request.offset */0

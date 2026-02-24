@@ -1,12 +1,12 @@
 package com.example.swp391_assetmanagement.service;
 
-import com.example.swp391_assetmanagement.service.servicerequest.ExternalProcessRequest;
-import com.example.swp391_assetmanagement.service.serviceresponse.ExternalProcessAllResponse;
+import com.example.swp391_assetmanagement.service.servicerequest.ExternalProcessServiceRequest;
+import com.example.swp391_assetmanagement.service.serviceresponse.ExternalProcessAllServiceResponse;
 
 import java.util.List;
 
 public interface AssetExternalProcessService {
 
-    List<ExternalProcessAllResponse> viewExternalProcess(ExternalProcessRequest assetRequest);
+    List<ExternalProcessAllServiceResponse> viewExternalProcess(ExternalProcessServiceRequest assetRequest);
 
 }

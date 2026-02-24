@@ -1,0 +1,27 @@
+SELECT u.id,
+       u.username,
+       u.password,
+       u.role_id,
+       u.status_id,
+       ud.location_id,
+       ud.name,
+       ud.phone,
+       ud.email,
+       ud.created_at
+       COUNT(1) OVER() AS total_items
+FROM users AS u
+INNER JOIN user_detail AS ud INTO u.id = ud.user_id
+
+WHERE 1 = 1
+/*%if request.locationId != null && request.locationId != "" */
+  AND location_id = /* request.locationId */0
+/*%end */
+/*%if request.roleID != null && request.roleID != "" */
+  AND role_id = /* request.roleID */''
+/*%end */
+/*%if request.name != null && request.name != "" */
+  AND name = /* request.name */''
+/*%end */
+
+    LIMIT /* request.pageSize */0
+OFFSET /* request.offset */0

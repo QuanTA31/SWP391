@@ -1,7 +1,7 @@
 package com.example.swp391_assetmanagement.dao;
 
-import com.example.swp391_assetmanagement.service.servicerequest.InternalProcessRequest;
-import com.example.swp391_assetmanagement.service.serviceresponse.InternalProcessAllResponse;
+import com.example.swp391_assetmanagement.service.servicerequest.InternalProcessServiceRequest;
+import com.example.swp391_assetmanagement.service.serviceresponse.InternalProcessAllServiceResponse;
 import org.seasar.doma.Dao;
 import org.seasar.doma.Select;
 import org.seasar.doma.boot.ConfigAutowireable;
@@ -13,5 +13,5 @@ import java.util.List;
 public interface AssetInternalProcessDAO {
 
     @Select
-    List<InternalProcessAllResponse> selectInternalProcessAll(InternalProcessRequest request);
+    List<InternalProcessAllServiceResponse> selectInternalProcessAll(InternalProcessServiceRequest request);
 }

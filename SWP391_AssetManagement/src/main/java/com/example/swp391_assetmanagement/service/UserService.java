@@ -1,12 +1,12 @@
 package com.example.swp391_assetmanagement.service;
 
-import com.example.swp391_assetmanagement.service.servicerequest.UserLoginRequest;
-import com.example.swp391_assetmanagement.service.serviceresponse.LocationViewAssetResponse;
-import com.example.swp391_assetmanagement.service.serviceresponse.UserLoginResponse;
+import com.example.swp391_assetmanagement.service.servicerequest.LoginServiceRequest;
+import com.example.swp391_assetmanagement.service.serviceresponse.LocationViewAssetServiceResponse;
+import com.example.swp391_assetmanagement.service.serviceresponse.LoginServiceResponse;
 
 public interface UserService {
 
-    UserLoginResponse authenticate(UserLoginRequest request);
+    LoginServiceResponse authenticate(LoginServiceRequest request);
 
-    LocationViewAssetResponse getLocationViewAsset(String userCode);
+    LocationViewAssetServiceResponse getLocationViewAsset(String userCode);
 }

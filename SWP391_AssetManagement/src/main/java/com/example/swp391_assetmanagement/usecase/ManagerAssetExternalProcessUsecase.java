@@ -1,14 +1,15 @@
 package com.example.swp391_assetmanagement.usecase;
 
-import com.example.swp391_assetmanagement.dto.request.ViewExternalProcessRequest;
+import com.example.swp391_assetmanagement.dto.request.ViewExternalProcessDTORequest;
 import com.example.swp391_assetmanagement.dto.response.*;
 //import com.example.swp391_assetmanagement.enums.ApprovalStatus;
 import com.example.swp391_assetmanagement.enums.AssetType;
 import com.example.swp391_assetmanagement.enums.RequestStatus;
 import com.example.swp391_assetmanagement.enums.RequestType;
+import com.example.swp391_assetmanagement.enums.Roles;
 import com.example.swp391_assetmanagement.service.AssetExternalProcessService;
-import com.example.swp391_assetmanagement.service.servicerequest.ExternalProcessRequest;
-import com.example.swp391_assetmanagement.service.serviceresponse.ExternalProcessAllResponse;
+import com.example.swp391_assetmanagement.service.servicerequest.ExternalProcessServiceRequest;
+import com.example.swp391_assetmanagement.service.serviceresponse.ExternalProcessAllServiceResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -29,29 +31,29 @@ public class ManagerAssetExternalProcessUsecase {
     private final AssetExternalProcessService assetExternalProcessService;
 
     @Transactional(readOnly = true)
-    public ViewExternalProcessAllResponse viewExternalProcess(ViewExternalProcessRequest request, HttpSession session) {
+    public ViewExternalProcessAllDTOResponse viewExternalProcess(ViewExternalProcessDTORequest request, HttpSession session) {
 
         validateExternalRequest(request, session);
 
         int pageIndex = (request.getPageIndex() != null && request.getPageIndex() != 0)  ? request.getPageIndex() : 1;
 
         // Get data from database
-        List<ExternalProcessAllResponse> externalProcessResponses = assetExternalProcessService.viewExternalProcess(
-                ExternalProcessRequest.builder()
+        List<ExternalProcessAllServiceResponse> externalProcessResponses = assetExternalProcessService.viewExternalProcess(
+                ExternalProcessServiceRequest.builder()
                         .requestStatusId(request.getRequestStatusId())
                         .requestTypeId(request.getRequestTypeId())
-                        .approvalStatusId(request.getApprovalStatusId())
+//                        .approvalStatusId(request.getApprovalStatusId())
                         .offset((pageIndex-1)*PAGE_SIZE)
                         .pageSize(PAGE_SIZE)
                         .build());
 
         if (externalProcessResponses.isEmpty()) {
-            return ViewExternalProcessAllResponse.builder()
+            return ViewExternalProcessAllDTOResponse.builder()
                     .externalProcessResponses(Collections.emptyList())
-                    .filters(FilterExternalResponse.builder()
+                    .filters(FilterExternalDTOResponse.builder()
                             .requestStatusId(request.getRequestStatusId())
                             .requestTypeId(request.getRequestTypeId())
-                            .approvalStatusId(request.getApprovalStatusId())
+//                            .approvalStatusId(request.getApprovalStatusId())
                             .page(pageIndex)
                             .pageSize(PAGE_SIZE)
                             .totalItems(0)
@@ -68,26 +70,29 @@ public class ManagerAssetExternalProcessUsecase {
         boolean hasNext = pageIndex < totalPages;
         boolean hasPrevious = pageIndex > 1;
 
-        return ViewExternalProcessAllResponse.builder()
+        return ViewExternalProcessAllDTOResponse.builder()
                 .externalProcessResponses(
                         externalProcessResponses.stream().map(
-                                        entity -> ExternalProcessResponse.builder()
-                                                .assetId(entity.assetId)
+                                        entity -> ExternalProcessDTOResponse.builder()
+//                                                .assetId(entity.assetId)
+                                                .assetRequestName(entity.assetRequestId)
                                                 .assetTypeName(AssetType.of(entity.assetTypeId).getName())
-                                                .requestStatusName(RequestStatus.of(entity.requestStatusId).getName())
-                                                .requestTypeName(RequestType.of(entity.requestTypeId).getName())
+//                                                .requestStatusName(RequestStatus.of(entity.requestStatusId).getName())
+//                                                .requestTypeName(RequestType.of(entity.requestTypeId).getName())
+                                                .externalStatusName(entity.externalStatusId)
                                                 .quantity(entity.quantity)
-                                                .handoverDate(entity.handoverDate)
+//                                                .handoverDate(entity.handoverDate)
                                                 .note(entity.note)
+                                                .createdAt(entity.createdAt)
                                                 //.approvalStatusName(ApprovalStatus.of(entity.approvalStatusId).getName())
-                                                .optionDetailId(entity.optionDetail)
+//                                                .optionDetailId(entity.optionDetail)
                                                 .build())
                                 .toList()
                 )
-                .filters(FilterExternalResponse.builder()
+                .filters(FilterExternalDTOResponse.builder()
                         .requestStatusId(request.getRequestStatusId())
                         .requestTypeId(request.getRequestTypeId())
-                        .approvalStatusId(request.getApprovalStatusId())
+//                        .approvalStatusId(request.getApprovalStatusId())
                         .page(pageIndex)
                         .pageSize(PAGE_SIZE)
                         .totalItems(totalItems)
@@ -98,12 +103,48 @@ public class ManagerAssetExternalProcessUsecase {
                 .build();
     }
 
-    private void validateExternalRequest(ViewExternalProcessRequest request, HttpSession session) {
+    // -----------------Lấy details của từng request----
+    @Transactional(readOnly = true)
+    public ViewExternalProcessAllDTOResponse getDetailById(Long requestId) {
 
-        // Check role
-//        if (!Objects.equals(session.getAttribute("ROLE"), Roles.MANAGER.getValue())) {
-//            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền truy cập vào trang này !");
-//        }
+        // Gọi Service lấy danh sách các item trong phiếu External này
+        List<ExternalProcessAllServiceResponse> details = assetExternalProcessService.viewExternalProcess(
+                ExternalProcessServiceRequest.builder()
+                        .requestId(requestId) // Lọc theo ID phiếu
+                        .offset(0)
+                        .pageSize(100) // Lấy tối đa 100 dòng
+                        .build());
+
+        if (details.isEmpty()) {
+            return ViewExternalProcessAllDTOResponse.builder()
+                    .externalProcessResponses(Collections.emptyList())
+                    .build();
+        }
+
+        // Map sang DTO Response
+        return ViewExternalProcessAllDTOResponse.builder()
+                .externalProcessResponses(
+                        details.stream().map(entity -> ExternalProcessDTOResponse.builder()
+                                .assetRequestName(entity.assetRequestId)
+                                .assetTypeName(AssetType.of(entity.assetTypeId).getName())
+                                .externalStatusName(entity.externalStatusId) // Bạn có thể map Enum ExternalStatus ở đây nếu có
+                                .quantity(entity.quantity)
+                                .note(entity.note)
+                                .createdAt(entity.createdAt)
+                                .build()
+                        ).toList()
+                )
+                .build();
+    }
+
+    private void validateExternalRequest(ViewExternalProcessDTORequest request, HttpSession session) {
+
+        //  Check role
+        if (!Objects.equals(session.getAttribute("ROLE"), Roles.ADMIN.getValue())
+        || !Objects.equals(session.getAttribute("ROLE"), Roles.CLIENT.getValue())
+        || !Objects.equals(session.getAttribute("ROLE"), Roles.WAREHOUSE.getValue())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền truy cập vào trang này !");
+        }
 
         //Check enums
         if (!ObjectUtils.isEmpty(request.getRequestStatusId()) && !RequestStatus.hasValue(request.getRequestStatusId())) {
