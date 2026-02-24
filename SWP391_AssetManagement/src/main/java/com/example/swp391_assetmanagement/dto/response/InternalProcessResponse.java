@@ -4,26 +4,35 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Builder
 public class InternalProcessResponse {
 
-    private final String assetId;
+    private final Long assetId;
 
-    private final String requestStatusName;
+    private final String assetRequestName;
 
-    private final String requestTypeName;
+    private final String assetTypeName;
 
-    private final Long fromUserId;
+    private final Integer quantity;
 
-    private final Long toUserId;
+    private final String fromLocationName;
 
-    private final LocalDate dateOfExecution;
+    private final String toLocationName;
 
-    private final LocalDate handoverDate;
+    private final String fromUserName;
+
+    private final String toUserName;
+
+//    private final LocalDate dateOfExecution;
+
+//    private final LocalDate handoverDate;
 
     private final String note;
+
+    private final LocalDate createdAt;
 
  //   private final String approvalStatusName;
 

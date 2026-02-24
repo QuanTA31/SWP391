@@ -6,6 +6,7 @@ import com.example.swp391_assetmanagement.dto.response.*;
 import com.example.swp391_assetmanagement.enums.AssetType;
 import com.example.swp391_assetmanagement.enums.RequestStatus;
 import com.example.swp391_assetmanagement.enums.RequestType;
+import com.example.swp391_assetmanagement.enums.Roles;
 import com.example.swp391_assetmanagement.service.AssetExternalProcessService;
 import com.example.swp391_assetmanagement.service.servicerequest.ExternalProcessRequest;
 import com.example.swp391_assetmanagement.service.serviceresponse.ExternalProcessAllResponse;
@@ -19,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +42,7 @@ public class ManagerAssetExternalProcessUsecase {
                 ExternalProcessRequest.builder()
                         .requestStatusId(request.getRequestStatusId())
                         .requestTypeId(request.getRequestTypeId())
-                        .approvalStatusId(request.getApprovalStatusId())
+//                        .approvalStatusId(request.getApprovalStatusId())
                         .offset((pageIndex-1)*PAGE_SIZE)
                         .pageSize(PAGE_SIZE)
                         .build());
@@ -51,7 +53,7 @@ public class ManagerAssetExternalProcessUsecase {
                     .filters(FilterExternalResponse.builder()
                             .requestStatusId(request.getRequestStatusId())
                             .requestTypeId(request.getRequestTypeId())
-                            .approvalStatusId(request.getApprovalStatusId())
+//                            .approvalStatusId(request.getApprovalStatusId())
                             .page(pageIndex)
                             .pageSize(PAGE_SIZE)
                             .totalItems(0)
@@ -72,22 +74,25 @@ public class ManagerAssetExternalProcessUsecase {
                 .externalProcessResponses(
                         externalProcessResponses.stream().map(
                                         entity -> ExternalProcessResponse.builder()
-                                                .assetId(entity.assetId)
+//                                                .assetId(entity.assetId)
+                                                .assetRequestName(entity.assetRequestId)
                                                 .assetTypeName(AssetType.of(entity.assetTypeId).getName())
-                                                .requestStatusName(RequestStatus.of(entity.requestStatusId).getName())
-                                                .requestTypeName(RequestType.of(entity.requestTypeId).getName())
+//                                                .requestStatusName(RequestStatus.of(entity.requestStatusId).getName())
+//                                                .requestTypeName(RequestType.of(entity.requestTypeId).getName())
+                                                .externalStatusName(entity.externalStatusId)
                                                 .quantity(entity.quantity)
-                                                .handoverDate(entity.handoverDate)
+//                                                .handoverDate(entity.handoverDate)
                                                 .note(entity.note)
+                                                .createdAt(entity.createdAt)
                                                 //.approvalStatusName(ApprovalStatus.of(entity.approvalStatusId).getName())
-                                                .optionDetailId(entity.optionDetail)
+//                                                .optionDetailId(entity.optionDetail)
                                                 .build())
                                 .toList()
                 )
                 .filters(FilterExternalResponse.builder()
                         .requestStatusId(request.getRequestStatusId())
                         .requestTypeId(request.getRequestTypeId())
-                        .approvalStatusId(request.getApprovalStatusId())
+//                        .approvalStatusId(request.getApprovalStatusId())
                         .page(pageIndex)
                         .pageSize(PAGE_SIZE)
                         .totalItems(totalItems)
@@ -98,12 +103,48 @@ public class ManagerAssetExternalProcessUsecase {
                 .build();
     }
 
+    // -----------------Lấy details của từng request----
+    @Transactional(readOnly = true)
+    public ViewExternalProcessAllResponse getDetailById(Long requestId) {
+
+        // Gọi Service lấy danh sách các item trong phiếu External này
+        List<ExternalProcessAllResponse> details = assetExternalProcessService.viewExternalProcess(
+                ExternalProcessRequest.builder()
+                        .requestId(requestId) // Lọc theo ID phiếu
+                        .offset(0)
+                        .pageSize(100) // Lấy tối đa 100 dòng
+                        .build());
+
+        if (details.isEmpty()) {
+            return ViewExternalProcessAllResponse.builder()
+                    .externalProcessResponses(Collections.emptyList())
+                    .build();
+        }
+
+        // Map sang DTO Response
+        return ViewExternalProcessAllResponse.builder()
+                .externalProcessResponses(
+                        details.stream().map(entity -> ExternalProcessResponse.builder()
+                                .assetRequestName(entity.assetRequestId)
+                                .assetTypeName(AssetType.of(entity.assetTypeId).getName())
+                                .externalStatusName(entity.externalStatusId) // Bạn có thể map Enum ExternalStatus ở đây nếu có
+                                .quantity(entity.quantity)
+                                .note(entity.note)
+                                .createdAt(entity.createdAt)
+                                .build()
+                        ).toList()
+                )
+                .build();
+    }
+
     private void validateExternalRequest(ViewExternalProcessRequest request, HttpSession session) {
 
-        // Check role
-//        if (!Objects.equals(session.getAttribute("ROLE"), Roles.MANAGER.getValue())) {
-//            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền truy cập vào trang này !");
-//        }
+        //  Check role
+        if (!Objects.equals(session.getAttribute("ROLE"), Roles.ADMIN.getValue())
+        || !Objects.equals(session.getAttribute("ROLE"), Roles.CLIENT.getValue())
+        || !Objects.equals(session.getAttribute("ROLE"), Roles.WAREHOUSE.getValue())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền truy cập vào trang này !");
+        }
 
         //Check enums
         if (!ObjectUtils.isEmpty(request.getRequestStatusId()) && !RequestStatus.hasValue(request.getRequestStatusId())) {

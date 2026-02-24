@@ -12,7 +12,7 @@ public class ViewInternalProcessRequest {
 
     private String requestTypeId;
 
-    private String approvalStatusId;
+//    private String approvalStatusId;
 
     private Integer pageIndex;
 }

@@ -15,10 +15,13 @@ public class AssetExternalRequestDetail {
     public Long id;
 
     @Column(name = "asset_request_id")
-    public String assetRequestId;
+    public Long assetRequestId;
 
-    @Column(name = "asset_request_type_id")
-    public String assetRequestTypeId;
+    @Column(name = "asset_type_id")
+    public String assetTypeId;
+
+    @Column(name = "external_status_id")
+    public String externalStatusId;
 
     @Column(name = "quantity")
     public Integer quantity;

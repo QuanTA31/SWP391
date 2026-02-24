@@ -30,7 +30,6 @@ public class LoginController {
             session.setAttribute("USER_NAME", userResponse.userName);
             session.setAttribute("ROLE", userResponse.getRoleId());
             session.setAttribute("USER_CODE", userResponse.getUserCode());
-            session.setAttribute("USER_ID", userResponse.getUserId());
             return "redirect:/ManagerViewAsset";
         }
         else {

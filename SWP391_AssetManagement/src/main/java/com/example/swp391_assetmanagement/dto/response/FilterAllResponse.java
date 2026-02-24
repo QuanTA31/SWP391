@@ -11,7 +11,7 @@ public class FilterAllResponse {
 
     private String requestTypeId;
 
-    private String approvalStatusId;
+  //  private String approvalStatusId;
 
     private final Integer page;
 
