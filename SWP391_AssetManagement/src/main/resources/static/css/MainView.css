@@ -36,21 +36,34 @@ body {
 
 /* SIDEBAR */
 .sidebar {
-    width: 220px;
-    border-right: 1px solid #e5e7eb;
-    padding: 12px;
-    background: #fff;
+    width: 230px;
+    background: #f4f6f8;              /* nền xám nhạt */
+    padding: 20px 16px;
+    border-left: 6px solid #29b6f6;
+    display: flex;
+    flex-direction: column;
 }
 
+/* MENU ITEM */
 .menu-item {
-    padding: 6px 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-bottom: 4px;
+    display: block;
+    padding: 10px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #1f2937;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    margin-bottom: 6px;
 }
 
+/* HOVER */
+.menu-item:hover {
+    background-color: #e3f2fd;
+}
+
+/* ACTIVE */
 .menu-item.active {
-    background: #e3f2fd;
+    background-color: #dbeafe;
     font-weight: 600;
 }
 

@@ -24,10 +24,23 @@
     <!-- SIDEBAR -->
     <div class="sidebar">
       <div class="fw-semibold mb-2">Menu</div>
-      <div class="menu-item">Main View Asset</div>
-      <div class="menu-item">Create Request</div>
-      <div class="menu-item active">View Request</div>
-      <div class="menu-item">Approval Request</div>
+<!--      <div class="fw-semibold mb-2">Menu</div>-->
+<!--      <div class="menu-item">Main View Asset</div>-->
+<!--      <div class="menu-item">Create Request</div>-->
+<!--      <div class="menu-item active">View Request</div>-->
+<!--      <div class="menu-item">Approval Request</div>-->
+      <a th:href="@{/viewAsset}" class="menu-item">
+        View Asset
+      </a>
+
+      <a th:href="@{/viewRequest}" class="menu-item">
+        View Request
+      </a>
+
+      <a th:if="${session.ROLE == '03'}"
+         th:href="@{/purchase-requests/warehouse/createRequest}" class="menu-item">
+        Create Purchase Request
+      </a>
     </div>
 
     <!-- CONTENT -->
@@ -40,7 +53,8 @@
         </div>
 
         <!-- FILTER -->
-        <form method="get" th:action="@{/main/viewRequest}">
+        <!--<form method="get" th:action="@{/main/viewRequest}"> -->
+        <form method="get" th:action="@{/viewRequest}">
           <div class="toolbar-right">
 
             <!-- REQUEST STATUS -->
@@ -122,13 +136,13 @@
               <td>
                   <a th:if="${item.internal}"
                      class="btn btn-sm btn-primary"
-                     th:href="@{/main/viewInternalRequest/detail(id=${item.id})}">
+                     th:href="@{/viewInternalRequest/detail(id=${item.id})}">
                       <i class="bi bi-eye"></i> View
                   </a>
 
                   <a th:if="${!item.internal}"
                      class="btn btn-sm btn-warning text-dark"
-                     th:href="@{/main/viewExternalRequest/detail(id=${item.id})}">
+                     th:href="@{/viewExternalRequest/detail(id=${item.id})}">
                       <i class="bi bi-eye"></i> View
                   </a>
               </td>
