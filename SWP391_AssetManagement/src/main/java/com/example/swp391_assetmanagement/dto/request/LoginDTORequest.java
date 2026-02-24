@@ -7,7 +7,7 @@ import lombok.Getter;
 @Builder
 public class LoginDTORequest {
 
-    public final String username;
+    private String username;
 
-    public final String password;
+    private String password;
 }
