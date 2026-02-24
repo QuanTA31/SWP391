@@ -5,7 +5,6 @@ import org.seasar.doma.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Setter
 @Entity
@@ -23,7 +22,7 @@ public class AssetRequest {
     public Long requestedBy;
 
     @Column(name = "requested_date")
-    public Date requestedDate;
+    public LocalDate requestedDate;
 
     @Column(name = "request_status_id")
     public String requestStatusId;
@@ -32,7 +31,7 @@ public class AssetRequest {
     public Long approvedBy;
 
     @Column(name = "approved_date")
-    public Date approvedDate;
+    public LocalDate approvedDate;
 
     @Column(name = "handover_date")
     public LocalDate handoverDate;
