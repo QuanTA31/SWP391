@@ -17,12 +17,12 @@ public class LoginController {
 
     private final LoginUsecase loginUsecase;
 
-    @GetMapping("/login")
+    @GetMapping({"/", "/login"})
     public String showLoginPage() {
         return "login";
     }
 
-    @PostMapping("/login")
+    @PostMapping("/")
     public String login(@ModelAttribute LoginDTORequest request, HttpSession session, Model model) {
         LoginDTOResponse userResponse = loginUsecase.executeLogin(request);
 
@@ -30,7 +30,7 @@ public class LoginController {
             session.setAttribute("USER_NAME", userResponse.getUserName());
             session.setAttribute("ROLE", userResponse.getRoleId());
             session.setAttribute("USER_CODE", userResponse.getUserCode());
-            return "redirect:/ManagerViewAsset";
+            return "redirect:/main/viewAsset";
         } else {
             model.addAttribute("error", "Incorrect username or password");
             return "login";

@@ -27,19 +27,17 @@ public class ViewAllUserUseCase {
 
     private final Integer PAGE_SIZE = 15;
     private final ViewAllUserService viewAllUserService;
-//    private final UserService userService;
 
     @Transactional(readOnly = true)
     public ViewAllUserDTOResponse viewUser(ViewAllUserDTORequest request, HttpSession session) {
         validateUserRequest( request, session);
 
         int pageIndex = (request.getPageIndex() != null && request.getPageIndex() != 0) ? request.getPageIndex() : 1;
-// Get data from database
+        // Get data from database
         List<ViewAllUserResponse> serviceResponses = viewAllUserService.selectAllUser(
                 ViewAllUserRequest.builder()
                         .locationId(request.getLocationId())
                         .roleID(request.getRoleID())
-                        //.name(request.getName())
                         .name(ObjectUtils.isEmpty(request.getName()) ? null : request.getName().trim())
                         .offset((pageIndex - 1) * PAGE_SIZE)
                         .pageSize(PAGE_SIZE)
