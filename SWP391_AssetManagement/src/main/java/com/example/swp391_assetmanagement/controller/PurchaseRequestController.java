@@ -17,7 +17,7 @@ public class PurchaseRequestController {
     private final CreatePurchaseRequestUsecase createPurchaseRequestUsecase;
 
     @GetMapping("/warehouse/create")
-    public String viewPurchaseRequestForm(@RequestParam Long assetRequestId, Model model, HttpSession session) {
+    public String viewPurchaseRequestForm(@RequestParam(required = false) Long assetRequestId, Model model, HttpSession session) {
         return "createPurchaseRequest";
     }
 
