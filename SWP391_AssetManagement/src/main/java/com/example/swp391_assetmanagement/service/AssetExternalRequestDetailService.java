@@ -7,4 +7,7 @@ import java.util.List;
 public interface AssetExternalRequestDetailService {
 
     int[] createPurchaseRequest(List<AssetExternalRequestDetail> details);
+
+    List<AssetExternalRequestDetail> getByAssetRequestId(Long assetRequestId);
+
 }
