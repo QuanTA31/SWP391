@@ -18,7 +18,7 @@
     <div class="app-content">
         <div class="sidebar">
             <div class="fw-semibold mb-2">Menu</div>
-            <div class="menu-item" th:onclick="|location.href='@{/main/viewAsset}'|">Main View Asset</div>
+            <div class="menu-item" th:onclick="|location.href='@{/admin/viewUser}'|">View All Users</div>
             <div class="menu-item active">Create User</div>
         </div>
 
@@ -28,7 +28,7 @@
             </div>
 
             <div class="form-container p-4 bg-light rounded shadow-sm overflow-auto">
-                <form th:action="@{/main/createUser}" th:object="${userRequest}" method="post">
+                <form th:action="@{/admin/createUser}" th:object="${userRequest}" method="post">
                     <div class="row g-3">
                         <div class="col-md-6">
                             <h6 class="text-primary border-bottom pb-2">Account Info</h6>

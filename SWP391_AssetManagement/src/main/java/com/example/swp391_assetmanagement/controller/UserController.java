@@ -29,7 +29,7 @@ public class UserController {
     public String showCreateForm(Model model) {
         // Gửi một object rỗng sang để bind dữ liệu form
         model.addAttribute("userRequest", new CreateUserDTORequest());
-        return "ManagerCreateUser";
+        return "CreateNewUser";
     }
 
     @PostMapping("/createUser")
@@ -45,7 +45,7 @@ public class UserController {
         // Gọi service lưu vào 2 bảng users và user_detail
         // createUserService.createNewUser(request);
 
-        return "redirect:/main/viewUser";
+        return "redirect:/admin/viewUser";
     }
     private String getPrefixByRole(String roleId) {
         return switch (roleId) {
