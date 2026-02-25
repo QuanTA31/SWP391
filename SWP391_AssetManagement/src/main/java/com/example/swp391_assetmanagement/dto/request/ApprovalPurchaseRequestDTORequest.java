@@ -1,9 +1,10 @@
 package com.example.swp391_assetmanagement.dto.request;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class ApprovalPurchaseRequestDTORequest {
 
