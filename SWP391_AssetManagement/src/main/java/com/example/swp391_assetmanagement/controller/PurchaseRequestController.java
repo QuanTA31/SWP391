@@ -68,6 +68,15 @@ public class PurchaseRequestController {
     public String managerOptionDetail(
             @ModelAttribute List<OptionDetailSelectDTORequest> request, HttpSession session, Model model) {
 
+        /*
+        Get db AssetRequest --> status = RESEARCH thì thực hiện các logic bên dưới không thì thôi.
+        th1: tồn tại 1 phần tử của  List<OptionDetailSelectDTORequest> có isSelected = true
+        update tất cả record còn lại trong option_detail thành isSelected = false
+        update AssetRequest. status = RESEARCH_DONE
+        th2 : tất cả các phần tử có trong list đều là  isSelected = false
+        update tất cả record trong option_detail thành isSelected = false
+        update AssetRequest. status = APPROVED
+         */
         return "redirect:/viewRequest";
     }
 }
