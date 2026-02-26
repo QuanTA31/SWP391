@@ -15,6 +15,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/purchase-requests")
@@ -32,7 +35,13 @@ public class PurchaseRequestController {
         CreatePurchaseRequestDTORequest createPurchaseRequestDTORequest = getPurchaseRequestWarehouseUsecase.execute(assetRequestId);
 
         model.addAttribute("purchaseRequest",createPurchaseRequestDTORequest);
-        model.addAttribute("assetTypes", AssetType.values());
+        model.addAttribute("assetTypes",
+                Arrays.stream(AssetType.values())
+                        .map(a -> Map.of(
+                                "value", a.getValue(),
+                                "label", a.getName()
+                        ))
+                        .toList());
 
         return "createPurchaseRequest";
     }
@@ -51,8 +60,13 @@ public class PurchaseRequestController {
         CreatePurchaseRequestDTORequest createPurchaseRequestDTORequest = getPurchaseRequestManagerUsecase.execute(assetRequestId);
 
         model.addAttribute("purchaseRequest",createPurchaseRequestDTORequest);
-        model.addAttribute("assetTypes", AssetType.values());
-        model.addAttribute("approvalRequest",ApprovalPurchaseRequestDTORequest.builder().build());
+        model.addAttribute("assetTypes",
+                Arrays.stream(AssetType.values())
+                        .map(a -> Map.of(
+                                "value", a.getValue(),
+                                "label", a.getName()
+                        ))
+                        .toList());        model.addAttribute("approvalRequest",new ApprovalPurchaseRequestDTORequest());
         return "createPurchaseRequest";
     }
 
