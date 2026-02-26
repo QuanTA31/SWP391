@@ -9,6 +9,8 @@ import lombok.*;
 @Builder
 public class CreatePurchaseRequestDetailDTORequest {
 
+    private Long assetExternalRequestDetailId;
+
     private String assetTypeId;
 
     private Integer quantity;
