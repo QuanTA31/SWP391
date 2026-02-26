@@ -5,10 +5,7 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Getter
-@Setter
 @Builder
-@NoArgsConstructor  // Quan trọng: Thêm cái này để Controller gọi new CreateUserDTORequest() không bị lỗi
-@AllArgsConstructor
 public class CreateUserDTORequest {
 
     private String userCode;

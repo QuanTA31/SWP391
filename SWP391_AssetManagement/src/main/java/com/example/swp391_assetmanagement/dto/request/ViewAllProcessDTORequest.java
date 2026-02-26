@@ -11,10 +11,9 @@ public class ViewAllProcessDTORequest {
 
     private String requestStatusId;
 
-    private String requestTypeId; //user chọn filter
+    private String requestTypeId;
 
-    //   private String approvalStatusId;
-    private List<String> requestTypeIdList;  //backend phân quyền
+    private List<String> requestTypeIdList;
 
     private Integer pageIndex;
 }

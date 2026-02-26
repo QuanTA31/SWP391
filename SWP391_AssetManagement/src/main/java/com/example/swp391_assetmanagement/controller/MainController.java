@@ -42,7 +42,7 @@ public class MainController {
             if(Objects.equals(Roles.ADMIN.getValue(),userResponse.getRoleId())){
                 return "redirect:/admin/viewUser";
             }
-            return "redirect:/ManagerViewAsset";
+            return "redirect:/viewAsset";
         }else {
             model.addAttribute("error", "Incorrect username or password");
             return "login";
