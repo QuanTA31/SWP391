@@ -38,7 +38,7 @@
       </a>
 
       <a th:if="${session.ROLE == '03'}"
-         th:href="@{/purchase-requests/warehouse/create(assetRequestId='')}" class="menu-item">
+         th:href="@{/purchase-requests/warehouse/view(assetRequestId='')}" class="menu-item">
         Create Purchase Request
       </a>
     </div>
@@ -138,7 +138,7 @@
 
                   <a th:if="${session.ROLE == '03'}"
                      class="btn btn-sm btn-info text-white"
-                     th:href="@{/purchase-requests/warehouse/create(assetRequestId=${item.id})}">
+                     th:href="@{/purchase-requests/warehouse/view(assetRequestId=${item.id})}">
                     <i class="bi bi-eye"></i> View
                   </a>
 
