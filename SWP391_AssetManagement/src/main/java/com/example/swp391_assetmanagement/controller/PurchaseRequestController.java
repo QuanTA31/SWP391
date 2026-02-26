@@ -2,6 +2,7 @@ package com.example.swp391_assetmanagement.controller;
 
 import com.example.swp391_assetmanagement.dto.request.ApprovalPurchaseRequestDTORequest;
 import com.example.swp391_assetmanagement.dto.request.CreatePurchaseRequestDTORequest;
+import com.example.swp391_assetmanagement.dto.request.OptionDetailSelectDTORequest;
 import com.example.swp391_assetmanagement.enums.AssetType;
 import com.example.swp391_assetmanagement.usecase.CreatePurchaseRequestUsecase;
 import com.example.swp391_assetmanagement.usecase.GetPurchaseRequestManagerUsecase;
@@ -12,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/purchase-requests")
@@ -49,7 +52,7 @@ public class PurchaseRequestController {
 
         model.addAttribute("purchaseRequest",createPurchaseRequestDTORequest);
         model.addAttribute("assetTypes", AssetType.values());
-        model.addAttribute("approvalRequest",new ApprovalPurchaseRequestDTORequest());
+        model.addAttribute("approvalRequest",ApprovalPurchaseRequestDTORequest.builder().build());
         return "createPurchaseRequest";
     }
 
@@ -58,6 +61,13 @@ public class PurchaseRequestController {
             @ModelAttribute ApprovalPurchaseRequestDTORequest request, HttpSession session, Model model) {
 
         managerCreatePurchaseRequestUsecase.execute(request, session);
+        return "redirect:/viewRequest";
+    }
+
+    @PostMapping("/manager/optionDetail")
+    public String managerOptionDetail(
+            @ModelAttribute List<OptionDetailSelectDTORequest> request, HttpSession session, Model model) {
+
         return "redirect:/viewRequest";
     }
 }

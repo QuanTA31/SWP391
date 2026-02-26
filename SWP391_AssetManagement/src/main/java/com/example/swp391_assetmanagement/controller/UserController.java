@@ -29,7 +29,7 @@ public class UserController {
     }
     @GetMapping("/createUser")
     public String showCreateForm(Model model) {
-        model.addAttribute("userRequest", new CreateUserDTORequest());
+        model.addAttribute("userRequest", CreateUserDTORequest.builder().build());
         return "CreateNewUser";
     }
 
