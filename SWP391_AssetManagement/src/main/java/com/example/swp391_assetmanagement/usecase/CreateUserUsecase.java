@@ -6,14 +6,14 @@ import com.example.swp391_assetmanagement.entity.Users;
 import com.example.swp391_assetmanagement.enums.Location;
 import com.example.swp391_assetmanagement.enums.Roles;
 import com.example.swp391_assetmanagement.service.CreateUserService;
-import com.example.swp391_assetmanagement.service.servicerequest.CreateUserServiceRequest;
-import com.example.swp391_assetmanagement.service.serviceresponse.CreateUserServiceResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import java.time.LocalDateTime;
 
@@ -23,7 +23,7 @@ public class CreateUserUsecase {
     private final CreateUserService createUserService;
 
     @Transactional
-    public CreateUserDTORequest createUser(CreateUserServiceRequest request, HttpSession session) {
+    public CreateUserDTORequest createUser(CreateUserDTORequest request, HttpSession session) {
         // 1. Validate (Tương tự ViewAllUserUsecase)
         validateCreateRequest(request, session);
 
@@ -36,7 +36,8 @@ public class CreateUserUsecase {
         Users userEntity = new Users();
         userEntity.setUserCode(autoUserCode);
         userEntity.setUsername(request.getUsername());
-        userEntity.setPassword(request.getPassword()); // Nên mã hóa password ở đây
+        String hashedPass = encryptSHA1(request.getPassword());
+        userEntity.setPassword(hashedPass);
         userEntity.setRoleId(request.getRoleId());
         userEntity.setStatusId(request.getStatusId());
         userEntity.setCreatedAt(LocalDateTime.now());
@@ -66,10 +67,9 @@ public class CreateUserUsecase {
                 .dateOfBirth(detailEntity.getDateOfBirth())
                 .password(userEntity.getPassword())
                 .build();
-//                mapToResponse(userEntity, detailEntity);
     }
 
-    private void validateCreateRequest(CreateUserServiceRequest request, HttpSession session) {
+    private void validateCreateRequest(CreateUserDTORequest request, HttpSession session) {
         // Kiểm tra quyền (Chỉ ADMIN/MANAGER mới được tạo user)
         String role = (String) session.getAttribute("ROLE");
         if (!Roles.ADMIN.getValue().equals(role) && !Roles.MANAGER.getValue().equals(role)) {
@@ -79,6 +79,25 @@ public class CreateUserUsecase {
         // Validate Enums
         if (!Location.hasValue(request.getLocationId())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Location invalid!");
+        }
+    }
+
+    public static String encryptSHA1(String input) {
+        try {
+            // Khởi tạo đối tượng MessageDigest với thuật toán SHA-1
+            MessageDigest md = MessageDigest.getInstance("SHA-1");
+
+            // Thực hiện mã hóa chuỗi đầu vào (trả về mảng byte)
+            byte[] messageDigest = md.digest(input.getBytes());
+
+            // Chuyển đổi mảng byte sang định dạng Hexadecimal (thập lục phân)
+            StringBuilder sb = new StringBuilder();
+            for (byte b : messageDigest) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Not found SHA-1", e);
         }
     }
 
@@ -92,17 +111,4 @@ public class CreateUserUsecase {
             default -> "C";
         };
     }
-
-//    private CreateUserServiceResponse mapToResponse(Users u, UserDetail d) {
-//        // Sử dụng Builder nếu bạn đã thêm @Builder vào Response
-//        return CreateUserDTORequest.builder()
-//                .userCode(u.getUserCode())
-//                .username(u.getUsername())
-//                .name(d.getName())
-//                .email(d.getEmail())
-//                .roleId(u.getRoleId())
-//                .statusId(u.getStatusId())
-//                .locationId(d.getLocationId())
-//                .build();
-//    }
 }
