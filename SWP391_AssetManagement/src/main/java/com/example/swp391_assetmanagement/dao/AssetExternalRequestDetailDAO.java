@@ -20,7 +20,7 @@ public interface AssetExternalRequestDetailDAO {
     List<AssetExternalRequestDetail> selectByAssetRequestId(Long assetRequestId);
 
     @BatchUpdate(sqlFile = true)
-    int batchUpdate(List<AssetExternalRequestDetail> details);
+    int[] batchUpdate(List<AssetExternalRequestDetail> details);
 
     @Select
     List<AssetExternalRequestDetail> selectByAssetRequestIdForUpdate(Long assetRequestId);

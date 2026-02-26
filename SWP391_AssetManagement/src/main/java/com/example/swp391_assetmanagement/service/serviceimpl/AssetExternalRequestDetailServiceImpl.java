@@ -25,7 +25,7 @@ public class AssetExternalRequestDetailServiceImpl implements AssetExternalReque
     }
 
     @Override
-    public int batchUpdate(List<AssetExternalRequestDetail> details) {
+    public int[] batchUpdate(List<AssetExternalRequestDetail> details) {
         return assetExternalRequestDetailDAO.batchUpdate(details);
     }
 

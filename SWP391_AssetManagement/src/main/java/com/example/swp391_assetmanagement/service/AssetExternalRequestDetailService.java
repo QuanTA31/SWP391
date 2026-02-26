@@ -10,7 +10,7 @@ public interface AssetExternalRequestDetailService {
 
     List<AssetExternalRequestDetail> getByAssetRequestId(Long assetRequestId);
 
-    int batchUpdate(List<AssetExternalRequestDetail> details);
+    int[] batchUpdate(List<AssetExternalRequestDetail> details);
 
     List<AssetExternalRequestDetail> getByAssetRequestIdForUpdate(Long assetRequestId);
 }
