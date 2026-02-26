@@ -6,6 +6,7 @@ import com.example.swp391_assetmanagement.enums.AssetType;
 import com.example.swp391_assetmanagement.usecase.CreatePurchaseRequestUsecase;
 import com.example.swp391_assetmanagement.usecase.GetPurchaseRequestManagerUsecase;
 import com.example.swp391_assetmanagement.usecase.GetPurchaseRequestWarehouseUsecase;
+import com.example.swp391_assetmanagement.usecase.ManagerCreatePurchaseRequestUsecase;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -13,6 +14,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/purchase-requests")
@@ -22,6 +25,7 @@ public class PurchaseRequestController {
     private final CreatePurchaseRequestUsecase createPurchaseRequestUsecase;
     private final GetPurchaseRequestWarehouseUsecase getPurchaseRequestWarehouseUsecase;
     private final GetPurchaseRequestManagerUsecase getPurchaseRequestManagerUsecase;
+    private final ManagerCreatePurchaseRequestUsecase managerCreatePurchaseRequestUsecase;
 
     @GetMapping("/warehouse/view")
     public String viewPurchaseRequestForm(@RequestParam(required = false) Long assetRequestId, Model model, HttpSession session) {
@@ -29,7 +33,13 @@ public class PurchaseRequestController {
         CreatePurchaseRequestDTORequest createPurchaseRequestDTORequest = getPurchaseRequestWarehouseUsecase.execute(assetRequestId);
 
         model.addAttribute("purchaseRequest",createPurchaseRequestDTORequest);
-        model.addAttribute("assetTypes", AssetType.values());
+        model.addAttribute("assetTypes",
+                Arrays.stream(AssetType.values())
+                        .map(a -> Map.of(
+                                "value", a.getValue(),
+                                "label", a.getName()
+                        ))
+                        .toList());
 
         return "createPurchaseRequest";
     }
@@ -48,15 +58,20 @@ public class PurchaseRequestController {
         CreatePurchaseRequestDTORequest createPurchaseRequestDTORequest = getPurchaseRequestManagerUsecase.execute(assetRequestId);
 
         model.addAttribute("purchaseRequest",createPurchaseRequestDTORequest);
-        model.addAttribute("assetTypes", AssetType.values());
-        model.addAttribute("approvalRequest",new ApprovalPurchaseRequestDTORequest());
+        model.addAttribute("assetTypes",
+                Arrays.stream(AssetType.values())
+                        .map(a -> Map.of(
+                                "value", a.getValue(),
+                                "label", a.getName()
+                        ))
+                        .toList());        model.addAttribute("approvalRequest",new ApprovalPurchaseRequestDTORequest());
         return "createPurchaseRequest";
     }
 
     @PostMapping("/manager/approval")
     public String managerViewPurchaseRequest(
             @ModelAttribute ApprovalPurchaseRequestDTORequest request, HttpSession session, Model model) {
-
+        managerCreatePurchaseRequestUsecase.execute(request, session);
         return "createPurchaseRequest";
     }
 }

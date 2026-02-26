@@ -7,9 +7,14 @@ INSERT INTO asset_request (request_type_id,
                            handover_date,
                            note,
                            created_at)
-values (
+VALUES (
            /* assetRequest.requestTypeId */'',
            /* assetRequest.requestedBy */0,
            /* assetRequest.requestedDate */'2025-01-01',
            /* assetRequest.requestStatusId */'',
-           /* assetRequest.note */'')
+           /* assetRequest.approvedBy */null,
+           /* assetRequest.approvedDate */null,
+           /* assetRequest.handoverDate */null,
+           /* assetRequest.note */'',
+           /* assetRequest.createdAt */null
+       )

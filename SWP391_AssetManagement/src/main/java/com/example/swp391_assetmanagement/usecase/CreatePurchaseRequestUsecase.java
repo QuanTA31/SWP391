@@ -66,6 +66,7 @@ public class CreatePurchaseRequestUsecase {
                                 detail.setAssetRequestId(assetRequestId);
                                 detail.setAssetTypeId(AssetType.of(dto.getAssetTypeId()).getValue());
                                 detail.setExternalStatusId(ExternalStatus.DRAFT.getValue());
+                                detail.setQuantity(dto.getQuantity());
                                 detail.setNote(dto.getNote());
 
                                 return detail;
@@ -149,27 +150,5 @@ public class CreatePurchaseRequestUsecase {
                     }
             );
         }
-    }
-
-    public CreatePurchaseRequestDTORequest getExistingRequest(Long assetRequestId) {
-        List<AssetExternalRequestDetail> details =
-                assetExternalRequestDetailService.getByAssetRequestId(assetRequestId);
-
-        List<CreatePurchaseRequestDetailDTORequest> detailDTOs = details.stream()
-                .map(detail -> {
-                    CreatePurchaseRequestDetailDTORequest dto = new CreatePurchaseRequestDetailDTORequest();
-                    dto.setAssetTypeId(detail.getAssetTypeId());
-                    dto.setQuantity(detail.getQuantity());
-                    dto.setNote(detail.getNote());
-                    return dto;
-                })
-                .toList();
-
-        CreatePurchaseRequestDTORequest dto = new CreatePurchaseRequestDTORequest();
-        dto.setAssetRequestId(assetRequestId);
-        dto.setCreatePurchaseRequestDetailDTORequestList(detailDTOs);
-        dto.setSubmitted(false);
-
-        return dto;
     }
 }
