@@ -13,10 +13,10 @@ import java.util.Optional;
 @Service
 public class OptionDetailServiceImpl implements OptionDetailService {
 
-    private final OptionDetailDao optionDetailDao; // 👈 BẮT BUỘC
+    private final OptionDetailDao optionDetailDao;
 
     public OptionDetailServiceImpl(OptionDetailDao optionDetailDao) {
-        this.optionDetailDao = optionDetailDao; // 👈 GÁN Ở ĐÂY
+        this.optionDetailDao = optionDetailDao;
     }
 
     @Override
@@ -102,7 +102,7 @@ public class OptionDetailServiceImpl implements OptionDetailService {
 
     @Override
     public boolean existsRequestDetail(Long requestDetailId) {
-        return optionDetailDao.countByRequestDetailId(requestDetailId, null) > 0;
+        return optionDetailDao.existsRequestDetail(requestDetailId) > 0;
     }
 
 }
