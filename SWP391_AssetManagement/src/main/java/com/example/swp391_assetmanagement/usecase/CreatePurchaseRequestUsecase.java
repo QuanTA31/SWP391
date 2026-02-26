@@ -66,6 +66,7 @@ public class CreatePurchaseRequestUsecase {
                                 detail.setAssetRequestId(assetRequestId);
                                 detail.setAssetTypeId(AssetType.of(dto.getAssetTypeId()).getValue());
                                 detail.setExternalStatusId(ExternalStatus.DRAFT.getValue());
+                                detail.setQuantity(dto.getQuantity());
                                 detail.setNote(dto.getNote());
 
                                 return detail;
