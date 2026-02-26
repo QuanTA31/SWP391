@@ -1,6 +1,7 @@
 package com.example.swp391_assetmanagement.usecase;
 
 import com.example.swp391_assetmanagement.dto.request.CreatePurchaseRequestDTORequest;
+import com.example.swp391_assetmanagement.dto.request.CreatePurchaseRequestDetailDTORequest;
 import com.example.swp391_assetmanagement.entity.AssetExternalRequestDetail;
 import com.example.swp391_assetmanagement.entity.AssetRequest;
 import com.example.swp391_assetmanagement.enums.AssetType;
@@ -61,5 +62,26 @@ public class CreatePurchaseRequestUsecase {
                             return detail;
                         })
                         .toList();
+    }
+    public CreatePurchaseRequestDTORequest getExistingRequest(Long assetRequestId) {
+        List<AssetExternalRequestDetail> details =
+                assetExternalRequestDetailService.getByAssetRequestId(assetRequestId);
+
+        List<CreatePurchaseRequestDetailDTORequest> detailDTOs = details.stream()
+                .map(detail -> {
+                    CreatePurchaseRequestDetailDTORequest dto = new CreatePurchaseRequestDetailDTORequest();
+                    dto.setAssetTypeId(detail.getAssetTypeId());
+                    dto.setQuantity(detail.getQuantity());
+                    dto.setNote(detail.getNote());
+                    return dto;
+                })
+                .toList();
+
+        CreatePurchaseRequestDTORequest dto = new CreatePurchaseRequestDTORequest();
+        dto.setAssetRequestId(assetRequestId);
+        dto.setCreatePurchaseRequestDetailDTORequestList(detailDTOs);
+        dto.setSubmitted(false);
+
+        return dto;
     }
 }

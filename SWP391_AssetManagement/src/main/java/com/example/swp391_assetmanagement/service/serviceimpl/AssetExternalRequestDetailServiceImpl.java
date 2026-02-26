@@ -19,4 +19,8 @@ public class AssetExternalRequestDetailServiceImpl implements AssetExternalReque
 
         return assetExternalRequestDetailDAO.insert(details);
     }
+    @Override
+    public List<AssetExternalRequestDetail> getByAssetRequestId(Long assetRequestId) {
+        return assetExternalRequestDetailDAO.selectByAssetRequestId(assetRequestId);
+    }
 }
