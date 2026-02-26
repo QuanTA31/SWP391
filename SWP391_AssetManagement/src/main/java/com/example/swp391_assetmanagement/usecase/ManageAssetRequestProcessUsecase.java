@@ -71,7 +71,8 @@ public class ManageAssetRequestProcessUsecase {
 
             requestTypeIdList.addAll(List.of(
                     RequestType.MAINTENANCE.getValue(),
-                    RequestType.LIQUIDATION.getValue()
+                    RequestType.LIQUIDATION.getValue(),
+                    RequestType.PROCUREMENT.getValue()
             ));
 
         }
