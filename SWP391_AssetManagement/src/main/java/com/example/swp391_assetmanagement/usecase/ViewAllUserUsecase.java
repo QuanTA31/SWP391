@@ -70,7 +70,6 @@ public class ViewAllUserUsecase {
                 .userDTOResponses(
                         serviceResponses.stream().map(
                                 entity -> UserDTOResponse.builder()
-                                        .userCode(entity.userCode)
                                         .userStatus(entity.userStatus)
                                         .name(entity.name)
                                         .phone(entity.phone)
@@ -79,7 +78,6 @@ public class ViewAllUserUsecase {
                                         .username(entity.username)
                                         .password(entity.password)
                                         .roleName(Roles.of(entity.roleId).getName())
-                                        .createAt(entity.getCreateAt())
                                         .build())
                                 .toList()
                 )

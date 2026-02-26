@@ -10,8 +10,6 @@ import java.time.LocalDate;
 @Builder
 public class UserDTOResponse {
 
-    private final String userCode;
-
     private final String username;
 
     private final String password;
@@ -27,6 +25,4 @@ public class UserDTOResponse {
     private final String phone;
 
     private final String email;
-
-    private final LocalDate createAt;
 }

@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>User Management | Asset Tracker</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/MainView.css}">
+    <link rel="stylesheet" th:href="@{/css/OptionDetail.css}">
+</head>
+
+<body>
+
+<div class="app-wrapper">
+
+    <div class="app-header">
+        <span>Asset Tracker</span>
+        <span>User Management</span>
+    </div>
+
+    <div class="app-content">
+
+        <div class="sidebar">
+            <div class="fw-semibold mb-2">Menu</div>
+            <div class="menu-item active">View All Users</div>
+            <div class="menu-item" th:onclick="|location.href='@{/admin/createUser}'|">Create User</div>
+        </div>
+
+        <div class="content-right">
+
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <span class="fw-semibold">User Management</span>
+                </div>
+
+                <form method="get" th:action="@{/admin/viewUser}">
+                    <div class="toolbar-right">
+
+                        <select name="locationId" class="form-select form-select-sm">
+                            <option value="">All Locations</option>
+                            <option th:each="loc : ${T(com.example.swp391_assetmanagement.enums.Location).values()}"
+                                    th:value="${loc.value}"
+                                    th:text="${loc.name}"
+                                    th:selected="${users.filters.locationId == loc.value}">
+                            </option>
+                        </select>
+
+                        <select name="roleID" class="form-select form-select-sm">
+                            <option value="">All Roles</option>
+                            <option th:each="role : ${T(com.example.swp391_assetmanagement.enums.Roles).values()}"
+                                    th:value="${role.value}"
+                                    th:text="${role.name}"
+                                    th:selected="${users.filters.roleId == role.value}">
+                            </option>
+                        </select>
+
+                        <input type="text"
+                               name="name"
+                               class="form-control form-control-sm"
+                               placeholder="Search Name..."
+                               th:value="${users.filters.name}">
+
+                        <button class="btn btn-sm btn-save-draft" type="submit" style="background-color: #29b6f6; color: white;">
+                            Search
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="table-container">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover table-fixed">
+                        <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Full Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Location</th>
+                            <th>Role</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr th:if="${users.userDTOResponses == null || users.userDTOResponses.isEmpty()}">
+                            <td colspan="8" class="text-center text-muted">No users found</td>
+                        </tr>
+
+                        <tr th:each="u : ${users.userDTOResponses}">
+                            <td th:text="${u.username}" class="fw-semibold"></td>
+                            <td th:text="${u.name}"></td>
+                            <td th:text="${u.email}"></td>
+                            <td th:text="${u.phone}"></td>
+                            <td th:text="${u.locationName}"></td>
+                            <td>
+                                <span class="badge bg-info text-dark" th:text="${u.roleName}"></span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="content-pagination">
+                <div class="pagination-info">
+                    Showing
+                    <strong th:text="${(users.filters.page - 1) * users.filters.pageSize + 1}">1</strong>
+                    to
+                    <strong th:text="${(users.filters.page - 1) * users.filters.pageSize + users.userDTOResponses.size()}">15</strong>
+                    of
+                    <strong th:text="${users.filters.totalUser}">100</strong>
+                </div>
+
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item" th:classappend="${!users.filters.hasPreviousPage} ? 'disabled'">
+                        <a class="page-link" th:href="@{/main/viewUser(pageIndex=${users.filters.page - 1}, locationId=${users.filters.locationId}, roleID=${users.filters.roleId}, name=${users.filters.name})}">«</a>
+                    </li>
+
+                    <li class="page-item"
+                        th:each="i : ${#numbers.sequence(1, users.filters.totalPages)}"
+                        th:classappend="${i == users.filters.page} ? 'active'">
+                        <a class="page-link"
+                           th:text="${i}"
+                           th:href="@{/main/viewUser(pageIndex=${i}, locationId=${users.filters.locationId}, roleID=${users.filters.roleId}, name=${users.filters.name})}"></a>
+                    </li>
+
+                    <li class="page-item" th:classappend="${!users.filters.hasNextPage} ? 'disabled'">
+                        <a class="page-link" th:href="@{/main/viewUser(pageIndex=${users.filters.page + 1}, locationId=${users.filters.locationId}, roleID=${users.filters.roleId}, name=${users.filters.name})}">»</a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
