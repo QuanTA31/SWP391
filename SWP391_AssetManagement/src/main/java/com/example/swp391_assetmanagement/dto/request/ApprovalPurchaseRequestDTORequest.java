@@ -9,7 +9,7 @@ import lombok.*;
 @Builder
 public class ApprovalPurchaseRequestDTORequest {
 
-    private boolean isApproved;
+    private Boolean isApproved;
 
     private Long assetRequestId;
 

@@ -110,9 +110,13 @@
         </div>
     </form>
 
-    <form th:if="${purchaseRequest.submitted and approvalRequest != null}" id="approvalForm" th:action="@{/purchase-requests/manager/approval}" th:object="${approvalRequest}" method="post">
-        <input type="hidden" th:field="*{assetRequestId}"/>
-        <input type="hidden" name="approved" id="approvedField" value=""/>
+    <form th:if="${purchaseRequest.submitted and approvalRequest != null}"
+          id="approvalForm"
+          th:action="@{/purchase-requests/manager/approval}"
+          method="post">
+
+        <input type="hidden" name="assetRequestId" th:value="${purchaseRequest.assetRequestId}"/>
+        <input type="hidden" name="isApproved" id="approvedField" value=""/>
     </form>
 </div>
 
