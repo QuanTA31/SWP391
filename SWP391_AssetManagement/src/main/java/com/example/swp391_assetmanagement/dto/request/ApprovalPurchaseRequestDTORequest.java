@@ -11,4 +11,6 @@ public class ApprovalPurchaseRequestDTORequest {
     private boolean isApproved;
 
     private Long assetRequestId;
+
+    private String note;
 }
