@@ -148,6 +148,12 @@
                     <i class="bi bi-eye"></i> View
                   </a>
 
+                  <a th:if="${session.ROLE == '04'}"
+                     class="btn btn-sm btn-info text-white"
+                     th:href="@{/purchase-requests/warehouse/view(assetRequestId=${item.id})}">
+                    <i class="bi bi-eye"></i> View
+                  </a>
+
                 </th:block>
 
                 <th:block th:unless="${item.requestTypeName == 'PROCUREMENT'}">
