@@ -37,7 +37,7 @@
             </a>
 
             <a th:if="${session.ROLE == '03'}"
-               th:href="@{/purchase-requests/warehouse/createRequest}" class="menu-item">
+               th:href="@{/purchase-requests/warehouse/create(assetRequestId='')}" class="menu-item">
                 Create Purchase Request
             </a>
         </div>

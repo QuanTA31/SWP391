@@ -38,7 +38,7 @@
       </a>
 
       <a th:if="${session.ROLE == '03'}"
-         th:href="@{/purchase-requests/warehouse/createRequest}" class="menu-item">
+         th:href="@{/purchase-requests/warehouse/create(assetRequestId='')}" class="menu-item">
         Create Purchase Request
       </a>
     </div>
@@ -134,17 +134,37 @@
               <td th:text="${item.note}"></td>
               <td th:text="${#temporals.format(item.createdAt, 'yyyy-MM-dd')}"></td>
               <td>
+                <th:block th:if="${item.requestTypeName == 'PROCUREMENT'}">
+
+                  <a th:if="${session.ROLE == '03'}"
+                     class="btn btn-sm btn-info text-white"
+                     th:href="@{/purchase-requests/warehouse/create(assetRequestId=${item.id})}">
+                    <i class="bi bi-eye"></i> View
+                  </a>
+
+                  <a th:if="${session.ROLE == '02'}"
+                     class="btn btn-sm btn-info text-white"
+                     th:href="@{/purchase-requests/manager/view(assetRequestId=${item.id})}">
+                    <i class="bi bi-eye"></i> View
+                  </a>
+
+                </th:block>
+
+                <th:block th:unless="${item.requestTypeName == 'PROCUREMENT'}">
+
                   <a th:if="${item.internal}"
                      class="btn btn-sm btn-primary"
                      th:href="@{/viewInternalRequest/detail(id=${item.id})}">
-                      <i class="bi bi-eye"></i> View
+                    <i class="bi bi-eye"></i> View
                   </a>
 
                   <a th:if="${!item.internal}"
                      class="btn btn-sm btn-warning text-dark"
                      th:href="@{/viewExternalRequest/detail(id=${item.id})}">
-                      <i class="bi bi-eye"></i> View
+                    <i class="bi bi-eye"></i> View
                   </a>
+
+                </th:block>
               </td>
             </tr>
 
