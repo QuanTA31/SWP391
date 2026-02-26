@@ -21,7 +21,7 @@ class DeleteOptionDetailUseCaseTest {
     AuthGuardService authGuardService;
 
     @InjectMocks
-    DeleteOptionDetailUseCase useCase;
+    DeleteOptionDetailUsecase useCase;
 
     @Test
     void should_delete_option_detail_by_id() {

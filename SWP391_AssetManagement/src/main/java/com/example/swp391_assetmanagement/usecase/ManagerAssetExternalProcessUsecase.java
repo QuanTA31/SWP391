@@ -1,6 +1,6 @@
 package com.example.swp391_assetmanagement.usecase;
 
-import com.example.swp391_assetmanagement.dto.request.ViewExternalProcessRequest;
+import com.example.swp391_assetmanagement.dto.request.ViewExternalProcessDTORequest;
 import com.example.swp391_assetmanagement.dto.response.*;
 //import com.example.swp391_assetmanagement.enums.ApprovalStatus;
 import com.example.swp391_assetmanagement.enums.AssetType;
@@ -8,8 +8,8 @@ import com.example.swp391_assetmanagement.enums.RequestStatus;
 import com.example.swp391_assetmanagement.enums.RequestType;
 import com.example.swp391_assetmanagement.enums.Roles;
 import com.example.swp391_assetmanagement.service.AssetExternalProcessService;
-import com.example.swp391_assetmanagement.service.servicerequest.ExternalProcessRequest;
-import com.example.swp391_assetmanagement.service.serviceresponse.ExternalProcessAllResponse;
+import com.example.swp391_assetmanagement.service.servicerequest.ExternalProcessServiceRequest;
+import com.example.swp391_assetmanagement.service.serviceresponse.ExternalProcessAllServiceResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,15 +31,15 @@ public class ManagerAssetExternalProcessUsecase {
     private final AssetExternalProcessService assetExternalProcessService;
 
     @Transactional(readOnly = true)
-    public ViewExternalProcessAllResponse viewExternalProcess(ViewExternalProcessRequest request, HttpSession session) {
+    public ViewExternalProcessAllDTOResponse viewExternalProcess(ViewExternalProcessDTORequest request, HttpSession session) {
 
         validateExternalRequest(request, session);
 
         int pageIndex = (request.getPageIndex() != null && request.getPageIndex() != 0)  ? request.getPageIndex() : 1;
 
         // Get data from database
-        List<ExternalProcessAllResponse> externalProcessResponses = assetExternalProcessService.viewExternalProcess(
-                ExternalProcessRequest.builder()
+        List<ExternalProcessAllServiceResponse> externalProcessResponses = assetExternalProcessService.viewExternalProcess(
+                ExternalProcessServiceRequest.builder()
                         .requestStatusId(request.getRequestStatusId())
                         .requestTypeId(request.getRequestTypeId())
 //                        .approvalStatusId(request.getApprovalStatusId())
@@ -48,9 +48,9 @@ public class ManagerAssetExternalProcessUsecase {
                         .build());
 
         if (externalProcessResponses.isEmpty()) {
-            return ViewExternalProcessAllResponse.builder()
+            return ViewExternalProcessAllDTOResponse.builder()
                     .externalProcessResponses(Collections.emptyList())
-                    .filters(FilterExternalResponse.builder()
+                    .filters(FilterExternalDTOResponse.builder()
                             .requestStatusId(request.getRequestStatusId())
                             .requestTypeId(request.getRequestTypeId())
 //                            .approvalStatusId(request.getApprovalStatusId())
@@ -70,10 +70,10 @@ public class ManagerAssetExternalProcessUsecase {
         boolean hasNext = pageIndex < totalPages;
         boolean hasPrevious = pageIndex > 1;
 
-        return ViewExternalProcessAllResponse.builder()
+        return ViewExternalProcessAllDTOResponse.builder()
                 .externalProcessResponses(
                         externalProcessResponses.stream().map(
-                                        entity -> ExternalProcessResponse.builder()
+                                        entity -> ExternalProcessDTOResponse.builder()
 //                                                .assetId(entity.assetId)
                                                 .assetRequestName(entity.assetRequestId)
                                                 .assetTypeName(AssetType.of(entity.assetTypeId).getName())
@@ -89,7 +89,7 @@ public class ManagerAssetExternalProcessUsecase {
                                                 .build())
                                 .toList()
                 )
-                .filters(FilterExternalResponse.builder()
+                .filters(FilterExternalDTOResponse.builder()
                         .requestStatusId(request.getRequestStatusId())
                         .requestTypeId(request.getRequestTypeId())
 //                        .approvalStatusId(request.getApprovalStatusId())
@@ -105,26 +105,26 @@ public class ManagerAssetExternalProcessUsecase {
 
     // -----------------Lấy details của từng request----
     @Transactional(readOnly = true)
-    public ViewExternalProcessAllResponse getDetailById(Long requestId) {
+    public ViewExternalProcessAllDTOResponse getDetailById(Long requestId) {
 
         // Gọi Service lấy danh sách các item trong phiếu External này
-        List<ExternalProcessAllResponse> details = assetExternalProcessService.viewExternalProcess(
-                ExternalProcessRequest.builder()
+        List<ExternalProcessAllServiceResponse> details = assetExternalProcessService.viewExternalProcess(
+                ExternalProcessServiceRequest.builder()
                         .requestId(requestId) // Lọc theo ID phiếu
                         .offset(0)
                         .pageSize(100) // Lấy tối đa 100 dòng
                         .build());
 
         if (details.isEmpty()) {
-            return ViewExternalProcessAllResponse.builder()
+            return ViewExternalProcessAllDTOResponse.builder()
                     .externalProcessResponses(Collections.emptyList())
                     .build();
         }
 
         // Map sang DTO Response
-        return ViewExternalProcessAllResponse.builder()
+        return ViewExternalProcessAllDTOResponse.builder()
                 .externalProcessResponses(
-                        details.stream().map(entity -> ExternalProcessResponse.builder()
+                        details.stream().map(entity -> ExternalProcessDTOResponse.builder()
                                 .assetRequestName(entity.assetRequestId)
                                 .assetTypeName(AssetType.of(entity.assetTypeId).getName())
                                 .externalStatusName(entity.externalStatusId) // Bạn có thể map Enum ExternalStatus ở đây nếu có
@@ -137,7 +137,7 @@ public class ManagerAssetExternalProcessUsecase {
                 .build();
     }
 
-    private void validateExternalRequest(ViewExternalProcessRequest request, HttpSession session) {
+    private void validateExternalRequest(ViewExternalProcessDTORequest request, HttpSession session) {
 
         //  Check role
         if (!Objects.equals(session.getAttribute("ROLE"), Roles.ADMIN.getValue())

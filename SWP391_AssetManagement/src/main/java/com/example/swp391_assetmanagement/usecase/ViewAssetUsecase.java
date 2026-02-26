@@ -11,9 +11,9 @@ import com.example.swp391_assetmanagement.enums.Location;
 import com.example.swp391_assetmanagement.enums.Roles;
 import com.example.swp391_assetmanagement.service.AssetService;
 import com.example.swp391_assetmanagement.service.UserService;
-import com.example.swp391_assetmanagement.service.servicerequest.AssetViewAllRequest;
-import com.example.swp391_assetmanagement.service.serviceresponse.AssetViewAllResponse;
-import com.example.swp391_assetmanagement.service.serviceresponse.LocationViewAssetResponse;
+import com.example.swp391_assetmanagement.service.servicerequest.AssetViewAllServiceRequest;
+import com.example.swp391_assetmanagement.service.serviceresponse.AssetViewAllServiceResponse;
+import com.example.swp391_assetmanagement.service.serviceresponse.LocationViewAssetServiceResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -54,12 +54,13 @@ public class ViewAssetUsecase {
             locationIdList.add(Location.BRANCH_OFFICE.getValue());
             locationIdList.add(Location.MEETING_ROOM.getValue());
             locationIdList.add(Location.IT_ROOM.getValue());
+            //Warehouse phai check duoc all chu anh
             locationIdList.add(Location.WAREHOUSE.getValue());
             locationIdList.add(Location.OUTSIDE_COMPANY.getValue());
 
         } else if (Objects.equals(session.getAttribute("ROLE"), Roles.DEPARTMENT_MANAGER.getValue())) {
 
-            LocationViewAssetResponse locationViewAssetResponse = userService.getLocationViewAsset(
+            LocationViewAssetServiceResponse locationViewAssetResponse = userService.getLocationViewAsset(
                     session.getAttribute("USER_CODE").toString());
             if (Location.hasValue(locationViewAssetResponse.locationId)) {
                 locationIdList.add(Location.of(locationViewAssetResponse.locationId).getValue());
@@ -67,8 +68,8 @@ public class ViewAssetUsecase {
         }
 
         // Get data from database
-        List<AssetViewAllResponse> serviceResponses = assetService.viewAllAsset(
-                AssetViewAllRequest.builder()
+        List<AssetViewAllServiceResponse> serviceResponses = assetService.viewAllAsset(
+                AssetViewAllServiceRequest.builder()
                         .locationId(request.getLocationId())
                         .assetTypeId(request.getAssetTypeId())
                         .assetStatusId(request.getAssetStatusId())

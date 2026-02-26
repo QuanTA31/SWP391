@@ -2,12 +2,13 @@ package com.example.swp391_assetmanagement.service.serviceimpl;
 
 import com.example.swp391_assetmanagement.dao.UserDAO;
 import com.example.swp391_assetmanagement.service.UserService;
-import com.example.swp391_assetmanagement.service.servicerequest.UserLoginRequest;
-import com.example.swp391_assetmanagement.service.serviceresponse.LocationViewAssetResponse;
-import com.example.swp391_assetmanagement.service.serviceresponse.UserLoginResponse;
+import com.example.swp391_assetmanagement.service.servicerequest.LoginServiceRequest;
+import com.example.swp391_assetmanagement.service.serviceresponse.LocationViewAssetServiceResponse;
+import com.example.swp391_assetmanagement.service.serviceresponse.LoginServiceResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -16,17 +17,23 @@ public class UserServiceImpl implements UserService {
     private final UserDAO userDAO;
 
     @Override
-    public UserLoginResponse authenticate(UserLoginRequest request){
+    public LoginServiceResponse authenticate(LoginServiceRequest request) {
 
-        UserLoginResponse userDAOResponse = userDAO.findByUsername(request);
-        if(!ObjectUtils.isEmpty(userDAOResponse)){
-            return userDAOResponse;
+        Optional<LoginServiceResponse> userDAOResponse = userDAO.findByUsername(request);
+        if (userDAOResponse.isPresent()) {
+            return userDAOResponse.get();
+        } else {
+            return null;
         }
-        return null;
     }
 
     @Override
-    public LocationViewAssetResponse getLocationViewAsset(String userCode) {
+    public LocationViewAssetServiceResponse getLocationViewAsset(String userCode) {
         return userDAO.findLocationByAssetCode(userCode);
+    }
+
+    @Override
+    public Long getIdByUserCode(String userCode) {
+        return userDAO.findIdByUserCode(userCode);
     }
 }

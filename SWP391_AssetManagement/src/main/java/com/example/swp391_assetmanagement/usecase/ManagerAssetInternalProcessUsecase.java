@@ -1,11 +1,11 @@
 package com.example.swp391_assetmanagement.usecase;
 
-import com.example.swp391_assetmanagement.dto.request.ViewInternalProcessRequest;
+import com.example.swp391_assetmanagement.dto.request.ViewInternalProcessDTORequest;
 import com.example.swp391_assetmanagement.dto.response.*;
 import com.example.swp391_assetmanagement.enums.*;
 import com.example.swp391_assetmanagement.service.AssetInternalProcessService;
-import com.example.swp391_assetmanagement.service.servicerequest.InternalProcessRequest;
-import com.example.swp391_assetmanagement.service.serviceresponse.InternalProcessAllResponse;
+import com.example.swp391_assetmanagement.service.servicerequest.InternalProcessServiceRequest;
+import com.example.swp391_assetmanagement.service.serviceresponse.InternalProcessAllServiceResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,15 +27,15 @@ public class ManagerAssetInternalProcessUsecase {
     private final AssetInternalProcessService assetInternalProcessService;
 
     @Transactional(readOnly = true)
-    public ViewInternalProcessAllResponse viewInternalProcess(ViewInternalProcessRequest request, HttpSession session) {
+    public ViewInternalProcessAllDTOResponse viewInternalProcess(ViewInternalProcessDTORequest request, HttpSession session) {
 
         validateInternalRequest(request, session);
 
         int pageIndex = (request.getPageIndex() != null && request.getPageIndex() != 0)  ? request.getPageIndex() : 1;
 
         // Get data from database
-        List<InternalProcessAllResponse> internalProcessResponses = assetInternalProcessService.viewInternalProcess(
-                InternalProcessRequest.builder()
+        List<InternalProcessAllServiceResponse> internalProcessResponses = assetInternalProcessService.viewInternalProcess(
+                InternalProcessServiceRequest.builder()
                         .requestStatusId(request.getRequestStatusId())
                         .requestTypeId(request.getRequestTypeId())
 //                        .approvalStatusId(request.getApprovalStatusId())
@@ -44,9 +44,9 @@ public class ManagerAssetInternalProcessUsecase {
                         .build());
 
         if (internalProcessResponses.isEmpty()) {
-            return ViewInternalProcessAllResponse.builder()
+            return ViewInternalProcessAllDTOResponse.builder()
                     .internalProcessResponses(Collections.emptyList())
-                    .filters(FilterInternalResponse.builder()
+                    .filters(FilterInternalDTOResponse.builder()
                             .requestStatusId(request.getRequestStatusId())
                             .requestTypeId(request.getRequestTypeId())
 //                            .approvalStatusId(request.getApprovalStatusId())
@@ -66,10 +66,10 @@ public class ManagerAssetInternalProcessUsecase {
         boolean hasNext = pageIndex < totalPages;
         boolean hasPrevious = pageIndex > 1;
 
-        return ViewInternalProcessAllResponse.builder()
+        return ViewInternalProcessAllDTOResponse.builder()
                 .internalProcessResponses(
                         internalProcessResponses.stream().map(
-                                        entity -> InternalProcessResponse.builder()
+                                        entity -> InternalProcessDTOResponse.builder()
                                                 .assetId(entity.assetId)
                                                 .assetRequestName(entity.assetRequestId)
                                                 .assetTypeName(AssetType.of(entity.assetTypeId).getName())
@@ -88,7 +88,7 @@ public class ManagerAssetInternalProcessUsecase {
                                                 .build())
                                 .toList()
                 )
-                .filters(FilterInternalResponse.builder()
+                .filters(FilterInternalDTOResponse.builder()
                         .requestStatusId(request.getRequestStatusId())
                         .requestTypeId(request.getRequestTypeId())
 //                        .approvalStatusId(request.getApprovalStatusId())
@@ -105,26 +105,26 @@ public class ManagerAssetInternalProcessUsecase {
 
     // -----------------Lấy details của từng request----
     @Transactional(readOnly = true)
-    public ViewInternalProcessAllResponse getDetailById(Long requestId) {
+    public ViewInternalProcessAllDTOResponse getDetailById(Long requestId) {
 
         // Gọi Service lấy dữ liệu, truyền requestId vào
-        List<InternalProcessAllResponse> details = assetInternalProcessService.viewInternalProcess(
-                InternalProcessRequest.builder()
+        List<InternalProcessAllServiceResponse> details = assetInternalProcessService.viewInternalProcess(
+                InternalProcessServiceRequest.builder()
                         .requestId(requestId) // Lọc theo ID phiếu
                         .offset(0)
                         .pageSize(100) // Lấy hết các tài sản trong phiếu (max 100)
                         .build());
 
         if (details.isEmpty()) {
-            return ViewInternalProcessAllResponse.builder()
+            return ViewInternalProcessAllDTOResponse.builder()
                     .internalProcessResponses(Collections.emptyList())
                     .build();
         }
 
         // Convert sang DTO Response
-        return ViewInternalProcessAllResponse.builder()
+        return ViewInternalProcessAllDTOResponse.builder()
                 .internalProcessResponses(
-                        details.stream().map(entity -> InternalProcessResponse.builder()
+                        details.stream().map(entity -> InternalProcessDTOResponse.builder()
                                 .assetId(entity.assetId)
                                 .assetRequestName(entity.assetRequestId)
                                 .assetTypeName(AssetType.of(entity.assetTypeId).getName())
@@ -141,7 +141,7 @@ public class ManagerAssetInternalProcessUsecase {
                 .build();
     }
 
-    private void validateInternalRequest(ViewInternalProcessRequest request, HttpSession session) {
+    private void validateInternalRequest(ViewInternalProcessDTORequest request, HttpSession session) {
 
        //  Check role
         if (!Objects.equals(session.getAttribute("ROLE"), Roles.ADMIN.getValue())

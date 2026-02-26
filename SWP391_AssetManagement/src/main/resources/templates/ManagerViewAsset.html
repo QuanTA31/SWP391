@@ -24,10 +24,22 @@
         <!-- SIDEBAR -->
         <div class="sidebar">
             <div class="fw-semibold mb-2">Menu</div>
-            <div class="menu-item active">Main View Asset</div>
-            <div class="menu-item">Create Request</div>
-            <div class="menu-item">View Request</div>
-            <div class="menu-item">Approval Request</div>
+<!--            <div class="menu-item active">Main View Asset</div>-->
+<!--            <div class="menu-item">Create Request</div>-->
+<!--            <div class="menu-item">View Request</div>-->
+<!--            <div class="menu-item">Approval Request</div>-->
+            <a th:href="@{/viewAsset}" class="menu-item">
+                View Asset
+            </a>
+
+            <a th:href="@{/viewRequest}" class="menu-item">
+                View Request
+            </a>
+
+            <a th:if="${session.ROLE == '03'}"
+               th:href="@{/purchase-requests/warehouse/createRequest}" class="menu-item">
+                Create Purchase Request
+            </a>
         </div>
 
         <!-- RIGHT CONTENT -->
@@ -188,7 +200,7 @@
                             <a class="page-link"
                                th:text="${i + 1}"
                                th:href="@{/main/viewAsset(
-               pageIndex=${i},
+               pageIndex=${i+1},
                locationId=${assets.filters.locationId},
                assetTypeId=${assets.filters.assetTypeId},
                assetStatusId=${assets.filters.assetStatusId},

@@ -1,7 +1,7 @@
 package com.example.swp391_assetmanagement.dao;
 
-import com.example.swp391_assetmanagement.service.servicerequest.ExternalProcessRequest;
-import com.example.swp391_assetmanagement.service.serviceresponse.ExternalProcessAllResponse;
+import com.example.swp391_assetmanagement.service.servicerequest.ExternalProcessServiceRequest;
+import com.example.swp391_assetmanagement.service.serviceresponse.ExternalProcessAllServiceResponse;
 import org.seasar.doma.Dao;
 import org.seasar.doma.Select;
 import org.seasar.doma.boot.ConfigAutowireable;
@@ -13,6 +13,6 @@ import java.util.List;
 public interface AssetExternalProcessDAO {
 
     @Select
-    List<ExternalProcessAllResponse> selectExternalProcessAll(ExternalProcessRequest request);
+    List<ExternalProcessAllServiceResponse> selectExternalProcessAll(ExternalProcessServiceRequest request);
 
 }

@@ -20,31 +20,19 @@
 
     <div class="app-content">
 
-        <div class="sidebar">
-            <div class="fw-semibold mb-2">Menu</div>
-            <div class="menu-item">Main View Asset</div>
-            <div class="menu-item">Create Request</div>
-            <div class="menu-item active">View Internal Request</div>
-            <div class="menu-item">Approval Request</div>
-        </div>
-
-        <div class="content-right">
+        <!-- CONTENT FULL WIDTH -->
+        <div class="content-full">
 
             <div class="toolbar d-flex justify-content-between align-items-center">
                 <div class="toolbar-left d-flex align-items-center gap-2">
-                    <a th:href="@{/main/viewRequest}" class="btn btn-sm btn-outline-secondary">
-                        <i class="bi bi-arrow-left"></i> &laquo; Back
+<!--                    <a th:href="@{/main/viewRequest}" class="btn btn-sm btn-outline-secondary">-->
+                    <a th:href="@{/viewRequest}" class="btn btn-sm btn-outline-secondary">
+                        &laquo; Back
                     </a>
 
                     <span class="fw-semibold ms-2">
                         Detail for Request #<span th:text="${requestId}" class="text-primary"></span>
                     </span>
-                </div>
-
-                <div class="toolbar-right">
-                    <button class="btn btn-sm btn-primary disabled">
-                        Print Detail
-                    </button>
                 </div>
             </div>
 
@@ -93,6 +81,7 @@
             </div>
 
         </div>
+
     </div>
 </div>
 

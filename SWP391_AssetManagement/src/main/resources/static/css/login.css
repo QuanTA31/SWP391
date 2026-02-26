@@ -1,53 +1,26 @@
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 0px;
-    width: 600px;
-    padding-bottom: 100px;
-    margin: 50px auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-h1{
-    text-align: center;
-}
-form input{
-    justify-content: center;
-    margin: 10px auto;
-    padding: 10px;
-    /*border: 1px solid #ccc;*/
-    -radius: 3px;
-    border: 1px solid #ddd;
-    width: 65%;
-    box-sizing: border-box;
-}
-form button {
-    background-color: #35a93f;
-    color: white;
-    border: none;
-    cursor: pointer;
-    width: 100px;
-    padding: 15px;
-}
 
-label {
-    display: inline-block;
-    width: 80px;
-    text-align: left;
-}
+        body {
+            background-color: #33b5e5;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
 
-body {
-    font-family: Arial, sans-serif;
-    background-color: #29b6f6;
-}
+        .login-card {
+            width: 100%;
+            max-width: 450px;
+        }
 
-div{
-    display: flex;
-    flex-direction: row;
-    text-align: center;
-    justify-content: center;
-    align-items: center;
-}
+        .btn-login {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px;
+        }
+
+        .btn-login:hover {
+            background-color: #45a049;
+            color: white;
+        }
