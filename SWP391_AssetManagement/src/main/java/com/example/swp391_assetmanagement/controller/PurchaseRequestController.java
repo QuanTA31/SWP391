@@ -4,6 +4,7 @@ import com.example.swp391_assetmanagement.dto.request.ApprovalPurchaseRequestDTO
 import com.example.swp391_assetmanagement.dto.request.CreatePurchaseRequestDTORequest;
 import com.example.swp391_assetmanagement.enums.AssetType;
 import com.example.swp391_assetmanagement.usecase.CreatePurchaseRequestUsecase;
+import com.example.swp391_assetmanagement.usecase.ManagerCreatePurchaseRequestUsecase;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 public class PurchaseRequestController {
 
     private final CreatePurchaseRequestUsecase createPurchaseRequestUsecase;
+    private final ManagerCreatePurchaseRequestUsecase managerCreatePurchaseRequestUsecase;
 
     @GetMapping("/warehouse/view")
     public String viewPurchaseRequestForm(@RequestParam(required = false) Long assetRequestId, Model model, HttpSession session) {
@@ -39,10 +41,9 @@ public class PurchaseRequestController {
 
     @PostMapping("/warehouse/create")
     public String createPurchaseRequestForm(
-            @ModelAttribute CreatePurchaseRequestDTORequest request, HttpSession session, Model model) {
+            @ModelAttribute CreatePurchaseRequestDTORequest request, HttpSession session) {
 
         createPurchaseRequestUsecase.execute(request, session);
-
         return "createPurchaseRequest";
     }
 
@@ -60,8 +61,9 @@ public class PurchaseRequestController {
 
     @PostMapping("/manager/approval")
     public String managerViewPurchaseRequest(
-            @ModelAttribute ApprovalPurchaseRequestDTORequest request, HttpSession session, Model model) {
+            @ModelAttribute ApprovalPurchaseRequestDTORequest request, HttpSession session) {
 
+        managerCreatePurchaseRequestUsecase.execute(request,session);
         return "createPurchaseRequest";
     }
 }
