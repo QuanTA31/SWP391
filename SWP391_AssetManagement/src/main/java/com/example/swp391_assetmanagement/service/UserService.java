@@ -9,4 +9,6 @@ public interface UserService {
     LoginServiceResponse authenticate(LoginServiceRequest request);
 
     LocationViewAssetServiceResponse getLocationViewAsset(String userCode);
+
+    Long getIdByUserCode(String userCode);
 }

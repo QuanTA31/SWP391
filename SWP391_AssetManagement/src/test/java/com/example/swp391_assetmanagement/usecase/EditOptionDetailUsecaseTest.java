@@ -9,13 +9,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class CreateOptionDetailUseCaseTest {
+class EditOptionDetailUsecaseTest {
 
     @Mock
     OptionDetailService optionDetailService;
@@ -23,27 +23,24 @@ class CreateOptionDetailUseCaseTest {
     @Mock
     private AuthGuardService authGuardService;
 
-
-
     @InjectMocks
-    CreateOptionDetailUsecase useCase;
+    EditOptionDetailUsecase useCase;
 
     @Test
-    void should_set_default_fields_and_save_all() {
-        Long requestDetailId = 100L;
+    void should_update_existing_option() {
+        OptionDetail existing = new OptionDetail();
+        existing.id = 1L;
 
-        OptionDetail option = new OptionDetail();
-        option.merchant = "Dell";
+        OptionDetail input = new OptionDetail();
+        input.id = 1L;
+        input.merchant = "HP";
 
-        List<OptionDetail> plans = List.of(option);
+        when(optionDetailService.getById(1L))
+                .thenReturn(Optional.of(existing));
 
-        //useCase.execute(requestDetailId, form);
+        //useCase.execute(100L, List.of(input));
 
-        assertEquals(requestDetailId, option.assetExternalRequestDetailId);
-        assertFalse(option.isSelected);
-        assertNull(option.approvedDate);
-        assertNull(option.approverBy);
-
-        verify(optionDetailService).saveAll(plans);
+        assertEquals("HP", existing.merchant);
+        verify(optionDetailService).update(existing);
     }
 }

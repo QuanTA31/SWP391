@@ -1,0 +1,175 @@
+package com.example.swp391_assetmanagement.usecase;
+
+import com.example.swp391_assetmanagement.dto.request.CreatePurchaseRequestDTORequest;
+import com.example.swp391_assetmanagement.dto.request.CreatePurchaseRequestDetailDTORequest;
+import com.example.swp391_assetmanagement.entity.AssetExternalRequestDetail;
+import com.example.swp391_assetmanagement.entity.AssetRequest;
+import com.example.swp391_assetmanagement.enums.AssetType;
+import com.example.swp391_assetmanagement.enums.ExternalStatus;
+import com.example.swp391_assetmanagement.enums.RequestStatus;
+import com.example.swp391_assetmanagement.enums.RequestType;
+import com.example.swp391_assetmanagement.service.AssetExternalRequestDetailService;
+import com.example.swp391_assetmanagement.service.AssetRequestService;
+import com.example.swp391_assetmanagement.service.UserService;
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class CreatePurchaseRequestUsecase {
+
+    private final AssetExternalRequestDetailService assetExternalRequestDetailService;
+    private final AssetRequestService assetRequestService;
+    private final UserService userService;
+
+    @Transactional
+    public void execute(CreatePurchaseRequestDTORequest request, HttpSession session) {
+
+        Long userId = userService.getIdByUserCode(session.getAttribute("USER_CODE").toString());
+
+        // Check update or insert
+        // insert
+        if (Objects.isNull(request.getAssetRequestId())) {
+
+            AssetRequest assetRequest = new AssetRequest();
+
+            assetRequest.setRequestTypeId(RequestType.PROCUREMENT.getValue());
+            assetRequest.setRequestedBy(userId);
+            assetRequest.setRequestedDate(LocalDate.now());
+            assetRequest.setRequestStatusId(
+                    request.isSubmitted()
+                            ? RequestStatus.PENDING_APPROVAL.getValue()
+                            : RequestStatus.DRAFT.getValue()
+            );
+
+            // Insert to AssetRequest
+            Long assetRequestId =
+                    assetRequestService.createPurchaseRequestForm(assetRequest);
+
+            // Insert to assetExternalRequestDetail
+            List<AssetExternalRequestDetail> details =
+                    request.getCreatePurchaseRequestDetailDTORequestList()
+                            .stream()
+                            .map(dto -> {
+
+                                AssetExternalRequestDetail detail = new AssetExternalRequestDetail();
+
+                                detail.setAssetRequestId(assetRequestId);
+                                detail.setAssetTypeId(AssetType.of(dto.getAssetTypeId()).getValue());
+                                detail.setExternalStatusId(ExternalStatus.DRAFT.getValue());
+                                detail.setNote(dto.getNote());
+
+                                return detail;
+                            })
+                            .toList();
+            assetExternalRequestDetailService.batchInsert(details);
+
+        } else {
+
+            // Get list assetExternalRequestDetail from DB
+            List<AssetExternalRequestDetail> dbDetails =
+                    assetExternalRequestDetailService.getByAssetRequestIdForUpdate(request.getAssetRequestId());
+
+            // Convert to set for fast
+            Set<Long> dbIds = dbDetails.stream()
+                    .map(AssetExternalRequestDetail::getId)
+                    .collect(Collectors.toSet());
+
+            // Check valid request to insert and update
+            Map<Boolean, List<CreatePurchaseRequestDetailDTORequest>> partitioned =
+                    request.getCreatePurchaseRequestDetailDTORequestList().stream()
+                            .peek(item -> {
+                                if (item.getAssetExternalRequestDetailId() != null
+                                        && !dbIds.contains(item.getAssetExternalRequestDetailId())) {
+                                    throw new IllegalStateException();
+                                }
+                            })
+                            .collect(Collectors.partitioningBy(
+                                    item -> item.getAssetExternalRequestDetailId() != null));
+
+            // Get list to update, insert from request
+            List<CreatePurchaseRequestDetailDTORequest> updateDTOs = partitioned.get(true);
+            List<CreatePurchaseRequestDetailDTORequest> insertDTOs = partitioned.get(false);
+
+            if (updateDTOs.size() != dbDetails.size()) {
+                throw new IllegalStateException();
+            }
+
+            // Insert to assetExternalRequestDetail if exist
+            if (!insertDTOs.isEmpty()) {
+                List<AssetExternalRequestDetail> toInsert = insertDTOs.stream()
+                        .map(dto -> {
+                            AssetExternalRequestDetail entity = new AssetExternalRequestDetail();
+                            entity.setAssetRequestId(request.getAssetRequestId());
+                            entity.setAssetTypeId(AssetType.of(dto.getAssetTypeId()).getValue());
+                            entity.setExternalStatusId(request.isSubmitted()
+                                    ? ExternalStatus.IN_PROGRESS.getValue()
+                                    : ExternalStatus.DRAFT.getValue());
+                            entity.setNote(dto.getNote());
+                            entity.setQuantity(dto.getQuantity());
+                            return entity;
+                        }).toList();
+                assetExternalRequestDetailService.batchInsert(toInsert);
+            }
+
+            // Update assetExternalRequestDetail if exist
+            if (!updateDTOs.isEmpty()) {
+                List<AssetExternalRequestDetail> toUpdate = updateDTOs.stream()
+                        .map(dto -> {
+                            AssetExternalRequestDetail entity = new AssetExternalRequestDetail();
+                            entity.setId(dto.getAssetExternalRequestDetailId());
+                            entity.setAssetRequestId(request.getAssetRequestId());
+                            entity.setAssetTypeId(AssetType.of(dto.getAssetTypeId()).getValue());
+                            entity.setExternalStatusId(request.isSubmitted()
+                                    ? ExternalStatus.IN_PROGRESS.getValue()
+                                    : ExternalStatus.DRAFT.getValue());
+                            entity.setNote(dto.getNote());
+                            entity.setQuantity(dto.getQuantity());
+                            return entity;
+                        }).toList();
+                assetExternalRequestDetailService.batchUpdate(toUpdate);
+            }
+
+            // Update AssetRequest if status = submit
+            assetRequestService.findAssetRequestByIdForUpdate(request.getAssetRequestId()).ifPresent(
+                    assetRequest -> {
+                        if (request.isSubmitted()) {
+                            assetRequest.setRequestStatusId(RequestStatus.PENDING_APPROVAL.getValue());
+                            assetRequestService.updatePurchaseRequest(assetRequest);
+                        }
+                    }
+            );
+        }
+    }
+
+    public CreatePurchaseRequestDTORequest getExistingRequest(Long assetRequestId) {
+        List<AssetExternalRequestDetail> details =
+                assetExternalRequestDetailService.getByAssetRequestId(assetRequestId);
+
+        List<CreatePurchaseRequestDetailDTORequest> detailDTOs = details.stream()
+                .map(detail -> {
+                    CreatePurchaseRequestDetailDTORequest dto = new CreatePurchaseRequestDetailDTORequest();
+                    dto.setAssetTypeId(detail.getAssetTypeId());
+                    dto.setQuantity(detail.getQuantity());
+                    dto.setNote(detail.getNote());
+                    return dto;
+                })
+                .toList();
+
+        CreatePurchaseRequestDTORequest dto = new CreatePurchaseRequestDTORequest();
+        dto.setAssetRequestId(assetRequestId);
+        dto.setCreatePurchaseRequestDetailDTORequestList(detailDTOs);
+        dto.setSubmitted(false);
+
+        return dto;
+    }
+}

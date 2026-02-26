@@ -17,13 +17,12 @@ public class UserServiceImpl implements UserService {
     private final UserDAO userDAO;
 
     @Override
-    public LoginServiceResponse authenticate(LoginServiceRequest request){
+    public LoginServiceResponse authenticate(LoginServiceRequest request) {
 
         Optional<LoginServiceResponse> userDAOResponse = userDAO.findByUsername(request);
         if (userDAOResponse.isPresent()) {
             return userDAOResponse.get();
-        }
-        else{
+        } else {
             return null;
         }
     }
@@ -31,5 +30,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public LocationViewAssetServiceResponse getLocationViewAsset(String userCode) {
         return userDAO.findLocationByAssetCode(userCode);
+    }
+
+    @Override
+    public Long getIdByUserCode(String userCode) {
+        return userDAO.findIdByUserCode(userCode);
     }
 }

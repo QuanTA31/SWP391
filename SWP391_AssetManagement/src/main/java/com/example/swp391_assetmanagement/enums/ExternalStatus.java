@@ -9,10 +9,13 @@ import org.seasar.doma.Domain;
 @Domain(valueType = String.class, factoryMethod = "of")
 public enum ExternalStatus implements EnumBase<RequestType> {
 
-    IN_PROGRESS("01", "IN_PROGRESS"),
-    UN_REPAIR("02", "UN_REPAIR"),
-    STOCK_IN("03", "STOCK_IN"),
-    COMPLETED("04", "COMPLETED");
+    DRAFT("01", "DRAFT"),
+    IN_PROGRESS("02", "IN_PROGRESS"),
+    UN_REPAIR("03", "UN_REPAIR"),
+    STOCK_IN("04", "STOCK_IN"),
+    COMPLETED("05", "COMPLETED"),
+    CANCEL("06", "CANCEL");
+
 
     private final String value;
     private final String name;
