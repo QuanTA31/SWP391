@@ -19,6 +19,15 @@ public interface AssetRequestDAO {
     @Insert(sqlFile = true)
     int insert(AssetRequest assetRequest);
 
+    @Select
+    Long getLastId();
+
     @Update(sqlFile = true)
     int update(AssetRequest assetRequest);
+
+    @Update(sqlFile = true)
+    int updateStatus(AssetRequest assetRequest);
+
+    @Select
+    Integer countById(Long assetRequestId, String status);
 }

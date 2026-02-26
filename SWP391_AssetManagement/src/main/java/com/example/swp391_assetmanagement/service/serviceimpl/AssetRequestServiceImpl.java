@@ -17,7 +17,7 @@ public class AssetRequestServiceImpl implements AssetRequestService {
     @Override
     public Long createPurchaseRequestForm(AssetRequest assetRequest) {
         assetRequestDAO.insert(assetRequest);
-        return assetRequest.id;
+        return assetRequestDAO.getLastId();
     }
 
     @Override
@@ -28,5 +28,15 @@ public class AssetRequestServiceImpl implements AssetRequestService {
     @Override
     public void updatePurchaseRequest(AssetRequest assetRequest) {
         assetRequestDAO.update(assetRequest);
+    }
+
+    @Override
+    public void updatePurchaseRequestStatus(AssetRequest assetRequest) {
+        assetRequestDAO.updateStatus(assetRequest);
+    }
+
+    @Override
+    public Integer countById(Long assetRequestId, String status) {
+        return assetRequestDAO.countById(assetRequestId, status);
     }
 }
