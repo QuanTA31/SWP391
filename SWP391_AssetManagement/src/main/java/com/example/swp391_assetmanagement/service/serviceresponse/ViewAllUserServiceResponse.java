@@ -10,9 +10,6 @@ import java.time.LocalDate;
 @Getter
 public class ViewAllUserServiceResponse {
 
-    @Column(name = "id")
-    public String userCode;
-
     @Column(name = "username")
     public String username;
 
@@ -36,10 +33,6 @@ public class ViewAllUserServiceResponse {
 
     @Column(name = "email")
     public String email;
-
-    @Column(name = "create_at")
-    public LocalDate createAt;
-
     //optional
     @Column(name = "total_user")
     public Integer totalUser;

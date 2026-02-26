@@ -31,7 +31,6 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class ViewAssetUsecase {
 
-
     private final Integer PAGE_SIZE = 15;
 
     private final AssetService assetService;

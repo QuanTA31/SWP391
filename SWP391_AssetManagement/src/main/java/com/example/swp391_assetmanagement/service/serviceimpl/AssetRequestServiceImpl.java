@@ -6,6 +6,8 @@ import com.example.swp391_assetmanagement.service.AssetRequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class AssetRequestServiceImpl implements AssetRequestService {
@@ -16,5 +18,15 @@ public class AssetRequestServiceImpl implements AssetRequestService {
     public Long createPurchaseRequestForm(AssetRequest assetRequest) {
         assetRequestDAO.insert(assetRequest);
         return assetRequest.id;
+    }
+
+    @Override
+    public Optional<AssetRequest> findAssetRequestByIdForUpdate(Long assetRequestId) {
+        return assetRequestDAO.findAssetRequestByIdForUpdate(assetRequestId);
+    }
+
+    @Override
+    public void updatePurchaseRequest(AssetRequest assetRequest) {
+        assetRequestDAO.update(assetRequest);
     }
 }

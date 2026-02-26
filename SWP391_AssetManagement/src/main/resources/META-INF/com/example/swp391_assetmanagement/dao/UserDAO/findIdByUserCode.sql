@@ -1,3 +1,3 @@
 SELECT id
 FROM users
-WHERE users.usercode = /* userCode */''
+WHERE users.user_code = /* userCode */''

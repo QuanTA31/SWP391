@@ -15,12 +15,22 @@ public class AssetExternalRequestDetailServiceImpl implements AssetExternalReque
     private final AssetExternalRequestDetailDAO  assetExternalRequestDetailDAO;
 
     @Override
-    public int[] createPurchaseRequest(List<AssetExternalRequestDetail> details) {
-
-        return assetExternalRequestDetailDAO.insert(details);
+    public int[] batchInsert(List<AssetExternalRequestDetail> details) {
+        return assetExternalRequestDetailDAO.batchInsert(details);
     }
+
     @Override
     public List<AssetExternalRequestDetail> getByAssetRequestId(Long assetRequestId) {
         return assetExternalRequestDetailDAO.selectByAssetRequestId(assetRequestId);
+    }
+
+    @Override
+    public int[] batchUpdate(List<AssetExternalRequestDetail> details) {
+        return assetExternalRequestDetailDAO.batchUpdate(details);
+    }
+
+    @Override
+    public List<AssetExternalRequestDetail> getByAssetRequestIdForUpdate(Long assetRequestId) {
+        return assetExternalRequestDetailDAO.selectByAssetRequestIdForUpdate(assetRequestId);
     }
 }

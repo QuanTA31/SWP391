@@ -6,8 +6,11 @@ import java.util.List;
 
 public interface AssetExternalRequestDetailService {
 
-    int[] createPurchaseRequest(List<AssetExternalRequestDetail> details);
+    int[] batchInsert(List<AssetExternalRequestDetail> details);
 
     List<AssetExternalRequestDetail> getByAssetRequestId(Long assetRequestId);
 
+    int[] batchUpdate(List<AssetExternalRequestDetail> details);
+
+    List<AssetExternalRequestDetail> getByAssetRequestIdForUpdate(Long assetRequestId);
 }
