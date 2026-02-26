@@ -2,6 +2,7 @@ package com.example.swp391_assetmanagement.controller;
 
 import com.example.swp391_assetmanagement.dto.request.*;
 import com.example.swp391_assetmanagement.dto.response.*;
+import com.example.swp391_assetmanagement.enums.Roles;
 import com.example.swp391_assetmanagement.usecase.*;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -23,12 +24,12 @@ public class MainController {
 
     private final LoginUsecase loginUsecase;
 
-    @GetMapping("/login")
+    @GetMapping({"/", "/login"})
     public String showLoginPage() {
         return "login";
     }
 
-    @PostMapping("/login")
+    @PostMapping("/")
     public String login(@ModelAttribute LoginDTORequest request, HttpSession session, Model model) {
         LoginDTOResponse userResponse = loginUsecase.executeLogin(request);
 
@@ -36,7 +37,10 @@ public class MainController {
             session.setAttribute("USER_NAME", userResponse.getUserName());
             session.setAttribute("ROLE", userResponse.getRoleId());
             session.setAttribute("USER_CODE", userResponse.getUserCode());
-            return "redirect:/viewAsset";
+            if(Objects.equals(Roles.ADMIN.getValue(),userResponse.getRoleId())){
+                return "redirect:/admin/viewUser";
+            }
+            return "redirect:/ManagerViewAsset";
         }else {
             model.addAttribute("error", "Incorrect username or password");
             return "login";
