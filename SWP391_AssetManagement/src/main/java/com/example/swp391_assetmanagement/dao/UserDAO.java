@@ -18,4 +18,7 @@ public interface UserDAO {
 
     @Select
     LocationViewAssetServiceResponse findLocationByAssetCode(String asserCode);
+
+    @Select
+    Long findIdByUserCode(String userCode);
 }

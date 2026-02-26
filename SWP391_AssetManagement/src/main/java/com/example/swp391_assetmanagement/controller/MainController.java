@@ -36,7 +36,7 @@ public class MainController {
             session.setAttribute("USER_NAME", userResponse.getUserName());
             session.setAttribute("ROLE", userResponse.getRoleId());
             session.setAttribute("USER_CODE", userResponse.getUserCode());
-            return "redirect:/ManagerViewAsset";
+            return "redirect:/viewAsset";
         }else {
             model.addAttribute("error", "Incorrect username or password");
             return "login";
