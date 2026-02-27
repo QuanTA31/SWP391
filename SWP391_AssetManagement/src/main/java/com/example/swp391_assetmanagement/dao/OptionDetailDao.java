@@ -39,4 +39,7 @@ public interface OptionDetailDao {
 
     @Delete(sqlFile = true)
     int deleteById(Long id);
+
+    @Select
+    int existsRequestDetail(Long requestDetailId);
 }

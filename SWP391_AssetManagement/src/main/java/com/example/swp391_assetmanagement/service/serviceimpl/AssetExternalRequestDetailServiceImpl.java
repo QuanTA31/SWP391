@@ -33,4 +33,9 @@ public class AssetExternalRequestDetailServiceImpl implements AssetExternalReque
     public List<AssetExternalRequestDetail> getByAssetRequestIdForUpdate(Long assetRequestId) {
         return assetExternalRequestDetailDAO.selectByAssetRequestIdForUpdate(assetRequestId);
     }
+
+    @Override
+    public void batchDelete(List<Long> idsToDelete) {
+        assetExternalRequestDetailDAO.batchDelete(idsToDelete);
+    }
 }

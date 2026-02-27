@@ -1,10 +1,7 @@
 package com.example.swp391_assetmanagement.dao;
 
 import com.example.swp391_assetmanagement.entity.AssetExternalRequestDetail;
-import org.seasar.doma.BatchInsert;
-import org.seasar.doma.BatchUpdate;
-import org.seasar.doma.Dao;
-import org.seasar.doma.Select;
+import org.seasar.doma.*;
 import org.seasar.doma.boot.ConfigAutowireable;
 
 import java.util.List;
@@ -24,4 +21,7 @@ public interface AssetExternalRequestDetailDAO {
 
     @Select
     List<AssetExternalRequestDetail> selectByAssetRequestIdForUpdate(Long assetRequestId);
+
+    @Delete(sqlFile = true)
+    int batchDelete(List<Long> details);
 }

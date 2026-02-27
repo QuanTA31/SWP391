@@ -13,14 +13,14 @@ import com.example.swp391_assetmanagement.service.AssetRequestService;
 import com.example.swp391_assetmanagement.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -66,6 +66,7 @@ public class CreatePurchaseRequestUsecase {
                                 detail.setAssetRequestId(assetRequestId);
                                 detail.setAssetTypeId(AssetType.of(dto.getAssetTypeId()).getValue());
                                 detail.setExternalStatusId(ExternalStatus.DRAFT.getValue());
+                                detail.setQuantity(dto.getQuantity());
                                 detail.setNote(dto.getNote());
 
                                 return detail;
@@ -75,33 +76,55 @@ public class CreatePurchaseRequestUsecase {
 
         } else {
 
+            Integer countRequest = assetRequestService.countById(request.getAssetRequestId(), RequestStatus.PENDING_APPROVAL.getValue());
+
+            if (countRequest > 0) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request is invalid!");
+            }
+
             // Get list assetExternalRequestDetail from DB
             List<AssetExternalRequestDetail> dbDetails =
                     assetExternalRequestDetailService.getByAssetRequestIdForUpdate(request.getAssetRequestId());
 
-            // Convert to set for fast
+
             Set<Long> dbIds = dbDetails.stream()
                     .map(AssetExternalRequestDetail::getId)
                     .collect(Collectors.toSet());
 
-            // Check valid request to insert and update
-            Map<Boolean, List<CreatePurchaseRequestDetailDTORequest>> partitioned =
-                    request.getCreatePurchaseRequestDetailDTORequestList().stream()
-                            .peek(item -> {
-                                if (item.getAssetExternalRequestDetailId() != null
-                                        && !dbIds.contains(item.getAssetExternalRequestDetailId())) {
-                                    throw new IllegalStateException();
-                                }
-                            })
-                            .collect(Collectors.partitioningBy(
-                                    item -> item.getAssetExternalRequestDetailId() != null));
 
-            // Get list to update, insert from request
-            List<CreatePurchaseRequestDetailDTORequest> updateDTOs = partitioned.get(true);
-            List<CreatePurchaseRequestDetailDTORequest> insertDTOs = partitioned.get(false);
+            List<CreatePurchaseRequestDetailDTORequest> updateDTOs = Collections.emptyList();
+            List<CreatePurchaseRequestDetailDTORequest> insertDTOs = Collections.emptyList();
 
-            if (updateDTOs.size() != dbDetails.size()) {
-                throw new IllegalStateException();
+            if (!CollectionUtils.isEmpty(request.getCreatePurchaseRequestDetailDTORequestList())) {
+                Map<Boolean, List<CreatePurchaseRequestDetailDTORequest>> partitioned =
+                        request.getCreatePurchaseRequestDetailDTORequestList().stream()
+                                .peek(item -> {
+                                    if (item.getAssetExternalRequestDetailId() != null
+                                            && !dbIds.contains(item.getAssetExternalRequestDetailId())) {
+                                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request is invalid!");
+                                    }
+                                })
+                                .collect(Collectors.partitioningBy(item -> item.getAssetExternalRequestDetailId() != null));
+
+                updateDTOs = partitioned.get(true);
+                insertDTOs = partitioned.get(false);
+
+                Set<Long> requestUpdateIds = updateDTOs.stream()
+                        .map(CreatePurchaseRequestDetailDTORequest::getAssetExternalRequestDetailId)
+                        .collect(Collectors.toSet());
+            }
+
+            Set<Long> requestUpdateIds = updateDTOs.stream()
+                    .map(CreatePurchaseRequestDetailDTORequest::getAssetExternalRequestDetailId)
+                    .collect(Collectors.toSet());
+
+            // Delete record
+            List<Long> idsToDelete = dbIds.stream()
+                    .filter(id -> !requestUpdateIds.contains(id))
+                    .toList();
+
+            if (!idsToDelete.isEmpty()) {
+                assetExternalRequestDetailService.batchDelete(idsToDelete);
             }
 
             // Insert to assetExternalRequestDetail if exist
@@ -144,7 +167,7 @@ public class CreatePurchaseRequestUsecase {
                     assetRequest -> {
                         if (request.isSubmitted()) {
                             assetRequest.setRequestStatusId(RequestStatus.PENDING_APPROVAL.getValue());
-                            assetRequestService.updatePurchaseRequest(assetRequest);
+                            assetRequestService.updatePurchaseRequestStatus(assetRequest);
                         }
                     }
             );

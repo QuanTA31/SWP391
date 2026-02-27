@@ -9,8 +9,10 @@ import com.example.swp391_assetmanagement.service.AssetRequestService;
 import com.example.swp391_assetmanagement.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -25,27 +27,32 @@ public class ManagerCreatePurchaseRequestUsecase {
     @Transactional
     public void execute(ApprovalPurchaseRequestDTORequest request, HttpSession session) {
 
+        Integer countRequest = assetRequestService.countById(request.getAssetRequestId(), RequestStatus.PENDING_APPROVAL.getValue());
+
+        if (countRequest == 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request is invalid!");
+        }
+
+        Long userId = userService.getIdByUserCode(session.getAttribute("USER_CODE").toString());
+
         // Get list assetExternalRequestDetail from DB
         List<AssetExternalRequestDetail> dbDetails =
                 assetExternalRequestDetailService.getByAssetRequestIdForUpdate(request.getAssetRequestId());
 
         // Update assetExternalRequestDetail
         List<AssetExternalRequestDetail> toUpdate = dbDetails.stream()
-                .map(dto -> {
-                    AssetExternalRequestDetail entity = new AssetExternalRequestDetail();
-                    entity.setExternalStatusId(request.isApproved()
-                            ? ExternalStatus.IN_PROGRESS.getValue() : ExternalStatus.CANCEL.getValue());
-                    return entity;
-                }).toList();
+                .peek(dto -> dto.setExternalStatusId(request.getIsApproved()
+                        ? ExternalStatus.IN_PROGRESS.getValue() : ExternalStatus.CANCEL.getValue())).toList();
         assetExternalRequestDetailService.batchUpdate(toUpdate);
 
         // Update AssetRequest if status = submit
         assetRequestService.findAssetRequestByIdForUpdate(request.getAssetRequestId()).ifPresent(
                 assetRequest -> {
-                        assetRequest.setRequestStatusId(request.isApproved()
-                                ? RequestStatus.APPROVED.getValue() : RequestStatus.COMPLETED.getValue());
-                        assetRequest.setNote(request.getNote());
-                        assetRequestService.updatePurchaseRequest(assetRequest);
+                    assetRequest.setApprovedBy(userId);
+                    assetRequest.setRequestStatusId(request.getIsApproved()
+                            ? RequestStatus.APPROVED.getValue() : RequestStatus.CANCELLED.getValue());
+                    assetRequest.setNote(request.getNote());
+                    assetRequestService.updatePurchaseRequest(assetRequest);
                 }
         );
 

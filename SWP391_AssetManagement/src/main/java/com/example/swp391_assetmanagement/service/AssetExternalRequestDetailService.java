@@ -13,4 +13,6 @@ public interface AssetExternalRequestDetailService {
     int[] batchUpdate(List<AssetExternalRequestDetail> details);
 
     List<AssetExternalRequestDetail> getByAssetRequestIdForUpdate(Long assetRequestId);
+
+    void batchDelete(List<Long> idsToDelete);
 }

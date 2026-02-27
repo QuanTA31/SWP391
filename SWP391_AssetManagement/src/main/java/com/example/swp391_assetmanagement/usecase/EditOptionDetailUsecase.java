@@ -2,8 +2,9 @@ package com.example.swp391_assetmanagement.usecase;
 
 import com.example.swp391_assetmanagement.dto.request.OptionDetailFormRequest;
 import com.example.swp391_assetmanagement.entity.OptionDetail;
+import com.example.swp391_assetmanagement.enums.Roles;
 import com.example.swp391_assetmanagement.service.OptionDetailService;
-import com.example.swp391_assetmanagement.service.auth.AuthGuardService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -14,14 +15,24 @@ import org.springframework.web.server.ResponseStatusException;
 public class EditOptionDetailUsecase {
 
     private final OptionDetailService optionDetailService;
-    private final AuthGuardService authGuardService;
 
     public void execute(
             Long requestDetailId,
-            OptionDetailFormRequest form
+            OptionDetailFormRequest form,
+            HttpSession session
     ) {
-        authGuardService.checkAuthenticated();
-        authGuardService.checkCanAccessRequest(requestDetailId);
+
+        //check role
+        String role = (String) session.getAttribute("ROLE");
+
+        if (!Roles.MANAGER.getValue().equals(role)
+                && !Roles.PURCHASING.getValue().equals(role)) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Bạn không có quyền truy cập chức năng này"
+            );
+        }
 
         validate(form);
 
@@ -63,4 +74,3 @@ public class EditOptionDetailUsecase {
         }
     }
 }
-
