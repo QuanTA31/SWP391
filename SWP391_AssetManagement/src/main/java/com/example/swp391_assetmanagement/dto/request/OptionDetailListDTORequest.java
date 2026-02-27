@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class OptionDetailListRequest {
+public class OptionDetailListDTORequest {
 
     private Long requestDetailId;
 
