@@ -13,10 +13,10 @@
 
 <div class="page-wrapper">
     <div class="page-header">
-        <div class="page-title">📋 Yêu Cầu Mua Sắm</div>
-        <span class="badge badge-draft" th:if="${!purchaseRequest.submitted and purchaseRequest.assetRequestId == null}">Tạo mới</span>
-        <span class="badge badge-pending" th:if="${!purchaseRequest.submitted and purchaseRequest.assetRequestId != null}">Bản nháp</span>
-        <span class="badge badge-view" th:if="${purchaseRequest.submitted}">Chờ phê duyệt</span>
+        <div class="page-title">📋 Purchase Request</div>
+        <span class="badge badge-draft" th:if="${!purchaseRequest.submitted and purchaseRequest.assetRequestId == null}">New Request</span>
+        <span class="badge badge-pending" th:if="${!purchaseRequest.submitted and purchaseRequest.assetRequestId != null}">Draft</span>
+        <span class="badge badge-view" th:if="${purchaseRequest.submitted}">Pending Approval</span>
     </div>
 
     <form th:action="@{/purchase-requests/warehouse/create}" th:object="${purchaseRequest}" method="post" id="purchaseForm">
@@ -24,26 +24,26 @@
         <input type="hidden" th:field="*{submitted}" id="isSubmittedField"/>
 
         <div class="card" th:if="${purchaseRequest.assetRequestId != null}">
-            <div class="card-header"><div class="icon">📄</div> Thông tin yêu cầu</div>
+            <div class="card-header"><div class="icon">📄</div> Request Information</div>
             <div class="card-body">
                 <div class="info-grid">
-                    <div class="info-item"><label>Mã yêu cầu</label><span th:text="'#' + ${purchaseRequest.assetRequestId}">—</span></div>
-                    <div class="info-item"><label>Loại yêu cầu</label><span>Mua sắm</span></div>
-                    <div class="info-item"><label>Ngày tạo</label><span>—</span></div>
+                    <div class="info-item"><label>Request Id</label><span th:text="'#' + ${purchaseRequest.assetRequestId}">—</span></div>
+                    <div class="info-item"><label>Request Type</label><span>Purchase</span></div>
+                    <div class="info-item"><label>Request Date</label><span>—</span></div>
                 </div>
             </div>
         </div>
 
         <div class="card">
-            <div class="card-header"><div class="icon">📦</div> Danh sách tài sản cần mua</div>
+            <div class="card-header"><div class="icon">📦</div> Asset Request List</div>
             <div class="table-wrapper">
                 <table id="detailTable">
                     <thead>
                     <tr>
                         <th style="width:40px">#</th>
-                        <th>Loại tài sản</th>
-                        <th style="width:120px">Số lượng</th>
-                        <th>Ghi chú</th>
+                        <th>Asset Type</th>
+                        <th style="width:120px">Quantity</th>
+                        <th>Note</th>
                         <th th:if="${!purchaseRequest.submitted}" style="width:50px"></th>
                     </tr>
                     </thead>
@@ -59,7 +59,7 @@
                             <span th:if="${purchaseRequest.submitted}" class="readonly-cell" th:text="${detail.assetTypeId}">—</span>
                             <select th:if="${!purchaseRequest.submitted}" class="asset-type-select"
                                     th:name="'createPurchaseRequestDetailDTORequestList[' + ${stat.index} + '].assetTypeId'">
-                                <option value="">-- Chọn loại --</option>
+                                <option value="">-- Asset Type --</option>
                                 <option th:each="type : ${assetTypes}"
                                         th:value="${type.value}"
                                         th:text="${type.label}"
@@ -78,7 +78,7 @@
                             <span th:if="${purchaseRequest.submitted}" class="readonly-cell" th:text="${detail.note}">—</span>
                             <textarea th:if="${!purchaseRequest.submitted}" class="note-input"
                                       th:name="'createPurchaseRequestDetailDTORequestList[' + ${stat.index} + '].note'"
-                                      rows="1" placeholder="Ghi chú..." th:text="${detail.note}"></textarea>
+                                      rows="1" placeholder="Note..." th:text="${detail.note}"></textarea>
                         </td>
                         <td th:if="${!purchaseRequest.submitted}">
                             <button type="button" class="btn btn-ghost" onclick="removeRow(this)" title="Xóa dòng">✕</button>
@@ -89,22 +89,22 @@
             </div>
 
             <div class="add-row-area" th:if="${!purchaseRequest.submitted}">
-                <button type="button" class="btn btn-outline" onclick="addRow()">+ Thêm dòng</button>
+                <button type="button" class="btn btn-outline" onclick="addRow()">+ Add</button>
             </div>
 
             <div class="form-footer" th:if="${!purchaseRequest.submitted}">
-                <button type="button" class="btn btn-outline" onclick="saveDraft()">💾 Lưu nháp</button>
-                <button type="button" class="btn btn-primary" onclick="submitForm()">📤 Gửi phê duyệt</button>
+                <button type="button" class="btn btn-outline" onclick="saveDraft()">💾 Save Draft</button>
+                <button type="button" class="btn btn-primary" onclick="submitForm()">📤 Submit</button>
             </div>
         </div>
 
         <div class="card" th:if="${purchaseRequest.submitted and approvalRequest != null}" th:object="${approvalRequest}">
-            <div class="card-header"><div class="icon">✅</div> Phê duyệt yêu cầu</div>
+            <div class="card-header"><div class="icon">✅</div> Request Approval</div>
             <div class="card-body">
                 <input type="hidden" th:field="*{assetRequestId}"/>
                 <div class="approval-section">
-                    <button type="button" class="btn btn-success" onclick="approveRequest()">✅ Phê duyệt</button>
-                    <button type="button" class="btn btn-danger" onclick="rejectRequest()">❌ Từ chối</button>
+                    <button type="button" class="btn btn-success" onclick="approveRequest()">✅ Approve</button>
+                    <button type="button" class="btn btn-danger" onclick="rejectRequest()">❌ Reject</button>
                 </div>
             </div>
         </div>
@@ -127,7 +127,7 @@
     let rowIndex = document.querySelectorAll('#detailBody tr').length;
 
     function buildSelectOptions(selectedValue) {
-        let html = '<option value="">-- Chọn loại --</option>';
+        let html = '<option value="">-- Select Asset Type --</option>';
         if (assetTypes && assetTypes.length) {
             assetTypes.forEach(function(type) {
                 const val = type.value;
@@ -159,7 +159,7 @@
                 <input type="number" class="quantity-input" min="1" name="createPurchaseRequestDetailDTORequestList[${i}].quantity" placeholder="0"/>
             </td>
             <td>
-                <textarea class="note-input" name="createPurchaseRequestDetailDTORequestList[${i}].note" rows="1" placeholder="Ghi chú..."></textarea>
+                <textarea class="note-input" name="createPurchaseRequestDetailDTORequestList[${i}].note" rows="1" placeholder="Note..."></textarea>
             </td>
             <td>
                 <button type="button" class="btn btn-ghost" onclick="removeRow(this)" title="Xóa dòng">✕</button>
