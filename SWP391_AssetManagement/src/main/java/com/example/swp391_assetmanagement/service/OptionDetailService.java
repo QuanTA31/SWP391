@@ -1,7 +1,7 @@
 package com.example.swp391_assetmanagement.service;
 
 import com.example.swp391_assetmanagement.entity.OptionDetail;
-import com.example.swp391_assetmanagement.dto.request.OptionDetailListRequest;
+import com.example.swp391_assetmanagement.dto.request.OptionDetailListDTORequest;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,15 +14,6 @@ public interface OptionDetailService {
 
     void update(OptionDetail plan);
 
-    void saveAll(List<OptionDetail> plans);
-
-    List<OptionDetail> getByRequestDetailId(
-            Long requestDetailId,
-            Boolean isSelected,
-            int offset,
-            int pageSize
-    );
-
     int countByRequestDetailId(
             Long requestDetailId,
             Boolean isSelected
@@ -32,9 +23,9 @@ public interface OptionDetailService {
 
     void deleteById(Long id);
 
-    List<OptionDetail> getList(OptionDetailListRequest request);
+    List<OptionDetail> getList(OptionDetailListDTORequest request);
 
-    int count(OptionDetailListRequest request);
+    int count(OptionDetailListDTORequest request);
 
     boolean existsRequestDetail(Long requestDetailId);
 

@@ -1,6 +1,6 @@
 package com.example.swp391_assetmanagement.usecase;
 
-import com.example.swp391_assetmanagement.dto.request.OptionDetailFormRequest;
+import com.example.swp391_assetmanagement.dto.request.OptionDetailFormDTORequest;
 import com.example.swp391_assetmanagement.entity.OptionDetail;
 import com.example.swp391_assetmanagement.enums.Roles;
 import com.example.swp391_assetmanagement.service.OptionDetailService;
@@ -20,7 +20,7 @@ public class CreateOptionDetailUsecase {
 
     public void execute(
             Long requestDetailId,
-            OptionDetailFormRequest form,
+            OptionDetailFormDTORequest form,
             HttpSession session
     ) {
         String role = (String) session.getAttribute("ROLE");
@@ -47,7 +47,7 @@ public class CreateOptionDetailUsecase {
         optionDetailService.create(option);
     }
 
-    private void validate(OptionDetailFormRequest form) {
+    private void validate(OptionDetailFormDTORequest form) {
         if (form == null) {
             throw new IllegalArgumentException("Form must not be null");
         }

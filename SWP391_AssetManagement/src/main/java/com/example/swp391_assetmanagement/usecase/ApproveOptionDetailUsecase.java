@@ -1,8 +1,10 @@
 package com.example.swp391_assetmanagement.usecase;
 
+import com.example.swp391_assetmanagement.dao.OptionDetailDao;
 import com.example.swp391_assetmanagement.entity.OptionDetail;
 import com.example.swp391_assetmanagement.enums.Roles;
 import com.example.swp391_assetmanagement.service.OptionDetailService;
+import com.example.swp391_assetmanagement.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,8 @@ import java.time.LocalDate;
 public class ApproveOptionDetailUsecase {
 
     private final OptionDetailService optionDetailService;
+    private final UserService userService;
+    private final OptionDetailDao optionDetailDao;
 
     public void execute(
             Long optionId,
@@ -42,17 +46,18 @@ public class ApproveOptionDetailUsecase {
                                 "Option detail not found"
                         )
                 );
-
+        String userCode = (String) session.getAttribute("USER_CODE");
+        Long userId = userService.getIdByUserCode(userCode);
         if (selected) {
             optionDetailService.unselectByRequestDetailId(requestDetailId);
-            plan.approvedDate = LocalDate.now();
-            // plan.approverBy = (Long) session.getAttribute("USER_ID");
+            plan.setIsSelected(true);
+            plan.setApprovedDate(LocalDate.now());
+            plan.setApproverBy(userId);
         } else {
-            plan.approvedDate = null;
-            plan.approverBy = null;
+            plan.setIsSelected(false);
+            plan.setApprovedDate(null);
+            plan.setApproverBy(null);
         }
-
-        plan.isSelected = selected;
         optionDetailService.update(plan);
     }
 }

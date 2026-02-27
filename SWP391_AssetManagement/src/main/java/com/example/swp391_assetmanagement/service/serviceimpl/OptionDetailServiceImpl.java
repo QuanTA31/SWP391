@@ -3,7 +3,7 @@ package com.example.swp391_assetmanagement.service.serviceimpl;
 import com.example.swp391_assetmanagement.dao.OptionDetailDao;
 import com.example.swp391_assetmanagement.entity.OptionDetail;
 import com.example.swp391_assetmanagement.service.OptionDetailService;
-import com.example.swp391_assetmanagement.dto.request.OptionDetailListRequest;
+import com.example.swp391_assetmanagement.dto.request.OptionDetailListDTORequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,14 +22,6 @@ public class OptionDetailServiceImpl implements OptionDetailService {
     @Override
     public Optional<OptionDetail> getById(Long id) {
         return optionDetailDao.findById(id);
-    }
-
-    @Override
-    @Transactional
-    public void saveAll(List<OptionDetail> plans) {
-        for (OptionDetail plan : plans) {
-            optionDetailDao.insert(plan);
-        }
     }
 
     @Override
@@ -57,21 +49,6 @@ public class OptionDetailServiceImpl implements OptionDetailService {
     }
 
     @Override
-    public List<OptionDetail> getByRequestDetailId(
-            Long requestDetailId,
-            Boolean isSelected,
-            int offset,
-            int pageSize
-    ) {
-        return optionDetailDao.getByRequestDetailId(
-                requestDetailId,
-                isSelected,
-                offset,
-                pageSize
-        );
-    }
-
-    @Override
     public int countByRequestDetailId(
             Long requestDetailId,
             Boolean isSelected
@@ -83,7 +60,7 @@ public class OptionDetailServiceImpl implements OptionDetailService {
     }
 
     @Override
-    public List<OptionDetail> getList(OptionDetailListRequest request) {
+    public List<OptionDetail> getList(OptionDetailListDTORequest request) {
         return optionDetailDao.getByRequestDetailId(
                 request.getRequestDetailId(),
                 request.getIsSelected(),
@@ -93,7 +70,7 @@ public class OptionDetailServiceImpl implements OptionDetailService {
     }
 
     @Override
-    public int count(OptionDetailListRequest request) {
+    public int count(OptionDetailListDTORequest request) {
         return optionDetailDao.countByRequestDetailId(
                 request.getRequestDetailId(),
                 request.getIsSelected()
