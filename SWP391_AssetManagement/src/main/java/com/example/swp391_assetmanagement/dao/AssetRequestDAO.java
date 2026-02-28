@@ -1,12 +1,11 @@
 package com.example.swp391_assetmanagement.dao;
 
 import com.example.swp391_assetmanagement.entity.AssetRequest;
-import org.seasar.doma.Dao;
-import org.seasar.doma.Insert;
-import org.seasar.doma.Select;
-import org.seasar.doma.Update;
+import com.example.swp391_assetmanagement.entity.OptionDetail;
+import org.seasar.doma.*;
 import org.seasar.doma.boot.ConfigAutowireable;
 
+import java.util.List;
 import java.util.Optional;
 
 @Dao
@@ -30,4 +29,10 @@ public interface AssetRequestDAO {
 
     @Select
     Integer countById(Long assetRequestId, String status);
+
+    @Select
+    AssetRequest selectByUpdate(Long assetRequestId);
+
+    @Update(sqlFile = true)
+    int updateIsSelected(AssetRequest assetRequest);
 }

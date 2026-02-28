@@ -26,6 +26,7 @@ public class PurchaseRequestController {
     private final GetPurchaseRequestWarehouseUsecase getPurchaseRequestWarehouseUsecase;
     private final GetPurchaseRequestManagerUsecase getPurchaseRequestManagerUsecase;
     private final ManagerCreatePurchaseRequestUsecase managerCreatePurchaseRequestUsecase;
+    private final ManagerRejectAllOptionDetailUsecase managerRejectAllOptionDetailUsecase;
 
     @GetMapping("/warehouse/view")
     public String viewPurchaseRequestForm(@RequestParam(required = false) Long assetRequestId, Model model, HttpSession session) {
@@ -77,18 +78,9 @@ public class PurchaseRequestController {
     }
 
     @PostMapping("/manager/optionDetailRejectAll")
-    public String managerOptionDetail(
-            @ModelAttribute List<OptionDetailSelectDTORequest> request, HttpSession session, Model model) {
+    public String managerOptionDetail(@RequestParam Long assetRequestId, HttpSession session, Model model) {
 
-        /*
-        Get db AssetRequest --> status = RESEARCH thì thực hiện các logic bên dưới không thì thôi.
-        th1: tồn tại 1 phần tử của  List<OptionDetailSelectDTORequest> có isSelected = true
-        update tất cả record còn lại trong option_detail thành isSelected = false
-        update AssetRequest. status = RESEARCH_DONE
-        th2 : tất cả các phần tử có trong list đều là  isSelected = false
-        update tất cả record trong option_detail thành isSelected = false
-        update AssetRequest. status = APPROVED
-         */
+        managerRejectAllOptionDetailUsecase.execute(assetRequestId, session);
         return "redirect:/viewRequest";
     }
 
