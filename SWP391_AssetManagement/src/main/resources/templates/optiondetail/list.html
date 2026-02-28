@@ -96,7 +96,7 @@
                                 </span>
                                 <span class="badge bg-secondary"
                                       th:unless="${p.isSelected}">
-                                                -
+                                                Reject
                                 </span>
                             </td>
                             <td th:text="${p.approverName}"></td>
@@ -207,6 +207,17 @@
                         </a>
                     </li>
                 </ul>
+            </div>
+            <div style="text-align: right; margin-top: 20px;">
+                <form th:action="@{/option-detail/reject}" method="post">
+                    <input type="hidden"
+                           name="assetExternalRequestDetailId"
+                           th:value="${assetExternalRequestDetailId}" />
+                    <button type="submit"
+                            class="btn btn-primary">
+                        Reject All
+                    </button>
+                </form>
             </div>
         </div>
     </div>

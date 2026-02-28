@@ -5,6 +5,7 @@ import org.seasar.doma.*;
 import org.seasar.doma.boot.ConfigAutowireable;
 
 import java.util.List;
+import java.util.Optional;
 
 @Dao
 @ConfigAutowireable
@@ -24,4 +25,7 @@ public interface AssetExternalRequestDetailDAO {
 
     @Delete(sqlFile = true)
     int batchDelete(List<Long> details);
+
+    @Select
+    AssetExternalRequestDetail findById(Long id);
 }

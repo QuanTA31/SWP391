@@ -40,7 +40,7 @@ public class CreateOptionDetailUsecase {
         option.setDescription(form.getDescription());
         option.setUnitPrice(form.getUnitPrice());
         option.setWarrantyPeriod(form.getWarrantyPeriod());
-        option.setIsSelected(false);
+        option.setIsSelected(null);
         option.setApprovedDate(null);
         option.setApproverBy(null);
 

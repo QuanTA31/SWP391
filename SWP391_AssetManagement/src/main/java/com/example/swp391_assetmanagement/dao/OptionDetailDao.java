@@ -43,4 +43,13 @@ public interface OptionDetailDao {
 
     @Select
     int existsRequestDetail(Long requestDetailId);
+
+    @Select
+    List<OptionDetail> selectByUpdate(Long assetExternalRequestDetailId);
+
+    @BatchUpdate(sqlFile = true)
+    int[] batchUpdate(List<OptionDetail> details);
+
+    @Select
+    Integer countByIdAndStatus(Long requestDetailId, Boolean status);
 }
