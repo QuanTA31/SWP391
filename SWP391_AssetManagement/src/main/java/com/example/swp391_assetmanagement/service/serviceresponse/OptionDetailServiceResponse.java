@@ -42,6 +42,6 @@ public class OptionDetailServiceResponse {
     public LocalDateTime createdAt;
 
     @Column(name = "approver_name")
-    public LocalDateTime approverName;
+    public String approverName;
 
 }
