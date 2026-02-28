@@ -49,4 +49,9 @@ public class AssetRequestServiceImpl implements AssetRequestService {
     public int updateIsSelected(AssetRequest assetRequest) {
         return assetRequestDAO.updateIsSelected(assetRequest);
     }
+
+    @Override
+    public Long findIdByAssetRequestDetailId(Long assetRequestDetailId) {
+        return assetRequestDAO.findIdByAssetRequestDetailId(assetRequestDetailId);
+    }
 }

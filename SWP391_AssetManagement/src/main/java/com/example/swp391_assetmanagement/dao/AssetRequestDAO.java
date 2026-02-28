@@ -1,11 +1,9 @@
 package com.example.swp391_assetmanagement.dao;
 
 import com.example.swp391_assetmanagement.entity.AssetRequest;
-import com.example.swp391_assetmanagement.entity.OptionDetail;
 import org.seasar.doma.*;
 import org.seasar.doma.boot.ConfigAutowireable;
 
-import java.util.List;
 import java.util.Optional;
 
 @Dao
@@ -35,4 +33,7 @@ public interface AssetRequestDAO {
 
     @Update(sqlFile = true)
     int updateIsSelected(AssetRequest assetRequest);
+
+    @Select
+    Long findIdByAssetRequestDetailId(Long assetRequestDetailId);
 }

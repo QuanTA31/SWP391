@@ -19,4 +19,6 @@ public interface AssetRequestService {
     AssetRequest findByUpdate(Long assetRequestId);
 
     int updateIsSelected(AssetRequest assetRequest);
+
+    Long findIdByAssetRequestDetailId(Long assetRequestDetailId);
 }
