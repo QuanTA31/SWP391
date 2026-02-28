@@ -32,7 +32,7 @@
                 <div class="toolbar-left">
                     <span class="fw-semibold">View Option Detail</span>
                 </div>
-                <form class="toolbar-right" method="get" th:action="@{/option-detail/list}">
+                <form class="toolbar-right" method="get" th:action="@{/purchase-requests/option-detail/list}">
                     <input type="hidden" name="asset_external_request_detail_id" th:value="${asset_external_request_detail_id}">
                     <select name="status" class="form-select form-select-sm">
                         <option value="all" th:selected="${status == 'all'}">All</option>
@@ -113,7 +113,7 @@
 
                                         <!--MANAGER-->
                                         <li th:if="${canApprove}">
-                                            <form method="post" th:action="@{/option-detail/approval}">
+                                            <form method="post" th:action="@{/purchase-requests/option-detail/approval}">
                                                 <input type="hidden" name="id" th:value="${p.id}">
                                                 <input type="hidden"
                                                        name="asset_external_request_detail_id"
@@ -188,7 +188,7 @@
                         th:classappend="${i == page} ? 'active'">
                         <a class="page-link"
                            th:text="${i}"
-                           th:href="@{/option-detail/list(
+                           th:href="@{/purchase-requests/option-detail/list(
                                page=${i},
                                status=${status},
                                asset_external_request_detail_id=${asset_external_request_detail_id}
@@ -198,7 +198,7 @@
 
                     <li class="page-item" th:classappend="${!hasNextPage} ? 'disabled'">
                         <a class="page-link"
-                           th:href="@{/option-detail/list(
+                           th:href="@{/purchase-requests/option-detail/list(
                                page=${page + 1},
                                status=${status},
                                asset_external_request_detail_id=${asset_external_request_detail_id}
@@ -219,7 +219,7 @@
                 <h5 class="modal-title" id="createOptionModalLabel">Create Option Detail</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form th:action="@{/option-detail/create}" method="post" th:object="${createForm}">
+            <form th:action="@{/purchase-requests/option-detail/create}" method="post" th:object="${createForm}">
                 <div class="modal-body">
                     <!-- 🔴 ERROR MESSAGE -->
                     <div class="alert alert-danger"
@@ -382,7 +382,7 @@
             const description = button.getAttribute("data-description");
             const unitPrice = button.getAttribute("data-unit-price");
             const warrantyPeriod = button.getAttribute("data-warranty-period");
-            editForm.action = "/option-detail/edit/" + id;
+            editForm.action = "/purchase-requests/option-detail/edit/" + id;
             const idInput = editForm.querySelector('input[name="id"]');
             const merchantInput = editForm.querySelector('input[name="merchant"]');
             const descriptionInput = editForm.querySelector('input[name="description"]');
@@ -420,7 +420,7 @@
                 const requestDetailId =
                     button.getAttribute("data-request-detail-id");
 
-                deleteForm.action = "/option-detail/delete/" + id;
+                deleteForm.action = "/purchase-requests/option-detail/delete/" + id;
                 deleteRequestDetailInput.value = requestDetailId;
             });
         }
