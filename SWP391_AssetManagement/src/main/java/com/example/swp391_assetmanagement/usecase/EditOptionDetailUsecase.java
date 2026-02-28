@@ -17,7 +17,6 @@ public class EditOptionDetailUsecase {
     private final OptionDetailService optionDetailService;
 
     public void execute(
-            Long id,
             Long requestDetailId,
             OptionDetailFormDTORequest form,
             HttpSession session

@@ -76,7 +76,7 @@ public class PurchaseRequestController {
         return "redirect:/viewRequest";
     }
 
-    @PostMapping("/manager/optionDetail")
+    @PostMapping("/manager/optionDetailRejectAll")
     public String managerOptionDetail(
             @ModelAttribute List<OptionDetailSelectDTORequest> request, HttpSession session, Model model) {
 
