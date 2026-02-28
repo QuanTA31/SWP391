@@ -151,10 +151,10 @@ public class PurchaseRequestController {
     }
 
     @PostMapping("/purchasing/research")
-    public String delete(@RequestParam  Long requestDetailId,
+    public String delete(@RequestParam  Long assetRequestId,
                          HttpSession session) {
-        updateAssetRequestUsecase.execute(requestDetailId, session);
-        return "redirect:/purchase-requests/option-detail/list?asset_external_request_detail_id=" + requestDetailId;
+        updateAssetRequestUsecase.execute(assetRequestId, session);
+        return "redirect:/purchase-requests/option-detail/list?asset_external_request_detail_id=" + assetRequestId;
     }
 
     // ================= APPROVAL =================
