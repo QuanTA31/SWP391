@@ -87,5 +87,15 @@ public class OptionDetailServiceImpl implements OptionDetailService {
         return optionDetailDao.countByIdAndStatus(id, status);
     }
 
+    @Override
+    public List<OptionDetail> getListByRequestDetailId(Long requestDetailId) {
+        return optionDetailDao.selectByUpdate(requestDetailId);
+    }
+
+    @Override
+    public int[] updateRejectAll(List<OptionDetail> optionDetails) {
+        return optionDetailDao.batchUpdate(optionDetails);
+    }
+
 }
 
