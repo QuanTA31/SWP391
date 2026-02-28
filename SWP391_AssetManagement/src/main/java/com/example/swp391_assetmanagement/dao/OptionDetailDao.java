@@ -55,4 +55,7 @@ public interface OptionDetailDao {
 
     @Update
     int edit(OptionDetail entity);
+
+    @Update(sqlFile = true)
+    int resetAllByRequestDetailId(Long requestDetailId);
 }
