@@ -208,13 +208,18 @@
                     </li>
                 </ul>
             </div>
-            <div style="text-align: right; margin-top: 20px;">
-                <form th:action="@{/purchase-requests/manager/optionDetailRejectAll}" method="post">
+            <div class="d-flex justify-content-end mt-3">
+                <!-- ONLY MANAGER -->
+                <form th:if="${canApprove}"
+                      th:action="@{/purchase-requests/manager/optionDetailRejectAll}"
+                      method="post">
+
                     <input type="hidden"
                            name="assetRequestId"
                            th:value="${asset_external_request_detail_id}" />
+
                     <button type="submit"
-                            class="btn btn-primary">
+                            class="btn btn-danger">
                         Reject All
                     </button>
                 </form>
