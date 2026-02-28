@@ -36,5 +36,5 @@ public interface OptionDetailService {
 
     void edit(OptionDetail plan);
 
-    void resetAllByRequestDetailId(Long requestDetailId);
+    void resetAllByRequestDetailId(Long requestDetailId, Long userId);
 }
