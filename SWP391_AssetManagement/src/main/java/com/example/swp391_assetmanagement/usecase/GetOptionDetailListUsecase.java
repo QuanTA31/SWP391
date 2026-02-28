@@ -40,6 +40,14 @@ public class GetOptionDetailListUsecase {
             );
         }
 
+        // check request detail
+        if (!optionDetailService.existsRequestDetail(requestDetailId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Request detail not found: " + requestDetailId
+            );
+        }
+
         String selectedStatus = (status == null || status.isBlank()) ? "all" : status;
         int pageIndex = (page == null || page < 1) ? 1 : page;
         Boolean isSelected = parseSelectedStatus(selectedStatus);

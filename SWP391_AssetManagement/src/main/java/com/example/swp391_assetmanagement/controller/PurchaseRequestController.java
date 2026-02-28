@@ -25,8 +25,6 @@ public class PurchaseRequestController {
     private final GetPurchaseRequestWarehouseUsecase getPurchaseRequestWarehouseUsecase;
     private final GetPurchaseRequestManagerUsecase getPurchaseRequestManagerUsecase;
     private final ManagerCreatePurchaseRequestUsecase managerCreatePurchaseRequestUsecase;
-    private final GetOptionDetailListUsecase getOptionDetailListUsecase;
-    private final ApproveOptionDetailUsecase approveOptionDetailUsecase;
 
     @GetMapping("/warehouse/view")
     public String viewPurchaseRequestForm(@RequestParam(required = false) Long assetRequestId, Model model, HttpSession session) {
