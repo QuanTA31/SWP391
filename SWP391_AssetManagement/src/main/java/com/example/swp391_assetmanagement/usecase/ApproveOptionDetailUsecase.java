@@ -82,6 +82,8 @@ public class ApproveOptionDetailUsecase {
             assetRequest.setRequestStatusId(RequestStatus.RESEARCH_DONE.getValue());
             assetRequestService.updatePurchaseRequestStatus(assetRequest);
 
+            optionDetailService.resetAllByRequestDetailId(requestDetailId);
+
             plan.setIsSelected(true);
             plan.setApprovedDate(LocalDate.now());
             plan.setApproverBy(userId);

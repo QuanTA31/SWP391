@@ -20,8 +20,6 @@ public interface OptionDetailService {
             Boolean isSelected
     );
 
-    void unselectByRequestDetailId(Long requestDetailId);
-
     void deleteById(Long id);
 
     List<OptionDetailServiceResponse> getList(OptionDetailListDTORequest request);
@@ -37,4 +35,6 @@ public interface OptionDetailService {
     int[] updateRejectAll(List<OptionDetail> optionDetails);
 
     void edit(OptionDetail plan);
+
+    void resetAllByRequestDetailId(Long requestDetailId);
 }

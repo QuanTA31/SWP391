@@ -27,12 +27,6 @@ public class OptionDetailServiceImpl implements OptionDetailService {
 
     @Override
     @Transactional
-    public void unselectByRequestDetailId(Long requestDetailId) {
-        optionDetailDao.unselectByRequestDetailId(requestDetailId);
-    }
-
-    @Override
-    @Transactional
     public void create(OptionDetail plan) {
         optionDetailDao.insert(plan);
     }
@@ -101,6 +95,11 @@ public class OptionDetailServiceImpl implements OptionDetailService {
     @Override
     public void edit(OptionDetail plan) {
         optionDetailDao.edit(plan);
+    }
+
+    @Override
+    public void resetAllByRequestDetailId(Long requestDetailId) {
+        optionDetailDao.resetAllByRequestDetailId(requestDetailId);
     }
 
 }
