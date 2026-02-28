@@ -8,6 +8,7 @@ import com.example.swp391_assetmanagement.service.serviceresponse.OptionDetailSe
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -98,8 +99,13 @@ public class OptionDetailServiceImpl implements OptionDetailService {
     }
 
     @Override
-    public void resetAllByRequestDetailId(Long requestDetailId) {
-        optionDetailDao.resetAllByRequestDetailId(requestDetailId);
+    @Transactional
+    public void resetAllByRequestDetailId(Long requestDetailId, Long userId) {
+        optionDetailDao.resetAllByRequestDetailId(
+                requestDetailId,
+                LocalDate.now(),
+                userId
+        );
     }
 
 }
