@@ -134,9 +134,7 @@ public class CreatePurchaseRequestUsecase {
                             AssetExternalRequestDetail entity = new AssetExternalRequestDetail();
                             entity.setAssetRequestId(request.getAssetRequestId());
                             entity.setAssetTypeId(AssetType.of(dto.getAssetTypeId()).getValue());
-                            entity.setExternalStatusId(request.isSubmitted()
-                                    ? ExternalStatus.IN_PROGRESS.getValue()
-                                    : ExternalStatus.DRAFT.getValue());
+                            entity.setExternalStatusId(ExternalStatus.DRAFT.getValue());
                             entity.setNote(dto.getNote());
                             entity.setQuantity(dto.getQuantity());
                             return entity;
@@ -152,9 +150,7 @@ public class CreatePurchaseRequestUsecase {
                             entity.setId(dto.getAssetExternalRequestDetailId());
                             entity.setAssetRequestId(request.getAssetRequestId());
                             entity.setAssetTypeId(AssetType.of(dto.getAssetTypeId()).getValue());
-                            entity.setExternalStatusId(request.isSubmitted()
-                                    ? ExternalStatus.IN_PROGRESS.getValue()
-                                    : ExternalStatus.DRAFT.getValue());
+                            entity.setExternalStatusId(ExternalStatus.DRAFT.getValue());
                             entity.setNote(dto.getNote());
                             entity.setQuantity(dto.getQuantity());
                             return entity;
