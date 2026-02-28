@@ -4,10 +4,7 @@ import com.example.swp391_assetmanagement.dto.request.ApprovalPurchaseRequestDTO
 import com.example.swp391_assetmanagement.dto.request.CreatePurchaseRequestDTORequest;
 import com.example.swp391_assetmanagement.dto.request.OptionDetailSelectDTORequest;
 import com.example.swp391_assetmanagement.enums.AssetType;
-import com.example.swp391_assetmanagement.usecase.CreatePurchaseRequestUsecase;
-import com.example.swp391_assetmanagement.usecase.GetPurchaseRequestManagerUsecase;
-import com.example.swp391_assetmanagement.usecase.GetPurchaseRequestWarehouseUsecase;
-import com.example.swp391_assetmanagement.usecase.ManagerCreatePurchaseRequestUsecase;
+import com.example.swp391_assetmanagement.usecase.*;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -78,7 +75,7 @@ public class PurchaseRequestController {
         return "redirect:/viewRequest";
     }
 
-    @PostMapping("/manager/optionDetail")
+    @PostMapping("/manager/optionDetailRejectAll")
     public String managerOptionDetail(
             @ModelAttribute List<OptionDetailSelectDTORequest> request, HttpSession session, Model model) {
 
