@@ -16,4 +16,6 @@ public class CreatePurchaseRequestDetailDTORequest {
     private Integer quantity;
 
     private String note;
+
+    private String assetTypeName;
 }
