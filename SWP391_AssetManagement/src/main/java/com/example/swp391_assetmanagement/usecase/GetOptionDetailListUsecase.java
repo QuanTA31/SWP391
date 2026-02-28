@@ -112,7 +112,7 @@ public class GetOptionDetailListUsecase {
                             Model model) {
 
         model.addAllAttributes(
-                this.execute(requestDetailId, status, page, session)
+                this.execute(requestDetailId, status, page, session, false)
                         .toModel()
         );
     }
