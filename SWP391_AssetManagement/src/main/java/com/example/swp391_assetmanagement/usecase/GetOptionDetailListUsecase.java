@@ -25,18 +25,29 @@ public class GetOptionDetailListUsecase {
             Long requestDetailId,
             String status,
             Integer page,
-            HttpSession session
+            HttpSession session,
+            boolean isApprovalMode // Thêm tham số này để phân biệt màn hình
     ) {
         // Check role
         String role = (String) session.getAttribute("ROLE");
 
-        if (!Roles.MANAGER.getValue().equals(role)
-                && !Roles.PURCHASING.getValue().equals(role)) {
-
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "Bạn không có quyền truy cập chức năng này"
-            );
+        // 2. Logic kiểm tra quyền dựa trên chế độ truy cập
+        if (isApprovalMode) {
+            // Nếu vào màn duyệt, CHỈ Manager được phép
+            if (!Roles.MANAGER.getValue().equals(role)) {
+                throw new ResponseStatusException(
+                        HttpStatus.FORBIDDEN,
+                        "Chỉ quản lý mới có quyền vào màn hình phê duyệt."
+                );
+            }
+        } else {
+            // Nếu vào màn xem chung, Manager hoặc Purchasing đều được
+            if (!Roles.MANAGER.getValue().equals(role) && !Roles.PURCHASING.getValue().equals(role)) {
+                throw new ResponseStatusException(
+                        HttpStatus.FORBIDDEN,
+                        "Bạn không có quyền truy cập chức năng này"
+                );
+            }
         }
 
         // check request detail

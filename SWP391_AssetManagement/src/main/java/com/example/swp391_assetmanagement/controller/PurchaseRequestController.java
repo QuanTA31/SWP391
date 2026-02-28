@@ -4,10 +4,7 @@ import com.example.swp391_assetmanagement.dto.request.ApprovalPurchaseRequestDTO
 import com.example.swp391_assetmanagement.dto.request.CreatePurchaseRequestDTORequest;
 import com.example.swp391_assetmanagement.dto.request.OptionDetailSelectDTORequest;
 import com.example.swp391_assetmanagement.enums.AssetType;
-import com.example.swp391_assetmanagement.usecase.CreatePurchaseRequestUsecase;
-import com.example.swp391_assetmanagement.usecase.GetPurchaseRequestManagerUsecase;
-import com.example.swp391_assetmanagement.usecase.GetPurchaseRequestWarehouseUsecase;
-import com.example.swp391_assetmanagement.usecase.ManagerCreatePurchaseRequestUsecase;
+import com.example.swp391_assetmanagement.usecase.*;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -28,6 +25,8 @@ public class PurchaseRequestController {
     private final GetPurchaseRequestWarehouseUsecase getPurchaseRequestWarehouseUsecase;
     private final GetPurchaseRequestManagerUsecase getPurchaseRequestManagerUsecase;
     private final ManagerCreatePurchaseRequestUsecase managerCreatePurchaseRequestUsecase;
+    private final GetOptionDetailListUsecase getOptionDetailListUsecase;
+    private final ApproveOptionDetailUsecase approveOptionDetailUsecase;
 
     @GetMapping("/warehouse/view")
     public String viewPurchaseRequestForm(@RequestParam(required = false) Long assetRequestId, Model model, HttpSession session) {
@@ -76,6 +75,28 @@ public class PurchaseRequestController {
 
         managerCreatePurchaseRequestUsecase.execute(request, session);
         return "redirect:/viewRequest";
+    }
+
+    @GetMapping("/manager/approvalOptionDetail")
+    public String managerOptionDetail(
+            @RequestParam("requestDetailId") Long requestDetailId,
+            @RequestParam(value = "page", required = false) Integer page,
+            HttpSession session,
+            Model model) {
+
+        var response = getOptionDetailListUsecase.execute(
+                requestDetailId,
+                "all",
+                page,
+                session,
+                true // approval mode
+        );
+
+        model.addAllAttributes(response.toModel());
+
+        model.addAttribute("asset_external_request_detail_id", requestDetailId);
+
+        return "optiondetail/managerOptionDetail";
     }
 
     @PostMapping("/manager/optionDetail")
