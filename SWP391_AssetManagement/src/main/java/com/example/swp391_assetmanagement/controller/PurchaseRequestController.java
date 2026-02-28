@@ -40,7 +40,7 @@ public class PurchaseRequestController {
                                 "label", a.getName()
                         ))
                         .toList());
-
+        model.addAttribute("role",session.getAttribute("ROLE"));
         return "createPurchaseRequest";
     }
 
@@ -64,7 +64,9 @@ public class PurchaseRequestController {
                                 "value", a.getValue(),
                                 "label", a.getName()
                         ))
-                        .toList());        model.addAttribute("approvalRequest",new ApprovalPurchaseRequestDTORequest());
+                        .toList());
+        model.addAttribute("approvalRequest",new ApprovalPurchaseRequestDTORequest());
+        model.addAttribute("role", session.getAttribute("ROLE"));
         return "createPurchaseRequest";
     }
 
