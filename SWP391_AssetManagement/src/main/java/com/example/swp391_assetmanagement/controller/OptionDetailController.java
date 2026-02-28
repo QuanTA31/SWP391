@@ -33,34 +33,13 @@ public class OptionDetailController {
     }
 
     // ================= LIST =================
-//    @GetMapping("/list")
-//    public String list(@RequestParam("asset_external_request_detail_id") Long requestDetailId, @RequestParam(value = "status", required = false) String status, @RequestParam(value = "page", required = false) Integer page, HttpSession session, Model model) {
-//        model.addAllAttributes(getOptionDetailListUseCase.execute(requestDetailId, status, page, session).toModel());
-//        model.addAttribute("createForm", model.containsAttribute("createForm") ? model.getAttribute("createForm") : new OptionDetailFormDTORequest());
-//        model.addAttribute("editForm", model.containsAttribute("editForm") ? model.getAttribute("editForm") : new OptionDetailFormDTORequest());
-//        return "optiondetail/list";
-//    }
-
     @GetMapping("/list")
-    public String list(
-            @RequestParam("asset_external_request_detail_id") Long requestDetailId,
-            @RequestParam(value = "status", required = false) String status,
-            @RequestParam(value = "page", required = false) Integer page,
-            HttpSession session,
-            Model model) {
-
-        // TRUYỀN THÊM 'false' VÀO ĐÂY:
-        // Vì đây là màn hình list chung cho cả Purchasing và Manager xem, không phải màn hình Approve chuyên biệt.
-        var response = getOptionDetailListUseCase.execute(requestDetailId, status, page, session, false);
-
-        model.addAllAttributes(response.toModel());
-
+    public String list(@RequestParam("asset_external_request_detail_id") Long requestDetailId, @RequestParam(value = "status", required = false) String status, @RequestParam(value = "page", required = false) Integer page, HttpSession session, Model model) {
+        model.addAllAttributes(getOptionDetailListUseCase.execute(requestDetailId, status, page, session).toModel());
         model.addAttribute("createForm", model.containsAttribute("createForm") ? model.getAttribute("createForm") : new OptionDetailFormDTORequest());
         model.addAttribute("editForm", model.containsAttribute("editForm") ? model.getAttribute("editForm") : new OptionDetailFormDTORequest());
-
         return "optiondetail/list";
     }
-
 
     // ================= EDIT =================
     @PostMapping("/edit/{id}")

@@ -26,36 +26,17 @@ public class GetOptionDetailListUsecase {
             Long requestDetailId,
             String status,
             Integer page,
-            HttpSession session,
-            boolean isApprovalMode // Thêm tham số này để phân biệt màn hình
+            HttpSession session
     ) {
         // Check role
         String role = (String) session.getAttribute("ROLE");
 
-        // 2. Logic kiểm tra quyền dựa trên chế độ truy cập
-        if (isApprovalMode) {
-            // Nếu vào màn duyệt, CHỈ Manager được phép
-            if (!Roles.MANAGER.getValue().equals(role)) {
-                throw new ResponseStatusException(
-                        HttpStatus.FORBIDDEN,
-                        "Chỉ quản lý mới có quyền vào màn hình phê duyệt."
-                );
-            }
-        } else {
-            // Nếu vào màn xem chung, Manager hoặc Purchasing đều được
-            if (!Roles.MANAGER.getValue().equals(role) && !Roles.PURCHASING.getValue().equals(role)) {
-                throw new ResponseStatusException(
-                        HttpStatus.FORBIDDEN,
-                        "Bạn không có quyền truy cập chức năng này"
-                );
-            }
-        }
+        if (!Roles.MANAGER.getValue().equals(role)
+                && !Roles.PURCHASING.getValue().equals(role)) {
 
-        // check request detail
-        if (!optionDetailService.existsRequestDetail(requestDetailId)) {
             throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "Request detail not found: " + requestDetailId
+                    HttpStatus.FORBIDDEN,
+                    "Bạn không có quyền truy cập chức năng này"
             );
         }
 
@@ -112,7 +93,7 @@ public class GetOptionDetailListUsecase {
                             Model model) {
 
         model.addAllAttributes(
-                this.execute(requestDetailId, status, page, session, false)
+                this.execute(requestDetailId, status, page, session)
                         .toModel()
         );
     }

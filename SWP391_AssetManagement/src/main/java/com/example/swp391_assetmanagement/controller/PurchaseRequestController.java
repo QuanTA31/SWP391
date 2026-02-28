@@ -77,29 +77,7 @@ public class PurchaseRequestController {
         return "redirect:/viewRequest";
     }
 
-    @GetMapping("/manager/approvalOptionDetail")
-    public String managerOptionDetail(
-            @RequestParam("requestDetailId") Long requestDetailId,
-            @RequestParam(value = "page", required = false) Integer page,
-            HttpSession session,
-            Model model) {
-
-        var response = getOptionDetailListUsecase.execute(
-                requestDetailId,
-                "all",
-                page,
-                session,
-                true // approval mode
-        );
-
-        model.addAllAttributes(response.toModel());
-
-        model.addAttribute("asset_external_request_detail_id", requestDetailId);
-
-        return "optiondetail/managerOptionDetail";
-    }
-
-    @PostMapping("/manager/optionDetail")
+    @PostMapping("/manager/optionDetailRejectAll")
     public String managerOptionDetail(
             @ModelAttribute List<OptionDetailSelectDTORequest> request, HttpSession session, Model model) {
 
