@@ -74,7 +74,7 @@ public class ApproveOptionDetailUsecase {
 
             //Check status ở đây
             if (Objects.isNull(assetRequest)
-                    || !Objects.equals(RequestStatus.RESEARCH_DONE.getValue(), assetRequest.requestStatusId)) {
+                    || !Objects.equals(RequestStatus.RESEARCH.getValue(), assetRequest.requestStatusId)) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
             }
 

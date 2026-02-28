@@ -1,7 +1,7 @@
 insert into option_detail (
     asset_external_request_detail_id,
     unit_price,
-    `describe`,
+    description,
     merchant,
     warranty_period,
     is_selected,
