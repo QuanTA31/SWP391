@@ -34,6 +34,7 @@ public class ManagerRejectAllOptionDetailUsecase {
             List<OptionDetail> optionDetails = optionDetail.stream()
                     .map(dto -> {
                         OptionDetail entity = new OptionDetail();
+                        entity.setId(dto.getId());
                         entity.setIsSelected(Boolean.FALSE);
                         return entity;
                     }).toList();
