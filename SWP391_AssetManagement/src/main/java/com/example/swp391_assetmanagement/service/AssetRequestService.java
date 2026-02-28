@@ -15,4 +15,8 @@ public interface AssetRequestService {
     void updatePurchaseRequestStatus(AssetRequest assetRequest);
 
     Integer countById(Long assetRequestId, String status);
+
+    AssetRequest findByUpdate(Long assetRequestId);
+
+    int updateIsSelected(AssetRequest assetRequest);
 }

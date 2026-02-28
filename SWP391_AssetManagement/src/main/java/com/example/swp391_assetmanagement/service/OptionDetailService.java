@@ -29,4 +29,8 @@ public interface OptionDetailService {
 
     boolean existsRequestDetail(Long requestDetailId);
 
+    List<OptionDetail> getListByRequestDetailId(Long requestDetailId);
+
+    int[] updateRejectAll(List<OptionDetail> optionDetails);
+
 }
