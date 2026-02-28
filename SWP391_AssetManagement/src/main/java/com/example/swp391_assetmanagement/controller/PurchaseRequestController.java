@@ -27,6 +27,7 @@ public class PurchaseRequestController {
     private final GetPurchaseRequestManagerUsecase getPurchaseRequestManagerUsecase;
     private final ManagerCreatePurchaseRequestUsecase managerCreatePurchaseRequestUsecase;
     private final ManagerRejectAllOptionDetailUsecase managerRejectAllOptionDetailUsecase;
+    private final UpdateAssetRequestUsecase updateAssetRequestUsecase;
 
     @GetMapping("/warehouse/view")
     public String viewPurchaseRequestForm(@RequestParam(required = false) Long assetRequestId, Model model, HttpSession session) {
@@ -146,6 +147,13 @@ public class PurchaseRequestController {
     public String delete(@PathVariable Long id, @RequestParam("asset_external_request_detail_id") Long requestDetailId,
                          HttpSession session) {
         deleteUseCase.execute(id, session);
+        return "redirect:/purchase-requests/option-detail/list?asset_external_request_detail_id=" + requestDetailId;
+    }
+
+    @PostMapping("/purchasing/research")
+    public String delete(@RequestParam  Long requestDetailId,
+                         HttpSession session) {
+        updateAssetRequestUsecase.execute(requestDetailId, session);
         return "redirect:/purchase-requests/option-detail/list?asset_external_request_detail_id=" + requestDetailId;
     }
 

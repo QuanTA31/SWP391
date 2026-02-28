@@ -43,4 +43,9 @@ public class AssetExternalRequestDetailServiceImpl implements AssetExternalReque
     public AssetExternalRequestDetail findToUpdate(Long id) {
         return assetExternalRequestDetailDAO.findById(id);
     }
+
+    @Override
+    public Long findAssetRequest(Long assetRequestDetailId) {
+        return assetExternalRequestDetailDAO.findAssetRequestId(assetRequestDetailId);
+    }
 }

@@ -28,4 +28,7 @@ public interface AssetExternalRequestDetailDAO {
 
     @Select
     AssetExternalRequestDetail findById(Long id);
+
+    @Select
+    Long findAssetRequestId(Long assetRequestDetailId);
 }
