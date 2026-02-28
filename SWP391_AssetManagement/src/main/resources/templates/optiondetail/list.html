@@ -209,10 +209,10 @@
                 </ul>
             </div>
             <div style="text-align: right; margin-top: 20px;">
-                <form th:action="@{/option-detail/reject}" method="post">
+                <form th:action="@{/purchase-requests/manager/optionDetailRejectAll}" method="post">
                     <input type="hidden"
-                           name="assetExternalRequestDetailId"
-                           th:value="${assetExternalRequestDetailId}" />
+                           name="assetRequestId"
+                           th:value="${asset_external_request_detail_id}" />
                     <button type="submit"
                             class="btn btn-primary">
                         Reject All
