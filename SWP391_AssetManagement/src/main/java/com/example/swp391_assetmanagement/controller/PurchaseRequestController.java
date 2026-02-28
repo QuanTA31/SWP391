@@ -2,6 +2,7 @@ package com.example.swp391_assetmanagement.controller;
 
 import com.example.swp391_assetmanagement.dto.request.ApprovalPurchaseRequestDTORequest;
 import com.example.swp391_assetmanagement.dto.request.CreatePurchaseRequestDTORequest;
+import com.example.swp391_assetmanagement.dto.request.OptionDetailFormDTORequest;
 import com.example.swp391_assetmanagement.dto.request.OptionDetailSelectDTORequest;
 import com.example.swp391_assetmanagement.enums.AssetType;
 import com.example.swp391_assetmanagement.usecase.*;
@@ -89,5 +90,80 @@ public class PurchaseRequestController {
         update AssetRequest. status = APPROVED
          */
         return "redirect:/viewRequest";
+    }
+
+    private final CreateOptionDetailUsecase createUseCase;
+    private final EditOptionDetailUsecase editUseCase;
+    private final ApproveOptionDetailUsecase approveUseCase;
+    private final DeleteOptionDetailUsecase deleteUseCase;
+    private final GetOptionDetailListUsecase getOptionDetailListUseCase;
+
+    // ================= CREATE =================
+    @PostMapping("/option-detail/create")
+    public String create(@RequestParam("asset_external_request_detail_id") Long requestDetailId,
+                         @ModelAttribute("createForm") OptionDetailFormDTORequest form,
+                         HttpSession session,
+                         Model model) {
+        try {
+            createUseCase.execute(requestDetailId, form, session);
+            model.addAttribute("createForm", new OptionDetailFormDTORequest());
+        } catch (IllegalArgumentException ex) {
+            model.addAttribute("errorMessage", ex.getMessage());
+            model.addAttribute("createForm", form);
+        }
+        getOptionDetailListUseCase.loadToModel(requestDetailId, null, null, session, model);
+        model.addAttribute("editForm", new OptionDetailFormDTORequest());
+        return "optiondetail/list";
+    }
+
+    // ================= LIST =================
+    @GetMapping("/option-detail/list")
+    public String list(@RequestParam("asset_external_request_detail_id") Long requestDetailId,
+                       @RequestParam(value = "status", required = false) String status,
+                       @RequestParam(value = "page", required = false) Integer page,
+                       HttpSession session, Model model) {
+        model.addAllAttributes(getOptionDetailListUseCase.execute(requestDetailId, status, page, session).toModel());
+        model.addAttribute("createForm", model.containsAttribute("createForm") ? model.getAttribute("createForm") : new OptionDetailFormDTORequest());
+        model.addAttribute("editForm", model.containsAttribute("editForm") ? model.getAttribute("editForm") : new OptionDetailFormDTORequest());
+        return "optiondetail/list";
+    }
+
+    // ================= EDIT =================
+    @PostMapping("/option-detail/edit/{id}")
+    public String edit(@PathVariable Long id,
+                       @RequestParam("asset_external_request_detail_id") Long requestDetailId,
+                       @ModelAttribute("editForm") OptionDetailFormDTORequest form,
+                       HttpSession session,
+                       Model model) {
+        try {
+            editUseCase.execute(id,requestDetailId, form, session);
+            model.addAttribute("editForm", new OptionDetailFormDTORequest());
+        } catch (IllegalArgumentException ex) {
+            model.addAttribute("editErrorMessage", ex.getMessage());
+            model.addAttribute("editForm", form);
+            model.addAttribute("openEditModal", true);
+        }
+        getOptionDetailListUseCase.loadToModel(requestDetailId, null, null, session, model);
+        model.addAttribute("createForm", new OptionDetailFormDTORequest());
+        return "optiondetail/list";
+    }
+
+    // ================= DELETE =================
+    @PostMapping("/option-detail/delete/{id}")
+    public String delete(@PathVariable Long id, @RequestParam("asset_external_request_detail_id") Long requestDetailId,
+                         HttpSession session) {
+        deleteUseCase.execute(id, session);
+        return "redirect:/purchase-requests/option-detail/list?asset_external_request_detail_id=" + requestDetailId;
+    }
+
+    // ================= APPROVAL =================
+    @PostMapping("/option-detail/approval")
+    public String approve(@RequestParam("id") Long optionId,
+                          @RequestParam("asset_external_request_detail_id") Long requestDetailId,
+                          HttpSession session
+                          //@RequestParam(value = "selected", required = false) String selected
+    ) {
+        approveUseCase.execute(optionId, requestDetailId,true, session);
+        return "redirect:/purchase-requests/option-detail/list?asset_external_request_detail_id=" + requestDetailId;
     }
 }
