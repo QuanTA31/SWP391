@@ -21,11 +21,13 @@ public class UpdateAssetRequestUsecase {
 
 
     public void execute(Long requestDetailId, HttpSession session) {
-        Long assetRequestId = assetExternalRequestDetailService.findAssetRequest(requestDetailId);
-        if(Objects.isNull(assetRequestId)){
+
+        Integer count = assetExternalRequestDetailService.countOptionDetail(requestDetailId);
+        if(count > 0){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request status is invalid !");
         }
-        AssetRequest assetRequest = assetRequestService.findByUpdate(assetRequestId);
+
+        AssetRequest assetRequest = assetRequestService.findByUpdate(requestDetailId);
         if (Objects.isNull(assetRequest)){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request status is invalid !");
         }

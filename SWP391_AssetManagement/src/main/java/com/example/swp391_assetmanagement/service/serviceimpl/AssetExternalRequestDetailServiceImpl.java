@@ -48,4 +48,9 @@ public class AssetExternalRequestDetailServiceImpl implements AssetExternalReque
     public Long findAssetRequest(Long assetRequestDetailId) {
         return assetExternalRequestDetailDAO.findAssetRequestId(assetRequestDetailId);
     }
+
+    @Override
+    public Integer countOptionDetail(Long assetRequestId) {
+        return assetExternalRequestDetailDAO.countOptionDetail(assetRequestId);
+    }
 }

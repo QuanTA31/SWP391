@@ -31,4 +31,7 @@ public interface AssetExternalRequestDetailDAO {
 
     @Select
     Long findAssetRequestId(Long assetRequestDetailId);
+
+    @Select
+    Integer countOptionDetail(Long assetRequestId);
 }

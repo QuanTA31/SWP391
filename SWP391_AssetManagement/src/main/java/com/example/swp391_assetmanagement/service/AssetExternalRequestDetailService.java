@@ -19,4 +19,6 @@ public interface AssetExternalRequestDetailService {
     AssetExternalRequestDetail findToUpdate(Long id);
 
     Long findAssetRequest(Long assetRequestDetailId);
+
+    Integer countOptionDetail(Long assetRequestId);
 }
