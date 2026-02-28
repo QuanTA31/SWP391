@@ -80,6 +80,9 @@
                         <!-- Cột xóa: chỉ WAREHOUSE + DRAFT/NEW -->
                         <th th:if="${role == '03' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null)}"
                             style="width:50px"></th>
+                        <!-- Cột actions: chỉ PURCHASING + APPROVED -->
+                        <th th:if="${role == '04' and purchaseRequest.requestStatus == '03'}"
+                            style="width:200px">Actions</th>
                     </tr>
                     </thead>
                     <tbody id="detailBody">
@@ -140,6 +143,18 @@
                             <button type="button" class="btn btn-ghost"
                                     onclick="removeRow(this)">✕</button>
                         </td>
+                        <td th:if="${role == '04' and purchaseRequest.requestStatus == '03'}">
+                            <!-- Dùng form attribute để link button với form bên ngoài purchaseForm -->
+                            <button type="submit"
+                                    th:form="'researchForm-' + ${stat.index}"
+                                    class="btn btn-primary btn-sm me-1">
+                                📤 Submit
+                            </button>
+                            <a th:href="@{/purchase-requests/option-detail/list(asset_external_request_detail_id=${detail.assetExternalRequestDetailId})}"
+                               class="btn btn-outline btn-sm">
+                                🔍 Options
+                            </a>
+                        </td>
                     </tr>
 
                     </tbody>
@@ -161,16 +176,6 @@
             </div>
 
             <!-- Footer PURCHASING: View Option Details (chỉ khi APPROVED) -->
-            <div class="form-footer"
-                 th:if="${role == '04' and purchaseRequest.requestStatus == '03'}">
-                <th:block th:each="detail : *{createPurchaseRequestDetailDTORequestList}">
-                    <button type="button" class="btn btn-sm btn-secondary" onclick="history.back()">Cancel</button>
-                    <a th:href="@{/purchase-requests/option-detail/list(asset_external_request_detail_id=${detail.assetExternalRequestDetailId})}"
-                       class="btn btn-primary me-2">
-                        🔍 Options - <span th:text="${detail.assetTypeId}"></span>
-                    </a>
-                </th:block>
-            </div>
 
         </div>
 
@@ -188,6 +193,16 @@
         </div>
 
     </form>
+    <!-- Forms riêng cho PURCHASING research - mỗi detail 1 form -->
+    <th:block th:if="${role == '04' and purchaseRequest.requestStatus == '03'}">
+        <form th:each="detail, stat : ${purchaseRequest.createPurchaseRequestDetailDTORequestList}"
+              th:id="'researchForm-' + ${stat.index}"
+              th:action="@{/purchase-requests/purchasing/research}"
+              method="post">
+            <input type="hidden" name="requestDetailId"
+                   th:value="${detail.assetExternalRequestDetailId}"/>
+        </form>
+    </th:block>
 
     <!-- Form riêng cho Approval POST -->
     <form th:if="${role == '02' and purchaseRequest.requestStatus == '02' and approvalRequest != null}"
@@ -215,6 +230,9 @@
             });
         }
         return html;
+    }
+    function submitResearch() {
+        document.getElementById('researchForm').submit();
     }
 
     function addRow() {
