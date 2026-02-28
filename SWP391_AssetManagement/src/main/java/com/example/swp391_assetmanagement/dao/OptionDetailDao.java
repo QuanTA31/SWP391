@@ -49,4 +49,7 @@ public interface OptionDetailDao {
 
     @BatchUpdate(sqlFile = true)
     int[] batchUpdate(List<OptionDetail> details);
+
+    @Select
+    Integer countByIdAndStatus(Long requestDetailId, Boolean status);
 }

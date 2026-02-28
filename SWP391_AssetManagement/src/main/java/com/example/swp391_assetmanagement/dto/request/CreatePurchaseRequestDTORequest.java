@@ -17,4 +17,6 @@ public class CreatePurchaseRequestDTORequest {
 
     private Long assetRequestId;
 
+    private String requestStatus;
+
 }

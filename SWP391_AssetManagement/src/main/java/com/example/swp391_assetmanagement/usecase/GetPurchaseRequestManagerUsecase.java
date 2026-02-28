@@ -4,6 +4,7 @@ import com.example.swp391_assetmanagement.dto.request.CreatePurchaseRequestDTORe
 import com.example.swp391_assetmanagement.dto.request.CreatePurchaseRequestDetailDTORequest;
 import com.example.swp391_assetmanagement.entity.AssetExternalRequestDetail;
 import com.example.swp391_assetmanagement.service.AssetExternalRequestDetailService;
+import com.example.swp391_assetmanagement.service.AssetRequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +14,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GetPurchaseRequestManagerUsecase {
     private final AssetExternalRequestDetailService assetExternalRequestDetailService;
+    private final AssetRequestService assetRequestService;
+
     public CreatePurchaseRequestDTORequest execute(Long assetRequestId) {
+
+        CreatePurchaseRequestDTORequest createPurchaseRequestDTORequest = new CreatePurchaseRequestDTORequest();
+
+        assetRequestService.findAssetRequestByIdForUpdate(assetRequestId).ifPresent(assetRequest -> {
+            createPurchaseRequestDTORequest.setRequestStatus(assetRequest.getRequestStatusId());
+        });
         List<AssetExternalRequestDetail> details = assetExternalRequestDetailService.getByAssetRequestId(assetRequestId);
 
         List<CreatePurchaseRequestDetailDTORequest> detailsDTOs = details.stream()
@@ -24,7 +33,7 @@ public class GetPurchaseRequestManagerUsecase {
                         .note(detail.getNote())
                         .build())
                 .toList();
-        CreatePurchaseRequestDTORequest createPurchaseRequestDTORequest = new CreatePurchaseRequestDTORequest();
+
         createPurchaseRequestDTORequest.setAssetRequestId(assetRequestId);
         createPurchaseRequestDTORequest.setCreatePurchaseRequestDetailDTORequestList(detailsDTOs);
         createPurchaseRequestDTORequest.setSubmitted(true);
