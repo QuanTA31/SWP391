@@ -1,10 +1,10 @@
 package com.example.swp391_assetmanagement.usecase;
 
-import com.example.swp391_assetmanagement.entity.OptionDetail;
 import com.example.swp391_assetmanagement.enums.Roles;
 import com.example.swp391_assetmanagement.service.OptionDetailService;
 import com.example.swp391_assetmanagement.dto.request.OptionDetailListDTORequest;
 import com.example.swp391_assetmanagement.dto.response.OptionDetailListDTOResponse;
+import com.example.swp391_assetmanagement.service.serviceresponse.OptionDetailServiceResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -59,7 +59,7 @@ public class GetOptionDetailListUsecase {
                 .pageSize(PAGE_SIZE)
                 .build();
 
-        List<OptionDetail> plans = optionDetailService.getList(request);
+        List<OptionDetailServiceResponse> plans = optionDetailService.getList(request);
         int totalItems = optionDetailService.count(request);
 
         int totalPages = Math.max(1,

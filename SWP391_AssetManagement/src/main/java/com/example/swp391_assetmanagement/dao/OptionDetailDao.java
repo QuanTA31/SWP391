@@ -1,6 +1,7 @@
 package com.example.swp391_assetmanagement.dao;
 
 import com.example.swp391_assetmanagement.entity.OptionDetail;
+import com.example.swp391_assetmanagement.service.serviceresponse.OptionDetailServiceResponse;
 import org.seasar.doma.*;
 import org.seasar.doma.boot.ConfigAutowireable;
 
@@ -22,7 +23,7 @@ public interface OptionDetailDao {
     int update(OptionDetail optionDetail);
 
     @Select
-    List<OptionDetail> getByRequestDetailId(
+    List<OptionDetailServiceResponse> getByRequestDetailId(
             Long requestDetailId,
             Boolean isSelected,
             int offset,

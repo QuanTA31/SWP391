@@ -1,20 +1,17 @@
-package com.example.swp391_assetmanagement.entity;
+package com.example.swp391_assetmanagement.service.serviceresponse;
 
-import lombok.Setter;
+import lombok.Getter;
 import org.seasar.doma.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import org.seasar.doma.Column;
 
+@Getter
 @Entity
-@Table(name = "option_detail")
-@Setter
-public class OptionDetail {
+public class OptionDetailServiceResponse {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     public Long id;
 
     @Column(name = "asset_external_request_detail_id")
@@ -43,4 +40,8 @@ public class OptionDetail {
 
     @Column(name = "created_at")
     public LocalDateTime createdAt;
+
+    @Column(name = "approver_name")
+    public LocalDateTime approverName;
+
 }

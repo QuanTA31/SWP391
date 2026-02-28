@@ -4,6 +4,7 @@ import com.example.swp391_assetmanagement.dao.OptionDetailDao;
 import com.example.swp391_assetmanagement.entity.OptionDetail;
 import com.example.swp391_assetmanagement.service.OptionDetailService;
 import com.example.swp391_assetmanagement.dto.request.OptionDetailListDTORequest;
+import com.example.swp391_assetmanagement.service.serviceresponse.OptionDetailServiceResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,7 +61,7 @@ public class OptionDetailServiceImpl implements OptionDetailService {
     }
 
     @Override
-    public List<OptionDetail> getList(OptionDetailListDTORequest request) {
+    public List<OptionDetailServiceResponse> getList(OptionDetailListDTORequest request) {
         return optionDetailDao.getByRequestDetailId(
                 request.getRequestDetailId(),
                 request.getIsSelected(),
