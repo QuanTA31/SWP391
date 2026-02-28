@@ -43,7 +43,7 @@ public class EditOptionDetailUsecase {
         option.setUnitPrice(form.getUnitPrice());
         option.setWarrantyPeriod(form.getWarrantyPeriod());
 
-        optionDetailService.update(option);
+        optionDetailService.edit(option);
     }
 
     private void validate(OptionDetailFormDTORequest form) {
