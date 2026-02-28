@@ -70,7 +70,7 @@ public class ApproveOptionDetailUsecase {
 
             //Lấy asset_request
             AssetRequest assetRequest =
-                    assetRequestService.findToUpdate(requestId);
+                    assetRequestService.findByUpdate(requestId);
 
             //Check status ở đây
             if (Objects.isNull(assetRequest)

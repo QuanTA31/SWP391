@@ -35,7 +35,4 @@ public interface AssetRequestDAO {
 
     @Update(sqlFile = true)
     int updateIsSelected(AssetRequest assetRequest);
-
-    @Select
-    AssetRequest findById(Long id);
 }
