@@ -43,4 +43,7 @@ public interface OptionDetailDao {
 
     @Select
     int existsRequestDetail(Long requestDetailId);
+
+    @Select
+    Integer countByIdAndStatus(Long requestDetailId, Boolean status);
 }

@@ -30,4 +30,7 @@ public interface AssetRequestDAO {
 
     @Select
     Integer countById(Long assetRequestId, String status);
+
+    @Select
+    AssetRequest findById(Long id);
 }

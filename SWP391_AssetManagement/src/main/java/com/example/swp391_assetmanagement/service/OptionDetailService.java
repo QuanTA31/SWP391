@@ -29,4 +29,5 @@ public interface OptionDetailService {
 
     boolean existsRequestDetail(Long requestDetailId);
 
+    Integer countByIdAndStatus(Long id, Boolean status);
 }

@@ -82,5 +82,10 @@ public class OptionDetailServiceImpl implements OptionDetailService {
         return optionDetailDao.existsRequestDetail(requestDetailId) > 0;
     }
 
+    @Override
+    public Integer countByIdAndStatus(Long id, Boolean status) {
+        return optionDetailDao.countByIdAndStatus(id, status);
+    }
+
 }
 

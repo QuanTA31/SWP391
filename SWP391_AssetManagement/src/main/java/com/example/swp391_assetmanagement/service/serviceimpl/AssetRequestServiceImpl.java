@@ -39,4 +39,9 @@ public class AssetRequestServiceImpl implements AssetRequestService {
     public Integer countById(Long assetRequestId, String status) {
         return assetRequestDAO.countById(assetRequestId, status);
     }
+
+    @Override
+    public AssetRequest findToUpdate(Long id) {
+        return assetRequestDAO.findById(id);
+    }
 }
