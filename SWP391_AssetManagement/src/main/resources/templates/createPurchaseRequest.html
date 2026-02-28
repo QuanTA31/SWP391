@@ -99,7 +99,7 @@
                         <td>
                             <span th:if="${!(role == '03' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null))}"
                                   class="readonly-cell"
-                                  th:text="${detail.assetTypeId}">—</span>
+                                  th:text="${detail.assetTypeName}">—</span>
                             <select th:if="${role == '03' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null)}"
                                     class="asset-type-select"
                                     th:name="'createPurchaseRequestDetailDTORequestList[' + ${stat.index} + '].assetTypeId'">
@@ -155,6 +155,7 @@
             <!-- Footer WAREHOUSE: Save Draft + Submit -->
             <div class="form-footer"
                  th:if="${role == '03' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null)}">
+                <button type="button" class="btn btn-sm btn-secondary" onclick="history.back()">Cancel</button>
                 <button type="button" class="btn btn-outline" onclick="saveDraft()">💾 Save Draft</button>
                 <button type="button" class="btn btn-primary" onclick="submitForm()">📤 Submit</button>
             </div>
@@ -163,6 +164,7 @@
             <div class="form-footer"
                  th:if="${role == '04' and purchaseRequest.requestStatus == '03'}">
                 <th:block th:each="detail : *{createPurchaseRequestDetailDTORequestList}">
+                    <button type="button" class="btn btn-sm btn-secondary" onclick="history.back()">Cancel</button>
                     <a th:href="@{/purchase-requests/option-detail/list(asset_external_request_detail_id=${detail.assetExternalRequestDetailId})}"
                        class="btn btn-primary me-2">
                         🔍 Options - <span th:text="${detail.assetTypeId}"></span>
@@ -178,6 +180,7 @@
             <div class="card-header"><div class="icon">✅</div> Request Approval</div>
             <div class="card-body">
                 <div class="approval-section">
+                    <button type="button" class="btn btn-sm btn-secondary" onclick="history.back()">Cancel</button>
                     <button type="button" class="btn btn-success" onclick="approveRequest()">✅ Approve</button>
                     <button type="button" class="btn btn-danger"  onclick="rejectRequest()">❌ Reject</button>
                 </div>
