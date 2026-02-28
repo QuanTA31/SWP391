@@ -36,4 +36,5 @@ public interface OptionDetailService {
 
     int[] updateRejectAll(List<OptionDetail> optionDetails);
 
+    void edit(OptionDetail plan);
 }

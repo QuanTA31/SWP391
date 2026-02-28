@@ -5,7 +5,6 @@ import com.example.swp391_assetmanagement.service.serviceresponse.OptionDetailSe
 import org.seasar.doma.*;
 import org.seasar.doma.boot.ConfigAutowireable;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,5 +53,6 @@ public interface OptionDetailDao {
     @Select
     Integer countByIdAndStatus(Long requestDetailId, Boolean status);
 
-
+    @Update
+    int edit(OptionDetail entity);
 }

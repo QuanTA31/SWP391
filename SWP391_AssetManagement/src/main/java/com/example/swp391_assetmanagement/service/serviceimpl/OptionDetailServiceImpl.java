@@ -98,5 +98,10 @@ public class OptionDetailServiceImpl implements OptionDetailService {
         return optionDetailDao.batchUpdate(optionDetails);
     }
 
+    @Override
+    public void edit(OptionDetail plan) {
+        optionDetailDao.edit(plan);
+    }
+
 }
 
