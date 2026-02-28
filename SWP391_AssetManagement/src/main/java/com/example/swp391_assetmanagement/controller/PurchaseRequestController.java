@@ -130,13 +130,12 @@ public class PurchaseRequestController {
 
     // ================= EDIT =================
     @PostMapping("/option-detail/edit/{id}")
-    public String edit(@PathVariable Long id,
-                       @RequestParam("asset_external_request_detail_id") Long requestDetailId,
+    public String edit(@RequestParam("asset_external_request_detail_id") Long requestDetailId,
                        @ModelAttribute("editForm") OptionDetailFormDTORequest form,
                        HttpSession session,
                        Model model) {
         try {
-            editUseCase.execute(id,requestDetailId, form, session);
+            editUseCase.execute(form, session);
             model.addAttribute("editForm", new OptionDetailFormDTORequest());
         } catch (IllegalArgumentException ex) {
             model.addAttribute("editErrorMessage", ex.getMessage());
