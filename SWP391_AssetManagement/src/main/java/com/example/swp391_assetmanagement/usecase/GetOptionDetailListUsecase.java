@@ -3,12 +3,13 @@ package com.example.swp391_assetmanagement.usecase;
 import com.example.swp391_assetmanagement.entity.OptionDetail;
 import com.example.swp391_assetmanagement.enums.Roles;
 import com.example.swp391_assetmanagement.service.OptionDetailService;
-import com.example.swp391_assetmanagement.dto.request.OptionDetailListRequest;
+import com.example.swp391_assetmanagement.dto.request.OptionDetailListDTORequest;
 import com.example.swp391_assetmanagement.dto.response.OptionDetailListDTOResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.ui.Model;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -62,7 +63,7 @@ public class GetOptionDetailListUsecase {
         int pageIndex = (page == null || page < 1) ? 1 : page;
         Boolean isSelected = parseSelectedStatus(selectedStatus);
 
-        OptionDetailListRequest request = OptionDetailListRequest.builder()
+        OptionDetailListDTORequest request = OptionDetailListDTORequest.builder()
                 .requestDetailId(requestDetailId)
                 .isSelected(isSelected)
                 .offset((pageIndex - 1) * PAGE_SIZE)
@@ -78,6 +79,9 @@ public class GetOptionDetailListUsecase {
         boolean hasAnySelected =
                 optionDetailService.countByRequestDetailId(requestDetailId, true) > 0;
 
+        boolean isManager = Roles.MANAGER.getValue().equals(role);
+        boolean isPurchasing = Roles.PURCHASING.getValue().equals(role);
+
         return OptionDetailListDTOResponse.builder()
                 .requestDetailId(requestDetailId)
                 .plans(plans)
@@ -88,7 +92,8 @@ public class GetOptionDetailListUsecase {
                 .totalPages(totalPages)
                 .hasPreviousPage(pageIndex > 1)
                 .hasNextPage(pageIndex < totalPages)
-                .canManage(true)
+                .canManage(isPurchasing)
+                .canApprove(isManager)
                 .hasAnySelected(hasAnySelected)
                 .build();
     }
@@ -98,5 +103,17 @@ public class GetOptionDetailListUsecase {
         if ("selected".equalsIgnoreCase(status)) return true;
         if ("unselected".equalsIgnoreCase(status)) return false;
         throw new IllegalArgumentException("Invalid status");
+    }
+
+    public void loadToModel(Long requestDetailId,
+                            String status,
+                            Integer page,
+                            HttpSession session,
+                            Model model) {
+
+        model.addAllAttributes(
+                this.execute(requestDetailId, status, page, session)
+                        .toModel()
+        );
     }
 }
