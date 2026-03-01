@@ -1,6 +1,7 @@
 package com.example.swp391_assetmanagement.service;
 
 import com.example.swp391_assetmanagement.entity.AssetExternalRequestDetail;
+import com.example.swp391_assetmanagement.service.serviceresponse.AssetExternalRequestDetailServiceResponse;
 
 import java.util.List;
 
@@ -24,4 +25,6 @@ public interface AssetExternalRequestDetailService {
 
     void updateExternalStatusId(Long id, String externalStatusId);
 
+
+    List<AssetExternalRequestDetailServiceResponse> findByAssetRequestId(Long assetRequestId);
 }

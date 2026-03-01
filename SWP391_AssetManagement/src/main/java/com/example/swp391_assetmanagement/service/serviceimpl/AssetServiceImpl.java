@@ -1,5 +1,6 @@
 package com.example.swp391_assetmanagement.service.serviceimpl;
 
+import com.example.swp391_assetmanagement.entity.Assets;
 import com.example.swp391_assetmanagement.service.AssetService;
 import com.example.swp391_assetmanagement.service.servicerequest.AssetViewAllServiceRequest;
 import com.example.swp391_assetmanagement.service.serviceresponse.AssetViewAllServiceResponse;
@@ -26,6 +27,21 @@ public class AssetServiceImpl implements AssetService {
         }
 
         return daoResponses;
+    }
+
+    @Override
+    public int[] insertAsset(List<Assets> assetsList) {
+        return assetsDAO.batchInsert(assetsList);
+    }
+
+    @Override
+    public List<Assets> findIdByStatus(String status) {
+        return assetsDAO.findByStatus(status);
+    }
+
+    @Override
+    public int[] updateAsset(List<Assets> assetsList) {
+        return assetsDAO.batchUpdate(assetsList);
     }
 
 }

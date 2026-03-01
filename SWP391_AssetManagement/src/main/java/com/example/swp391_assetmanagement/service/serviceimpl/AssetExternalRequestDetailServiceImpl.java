@@ -3,6 +3,7 @@ package com.example.swp391_assetmanagement.service.serviceimpl;
 import com.example.swp391_assetmanagement.dao.AssetExternalRequestDetailDAO;
 import com.example.swp391_assetmanagement.entity.AssetExternalRequestDetail;
 import com.example.swp391_assetmanagement.service.AssetExternalRequestDetailService;
+import com.example.swp391_assetmanagement.service.serviceresponse.AssetExternalRequestDetailServiceResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -57,5 +58,10 @@ public class AssetExternalRequestDetailServiceImpl implements AssetExternalReque
     @Override
     public void updateExternalStatusId(Long id, String externalStatusId) {
         assetExternalRequestDetailDAO.updateExternalStatusId(id, externalStatusId);
+    }
+
+    @Override
+    public List<AssetExternalRequestDetailServiceResponse>  findByAssetRequestId(Long assetRequestId) {
+        return assetExternalRequestDetailDAO.findByAssetRequestId(assetRequestId);
     }
 }

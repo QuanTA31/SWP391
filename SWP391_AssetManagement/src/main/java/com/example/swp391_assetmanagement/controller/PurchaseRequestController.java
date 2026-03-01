@@ -1,9 +1,6 @@
 package com.example.swp391_assetmanagement.controller;
 
-import com.example.swp391_assetmanagement.dto.request.ApprovalPurchaseRequestDTORequest;
-import com.example.swp391_assetmanagement.dto.request.CreatePurchaseRequestDTORequest;
-import com.example.swp391_assetmanagement.dto.request.OptionDetailFormDTORequest;
-import com.example.swp391_assetmanagement.dto.request.OptionDetailSelectDTORequest;
+import com.example.swp391_assetmanagement.dto.request.*;
 import com.example.swp391_assetmanagement.enums.AssetType;
 import com.example.swp391_assetmanagement.usecase.*;
 import jakarta.servlet.http.HttpSession;
@@ -28,6 +25,7 @@ public class PurchaseRequestController {
     private final ManagerCreatePurchaseRequestUsecase managerCreatePurchaseRequestUsecase;
     private final ManagerRejectAllOptionDetailUsecase managerRejectAllOptionDetailUsecase;
     private final UpdateAssetRequestUsecase updateAssetRequestUsecase;
+    private final WarehouseCreateAssetsUsecase warehouseCreateAssetsUsecase;
 
     @GetMapping("/warehouse/view")
     public String viewPurchaseRequestForm(@RequestParam(required = false) Long assetRequestId, Model model, HttpSession session) {
@@ -37,10 +35,7 @@ public class PurchaseRequestController {
         model.addAttribute("purchaseRequest",createPurchaseRequestDTORequest);
         model.addAttribute("assetTypes",
                 Arrays.stream(AssetType.values())
-                        .map(a -> Map.of(
-                                "value", a.getValue(),
-                                "label", a.getName()
-                        ))
+                        .map(a -> new AssetTypeDTORequest(a.getValue(), a.getName()))
                         .toList());
         model.addAttribute("role",session.getAttribute("ROLE"));
         return "createPurchaseRequest";
@@ -62,10 +57,7 @@ public class PurchaseRequestController {
         model.addAttribute("purchaseRequest",createPurchaseRequestDTORequest);
         model.addAttribute("assetTypes",
                 Arrays.stream(AssetType.values())
-                        .map(a -> Map.of(
-                                "value", a.getValue(),
-                                "label", a.getName()
-                        ))
+                        .map(a -> new AssetTypeDTORequest(a.getValue(), a.getName()))
                         .toList());
         model.addAttribute("approvalRequest",new ApprovalPurchaseRequestDTORequest());
         model.addAttribute("role", session.getAttribute("ROLE"));
@@ -81,9 +73,9 @@ public class PurchaseRequestController {
     }
 
     @PostMapping("/manager/optionDetailRejectAll")
-    public String managerOptionDetail(@RequestParam Long assetRequestId, HttpSession session, Model model) {
+    public String managerOptionDetail(@RequestParam Long assetRequestDetailId, HttpSession session, Model model) {
 
-        managerRejectAllOptionDetailUsecase.execute(assetRequestId, session);
+        managerRejectAllOptionDetailUsecase.execute(assetRequestDetailId, session);
         return "redirect:/viewRequest";
     }
 
@@ -154,7 +146,7 @@ public class PurchaseRequestController {
     public String delete(@RequestParam  Long assetRequestId,
                          HttpSession session) {
         updateAssetRequestUsecase.execute(assetRequestId, session);
-        return "redirect:/purchase-requests/option-detail/list?asset_external_request_detail_id=" + assetRequestId;
+        return "redirect:/viewRequest";
     }
 
     // ================= APPROVAL =================
@@ -166,5 +158,12 @@ public class PurchaseRequestController {
     ) {
         approveUseCase.execute(optionId, requestDetailId,true, session);
         return "redirect:/purchase-requests/option-detail/list?asset_external_request_detail_id=" + requestDetailId;
+    }
+
+    @PostMapping("/warehouse/createAssets")
+    public String createAssets(@RequestParam  Long assetRequestId,
+                         HttpSession session) {
+        warehouseCreateAssetsUsecase.execute(assetRequestId, session);
+        return "redirect:/purchase-requests/option-detail/list?asset_external_request_detail_id=" + assetRequestId;
     }
 }

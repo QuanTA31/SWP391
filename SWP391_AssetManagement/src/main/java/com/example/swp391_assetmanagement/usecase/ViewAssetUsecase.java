@@ -107,7 +107,7 @@ public class ViewAssetUsecase {
                         serviceResponses.stream().map(
                                         entity -> AssetDTOResponse.builder()
                                                 .assetCode(entity.assetCode)
-                                                .describe(entity.describe)
+                                                .describe(entity.description)
                                                 .originalPrice(entity.originalPrice)
                                                 .warrantyPeriod(entity.warrantyPeriod)
                                                 .receivedDate(entity.receivedDate)
