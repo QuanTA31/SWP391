@@ -28,6 +28,7 @@ public class PurchaseRequestController {
     private final ManagerCreatePurchaseRequestUsecase managerCreatePurchaseRequestUsecase;
     private final ManagerRejectAllOptionDetailUsecase managerRejectAllOptionDetailUsecase;
     private final UpdateAssetRequestUsecase updateAssetRequestUsecase;
+    private final MoveAssetRequestToInProgressUsecase moveAssetRequestToInProgressUsecase;
 
     @GetMapping("/warehouse/view")
     public String viewPurchaseRequestForm(@RequestParam(required = false) Long assetRequestId, Model model, HttpSession session) {
@@ -167,4 +168,13 @@ public class PurchaseRequestController {
         approveUseCase.execute(optionId, requestDetailId,true, session);
         return "redirect:/purchase-requests/option-detail/list?asset_external_request_detail_id=" + requestDetailId;
     }
+
+    // ==================== IN_PROGRESS ===============
+    @PostMapping("/purchasing/progress")
+    public String progress(@RequestParam  Long requestId,
+                         HttpSession session) {
+        moveAssetRequestToInProgressUsecase.execute(requestId, session);
+        return "redirect:/viewRequest";
+    }
+
 }

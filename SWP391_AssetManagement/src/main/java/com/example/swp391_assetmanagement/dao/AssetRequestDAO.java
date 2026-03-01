@@ -35,4 +35,7 @@ public interface AssetRequestDAO {
 
     @Update(sqlFile = true)
     int updateIsSelected(AssetRequest assetRequest);
+
+    @Update(sqlFile = true)
+    int moveInProgress(Long id, String researchDone, String inProgress);
 }
