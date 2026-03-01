@@ -18,4 +18,6 @@ public class CreatePurchaseRequestDetailDTORequest {
     private String note;
 
     private String assetTypeName;
+
+    private String externalStatusId;
 }

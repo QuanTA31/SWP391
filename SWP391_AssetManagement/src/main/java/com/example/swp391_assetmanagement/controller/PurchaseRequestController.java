@@ -146,7 +146,7 @@ public class PurchaseRequestController {
     public String delete(@RequestParam  Long assetRequestId,
                          HttpSession session) {
         updateAssetRequestUsecase.execute(assetRequestId, session);
-        return "redirect:/purchase-requests/option-detail/list?asset_external_request_detail_id=" + assetRequestId;
+        return "redirect:/viewRequest";
     }
 
     // ================= APPROVAL =================
