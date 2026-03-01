@@ -82,9 +82,9 @@ public class PurchaseRequestController {
     }
 
     @PostMapping("/manager/optionDetailRejectAll")
-    public String managerOptionDetail(@RequestParam Long assetRequestId, HttpSession session, Model model) {
+    public String managerOptionDetail(@RequestParam Long assetRequestDetailId, HttpSession session, Model model) {
 
-        managerRejectAllOptionDetailUsecase.execute(assetRequestId, session);
+        managerRejectAllOptionDetailUsecase.execute(assetRequestDetailId, session);
         return "redirect:/viewRequest";
     }
 

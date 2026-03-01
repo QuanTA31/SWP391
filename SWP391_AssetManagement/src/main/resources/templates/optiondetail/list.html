@@ -89,14 +89,18 @@
                             <td>
                                 <span th:text="${p.warrantyPeriod != null ? #temporals.format(p.warrantyPeriod, 'yyyy-MM-dd') : ''}"></span>
                             </td>
-                            <td>
+                            <td th:switch="${p.isSelected}">
                                 <span class="badge bg-success"
-                                      th:if="${p.isSelected}">
-                                             Approved
+                                      th:case="true">
+                                      Approved
                                 </span>
                                 <span class="badge bg-secondary"
-                                      th:unless="${p.isSelected}">
-                                                Reject
+                                      th:case="false">
+                                      Reject
+                                </span>
+                                <span class="badge bg-warning text-dark"
+                                      th:case="*">
+                                      Pending
                                 </span>
                             </td>
                             <td th:text="${p.approverName}"></td>
@@ -215,7 +219,7 @@
                       method="post">
 
                     <input type="hidden"
-                           name="assetRequestId"
+                           name="assetRequestDetailId"
                            th:value="${asset_external_request_detail_id}" />
 
                     <button type="submit"

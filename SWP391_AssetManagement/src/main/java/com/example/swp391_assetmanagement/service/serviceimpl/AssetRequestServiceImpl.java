@@ -52,6 +52,11 @@ public class AssetRequestServiceImpl implements AssetRequestService {
     }
 
     @Override
+    public Long findIdByAssetRequestDetailId(Long assetRequestDetailId) {
+        return assetRequestDAO.findIdByAssetRequestDetailId(assetRequestDetailId);
+    }
+
+    @Override
     public int moveInProgress(Long requestId) {
         return assetRequestDAO.moveInProgress(requestId, RequestStatus.RESEARCH_DONE.getValue(),
                 RequestStatus.IN_PROGRESS.getValue());

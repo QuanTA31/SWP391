@@ -8,6 +8,7 @@ import com.example.swp391_assetmanagement.service.serviceresponse.OptionDetailSe
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,12 +24,6 @@ public class OptionDetailServiceImpl implements OptionDetailService {
     @Override
     public Optional<OptionDetail> getById(Long id) {
         return optionDetailDao.findById(id);
-    }
-
-    @Override
-    @Transactional
-    public void unselectByRequestDetailId(Long requestDetailId) {
-        optionDetailDao.unselectByRequestDetailId(requestDetailId);
     }
 
     @Override
@@ -101,6 +96,16 @@ public class OptionDetailServiceImpl implements OptionDetailService {
     @Override
     public void edit(OptionDetail plan) {
         optionDetailDao.edit(plan);
+    }
+
+    @Override
+    @Transactional
+    public void resetAllByRequestDetailId(Long requestDetailId, Long userId) {
+        optionDetailDao.resetAllByRequestDetailId(
+                requestDetailId,
+                LocalDate.now(),
+                userId
+        );
     }
 
 }
