@@ -1,6 +1,7 @@
 package com.example.swp391_assetmanagement.dao;
 
 import com.example.swp391_assetmanagement.entity.AssetExternalRequestDetail;
+import com.example.swp391_assetmanagement.service.serviceresponse.AssetExternalRequestDetailServiceResponse;
 import org.seasar.doma.*;
 import org.seasar.doma.boot.ConfigAutowireable;
 
@@ -34,4 +35,7 @@ public interface AssetExternalRequestDetailDAO {
 
     @Select
     Integer countOptionDetail(Long assetRequestId);
+
+    @Select
+    List<AssetExternalRequestDetailServiceResponse> findByAssetRequestId(Long assetRequestId);
 }
