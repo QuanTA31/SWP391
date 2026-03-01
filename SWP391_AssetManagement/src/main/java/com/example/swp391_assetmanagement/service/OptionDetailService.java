@@ -30,6 +30,10 @@ public interface OptionDetailService {
 
     Integer countByIdAndStatus(Long id, Boolean status);
 
+    Integer countByIdAndIsSelected(Long id, Long assetRequestId);
+
+    Boolean checkValidRequest(Long assetRequestDetailId, Long assetRequestId);
+
     List<OptionDetail> getListByRequestDetailId(Long requestDetailId);
 
     int[] updateRejectAll(List<OptionDetail> optionDetails);

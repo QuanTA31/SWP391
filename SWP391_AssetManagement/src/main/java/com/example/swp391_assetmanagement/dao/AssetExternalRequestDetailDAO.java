@@ -36,6 +36,12 @@ public interface AssetExternalRequestDetailDAO {
     @Select
     Integer countOptionDetail(Long assetRequestId);
 
+    @Update(sqlFile = true)
+    int updateExternalStatusId(Long id, String externalStatusId);
+
+    @Select
+    Integer countNotApprovedByRequestId(Long requestId);
+
     @Select
     List<AssetExternalRequestDetailServiceResponse> findByAssetRequestId(Long assetRequestId);
 }

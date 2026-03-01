@@ -56,6 +56,11 @@ public class AssetExternalRequestDetailServiceImpl implements AssetExternalReque
     }
 
     @Override
+    public void updateExternalStatusId(Long id, String externalStatusId) {
+        assetExternalRequestDetailDAO.updateExternalStatusId(id, externalStatusId);
+    }
+
+    @Override
     public List<AssetExternalRequestDetailServiceResponse>  findByAssetRequestId(Long assetRequestId) {
         return assetExternalRequestDetailDAO.findByAssetRequestId(assetRequestId);
     }

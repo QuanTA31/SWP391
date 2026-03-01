@@ -23,5 +23,8 @@ public interface AssetExternalRequestDetailService {
 
     Integer countOptionDetail(Long assetRequestId);
 
+    void updateExternalStatusId(Long id, String externalStatusId);
+
+
     List<AssetExternalRequestDetailServiceResponse> findByAssetRequestId(Long assetRequestId);
 }

@@ -54,6 +54,12 @@ public interface OptionDetailDao {
     @Select
     Integer countByIdAndStatus(Long requestDetailId, Boolean status);
 
+    @Select
+    Integer countByIdAndIsSelected(Long requestDetailId, Long assetRequestId);
+
+    @Select
+    Boolean checkValidRequest(Long requestDetailId, Long assetRequestId);
+
     @Update
     int edit(OptionDetail entity);
 
