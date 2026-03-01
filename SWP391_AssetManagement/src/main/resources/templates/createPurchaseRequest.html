@@ -107,10 +107,10 @@
                                     class="asset-type-select"
                                     th:name="'createPurchaseRequestDetailDTORequestList[' + ${stat.index} + '].assetTypeId'">
                                 <option value="">-- Asset Type --</option>
-                                <option  th:each="st : ${T(com.example.swp391_assetmanagement.enums.AssetType).values()}"
-                                         th:value="${st.value}"
-                                         th:text="${st.name}"
-                                        th:selected="${st.value == detail.assetTypeId}">
+                                <option th:each="type : ${assetTypes}"
+                                        th:value="${type.value}"
+                                        th:text="${type.label}"
+                                        th:selected="${type.value == detail.assetTypeId}">
                                 </option>
                             </select>
                         </td>
@@ -224,7 +224,7 @@
         if (assetTypes && assetTypes.length) {
             assetTypes.forEach(function(type) {
                 const val   = type.value;
-                const label = type.name || type.value;
+                const label = type.label || type.value;
                 const sel   = (val === selectedValue) ? 'selected' : '';
                 html += `<option value="${val}" ${sel}>${label}</option>`;
             });
