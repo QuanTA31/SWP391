@@ -28,4 +28,6 @@ public class AssetExternalRequestDetailServiceResponse {
     @Column(name = "description")
     public String description;
 
+    @Column(name = "asset_request_id")
+    public Long assetRequestId;
 }

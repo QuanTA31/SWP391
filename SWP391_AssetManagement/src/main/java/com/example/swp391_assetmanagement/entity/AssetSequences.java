@@ -15,7 +15,6 @@ public class AssetSequences {
     @Column(name = "asset_type")
     public String assetType;
 
-    @Id
     @Column(name = "current_value")
-    public Long currentValue;
+    public Integer currentValue;
 }

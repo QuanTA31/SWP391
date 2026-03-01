@@ -50,12 +50,19 @@ public class WarehouseCreateAssetsUsecase {
                 AssetSequences assetSequences = assetSequencesService.findByIdToUpdate(
                         AssetType.hasValue(request.getAssetTypeId()) ? request.getAssetTypeId() : null);
 
-                long newValue = assetSequences.currentValue + request.getQuantity();
+                Integer startValue = assetSequences.currentValue;
+                Integer quantity = request.getQuantity();
+                Integer newValue = startValue + quantity;
+
+                // Update asset_code
+
+                assetSequences.setCurrentValue(newValue);
+                assetSequencesService.update(assetSequences);
 
                 List<Assets> assetsList = new ArrayList<>();
 
                 // Insert to assets
-                for (Long i = assetSequences.currentValue; i < newValue; i++) {
+                for (Integer i = startValue; i < newValue; i++) {
                     Assets assets = new Assets();
                     assets.setAssetCode(String.format("%s-%04d", AssetType.of(request.getAssetTypeId()).getName(), i));
                     assets.setAssetStatusId(AssetStatus.STOCK_IN.getValue());
@@ -68,10 +75,6 @@ public class WarehouseCreateAssetsUsecase {
                     assetsList.add(assets);
                 }
                 assetService.insertAsset(assetsList);
-
-                // Update asset_code
-                assetSequences.setCurrentValue(newValue);
-                assetSequencesService.update(assetSequences);
 
                 List<Assets> assets = assetService.findIdByStatus(AssetStatus.STOCK_IN.getValue());
 
@@ -90,7 +93,7 @@ public class WarehouseCreateAssetsUsecase {
 
                 // Update asset_request
                 AssetRequest assetRequest = new AssetRequest();
-                assetRequest.setId(assetRequestId);
+                assetRequest.setId(request.getAssetRequestId());
                 assetRequest.setRequestStatusId(RequestStatus.STOCK_IN.getValue());
                 assetRequestService.updatePurchaseRequestStatus(assetRequest);
             }
