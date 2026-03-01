@@ -31,8 +31,8 @@ public class Assets {
     @Column(name = "original_price")
     public BigDecimal originalPrice;
 
-    @Column(name = "describe")
-    public String describe;
+    @Column(name = "description")
+    public String description;
 
     @Column(name = "current_user_id")
     public Long currentUserId;
@@ -44,7 +44,7 @@ public class Assets {
     public BigDecimal depreciation;
 
     @Column(name = "received_date")
-    public LocalDateTime receivedDate;
+    public LocalDate receivedDate;
 
     @Column(name = "note")
     public String note;
