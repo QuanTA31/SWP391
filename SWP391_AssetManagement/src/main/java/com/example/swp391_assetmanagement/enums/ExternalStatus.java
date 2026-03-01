@@ -11,8 +11,8 @@ public enum ExternalStatus implements EnumBase<RequestType> {
 
     DRAFT("01", "DRAFT"),
     IN_PROGRESS("02", "IN_PROGRESS"),
-    UN_REPAIR("03", "UN_REPAIR"),
-    STOCK_IN("04", "STOCK_IN"),
+    DONE("03", "DONE"),
+    REJECT("04", "REJECT"),
     COMPLETED("05", "COMPLETED"),
     CANCEL("06", "CANCEL");
 

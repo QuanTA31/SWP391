@@ -84,6 +84,16 @@ public class OptionDetailServiceImpl implements OptionDetailService {
     }
 
     @Override
+    public Integer countByIdAndIsSelected(Long assetRequestDetailId, Long assetRequestId) {
+        return optionDetailDao.countByIdAndIsSelected(assetRequestDetailId,assetRequestId);
+    }
+
+    @Override
+    public Boolean checkValidRequest(Long assetRequestDetailId, Long assetRequestId) {
+        return optionDetailDao.checkValidRequest(assetRequestDetailId, assetRequestId);
+    }
+
+    @Override
     public List<OptionDetail> getListByRequestDetailId(Long requestDetailId) {
         return optionDetailDao.selectByUpdate(requestDetailId);
     }

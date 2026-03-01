@@ -53,4 +53,9 @@ public class AssetExternalRequestDetailServiceImpl implements AssetExternalReque
     public Integer countOptionDetail(Long assetRequestId) {
         return assetExternalRequestDetailDAO.countOptionDetail(assetRequestId);
     }
+
+    @Override
+    public void updateExternalStatusId(Long id, String externalStatusId) {
+        assetExternalRequestDetailDAO.updateExternalStatusId(id, externalStatusId);
+    }
 }
