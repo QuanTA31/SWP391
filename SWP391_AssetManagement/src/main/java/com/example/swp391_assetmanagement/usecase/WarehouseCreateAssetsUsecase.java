@@ -64,7 +64,7 @@ public class WarehouseCreateAssetsUsecase {
                 // Insert to assets
                 for (Integer i = startValue; i < newValue; i++) {
                     Assets assets = new Assets();
-                    assets.setAssetCode(String.format("%s-%04d", AssetType.of(request.getAssetTypeId()).getName(), i));
+                    assets.setAssetCode(String.format("%s-%05d", AssetType.of(request.getAssetTypeId()).getName(), i));
                     assets.setAssetStatusId(AssetStatus.STOCK_IN.getValue());
                     assets.setAssetTypeId(AssetType.of(request.getAssetTypeId()).getValue());
                     assets.setWarrantyPeriod(request.getWarrantyPeriod());
