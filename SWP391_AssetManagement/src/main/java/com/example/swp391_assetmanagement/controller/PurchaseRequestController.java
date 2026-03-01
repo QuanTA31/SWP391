@@ -1,9 +1,6 @@
 package com.example.swp391_assetmanagement.controller;
 
-import com.example.swp391_assetmanagement.dto.request.ApprovalPurchaseRequestDTORequest;
-import com.example.swp391_assetmanagement.dto.request.CreatePurchaseRequestDTORequest;
-import com.example.swp391_assetmanagement.dto.request.OptionDetailFormDTORequest;
-import com.example.swp391_assetmanagement.dto.request.OptionDetailSelectDTORequest;
+import com.example.swp391_assetmanagement.dto.request.*;
 import com.example.swp391_assetmanagement.enums.AssetType;
 import com.example.swp391_assetmanagement.usecase.*;
 import jakarta.servlet.http.HttpSession;
@@ -37,10 +34,7 @@ public class PurchaseRequestController {
         model.addAttribute("purchaseRequest",createPurchaseRequestDTORequest);
         model.addAttribute("assetTypes",
                 Arrays.stream(AssetType.values())
-                        .map(a -> Map.of(
-                                "value", a.getValue(),
-                                "label", a.getName()
-                        ))
+                        .map(a -> new AssetTypeDTORequest(a.getValue(), a.getName()))
                         .toList());
         model.addAttribute("role",session.getAttribute("ROLE"));
         return "createPurchaseRequest";
@@ -62,10 +56,7 @@ public class PurchaseRequestController {
         model.addAttribute("purchaseRequest",createPurchaseRequestDTORequest);
         model.addAttribute("assetTypes",
                 Arrays.stream(AssetType.values())
-                        .map(a -> Map.of(
-                                "value", a.getValue(),
-                                "label", a.getName()
-                        ))
+                        .map(a -> new AssetTypeDTORequest(a.getValue(), a.getName()))
                         .toList());
         model.addAttribute("approvalRequest",new ApprovalPurchaseRequestDTORequest());
         model.addAttribute("role", session.getAttribute("ROLE"));
