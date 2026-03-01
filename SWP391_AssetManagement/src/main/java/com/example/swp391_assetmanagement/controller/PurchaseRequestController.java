@@ -28,6 +28,7 @@ public class PurchaseRequestController {
     private final ManagerCreatePurchaseRequestUsecase managerCreatePurchaseRequestUsecase;
     private final ManagerRejectAllOptionDetailUsecase managerRejectAllOptionDetailUsecase;
     private final UpdateAssetRequestUsecase updateAssetRequestUsecase;
+    private final WarehouseCreateAssetsUsecase warehouseCreateAssetsUsecase;
 
     @GetMapping("/warehouse/view")
     public String viewPurchaseRequestForm(@RequestParam(required = false) Long assetRequestId, Model model, HttpSession session) {
@@ -166,5 +167,12 @@ public class PurchaseRequestController {
     ) {
         approveUseCase.execute(optionId, requestDetailId,true, session);
         return "redirect:/purchase-requests/option-detail/list?asset_external_request_detail_id=" + requestDetailId;
+    }
+
+    @PostMapping("/warehouse/createAssets")
+    public String createAssets(@RequestParam  Long assetRequestId,
+                         HttpSession session) {
+        warehouseCreateAssetsUsecase.execute(assetRequestId, session);
+        return "redirect:/purchase-requests/option-detail/list?asset_external_request_detail_id=" + assetRequestId;
     }
 }
