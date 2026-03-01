@@ -1,5 +1,5 @@
 SELECT asset_code,
-       desctiption,
+       description,
        original_price,
        warranty_period,
        received_date,
