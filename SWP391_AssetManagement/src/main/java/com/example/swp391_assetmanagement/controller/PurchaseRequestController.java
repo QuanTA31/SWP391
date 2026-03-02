@@ -168,7 +168,7 @@ public class PurchaseRequestController {
     public String createAssets(@RequestParam  Long assetRequestId,
                          HttpSession session) {
         warehouseCreateAssetsUsecase.execute(assetRequestId, session);
-        return "redirect:/purchase-requests/option-detail/list?asset_external_request_detail_id=" + assetRequestId;
+        return "redirect:/purchase-requests/viewPurchaseAsset?assetRequestId=" + assetRequestId;
     }
 
     // ==================== IN_PROGRESS ===============
