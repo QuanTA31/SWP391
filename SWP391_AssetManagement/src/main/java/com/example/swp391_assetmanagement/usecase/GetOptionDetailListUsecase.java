@@ -1,6 +1,11 @@
 package com.example.swp391_assetmanagement.usecase;
 
+import com.example.swp391_assetmanagement.entity.AssetExternalRequestDetail;
+import com.example.swp391_assetmanagement.entity.AssetRequest;
+import com.example.swp391_assetmanagement.enums.RequestStatus;
 import com.example.swp391_assetmanagement.enums.Roles;
+import com.example.swp391_assetmanagement.service.AssetExternalRequestDetailService;
+import com.example.swp391_assetmanagement.service.AssetRequestService;
 import com.example.swp391_assetmanagement.service.OptionDetailService;
 import com.example.swp391_assetmanagement.dto.request.OptionDetailListDTORequest;
 import com.example.swp391_assetmanagement.dto.response.OptionDetailListDTOResponse;
@@ -13,6 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
@@ -21,6 +27,8 @@ public class GetOptionDetailListUsecase {
     private static final int PAGE_SIZE = 10;
 
     private final OptionDetailService optionDetailService;
+    private final AssetExternalRequestDetailService assetExternalRequestDetailService;
+    private final AssetRequestService assetRequestService;
 
     public OptionDetailListDTOResponse execute(
             Long requestDetailId,
@@ -68,6 +76,18 @@ public class GetOptionDetailListUsecase {
         boolean hasAnySelected =
                 optionDetailService.countByRequestDetailId(requestDetailId, true) > 0;
 
+        AssetExternalRequestDetail detail =
+                assetExternalRequestDetailService.findToUpdate(requestDetailId);
+
+        AssetRequest assetRequest =
+                assetRequestService.findByUpdate(detail.getAssetRequestId());
+
+        boolean isApproved =
+                Objects.equals(
+                        RequestStatus.APPROVED.getValue(),
+                        assetRequest.getRequestStatusId()
+                );
+
         boolean isManager = Roles.MANAGER.getValue().equals(role);
         boolean isPurchasing = Roles.PURCHASING.getValue().equals(role);
 
@@ -81,7 +101,7 @@ public class GetOptionDetailListUsecase {
                 .totalPages(totalPages)
                 .hasPreviousPage(pageIndex > 1)
                 .hasNextPage(pageIndex < totalPages)
-                .canManage(isPurchasing)
+                .canManage(isPurchasing && isApproved)
                 .canApprove(isManager)
                 .hasAnySelected(hasAnySelected)
                 .build();

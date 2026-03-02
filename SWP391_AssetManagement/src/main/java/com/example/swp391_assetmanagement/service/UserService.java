@@ -11,4 +11,6 @@ public interface UserService {
     LocationViewAssetServiceResponse getLocationViewAsset(String userCode);
 
     Long getIdByUserCode(String userCode);
+
+    String getRoleCodesByUserCode(String userCode);
 }
