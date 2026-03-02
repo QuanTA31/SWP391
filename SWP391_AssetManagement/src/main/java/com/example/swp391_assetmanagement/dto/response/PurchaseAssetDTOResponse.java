@@ -14,12 +14,11 @@ public class PurchaseAssetDTOResponse {
 
     private final String assetTypeName;
 
-    private final String assetStatusName;
+    public LocalDate warrantyPeriod;
 
-    private final LocalDate warrantyPeriod;
+    public BigDecimal originalPrice;
 
-    private final BigDecimal originalPrice;
+    public String description;
 
-    private final LocalDate approvedDate;
-
+    public LocalDate receivedDate;
 }

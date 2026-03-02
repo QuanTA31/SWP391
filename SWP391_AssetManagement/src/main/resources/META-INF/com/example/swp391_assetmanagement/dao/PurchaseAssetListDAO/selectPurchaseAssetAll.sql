@@ -2,24 +2,23 @@ SELECT
     a.asset_code,
     a.asset_type_id,
     a.asset_status_id,
---    a.describe,
+    a.description,
     a.warranty_period,
     a.original_price,
-    ar.approved_date,
     COUNT(1) OVER() AS total_items
 
 FROM assets a
 
-LEFT JOIN assets_asset_request_external aare
+INNER JOIN assets_asset_request_external aare
     ON a.id = aare.assetId
 
-LEFT JOIN asset_external_request_detail aerd
+INNER JOIN asset_external_request_detail aerd
     ON aerd.id = aare.assetExternalRequestDetailId
 
-LEFT JOIN asset_request ar
+INNER JOIN asset_request ar
     ON ar.id = aerd.asset_request_id
 
-WHERE 1 = 1
+WHERE ar.id = /* request.assetRequestId */''
 
 /*%if request.assetTypeId != null && request.assetTypeId != "" */
     AND a.asset_type_id = /* request.assetTypeId */''

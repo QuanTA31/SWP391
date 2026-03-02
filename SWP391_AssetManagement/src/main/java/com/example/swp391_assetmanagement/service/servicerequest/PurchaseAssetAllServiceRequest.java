@@ -7,6 +7,8 @@ import lombok.Getter;
 @Builder
 public class PurchaseAssetAllServiceRequest {
 
+    private Long assetRequestId;
+
     private String assetTypeId;
 
     private String searchWord;

@@ -42,6 +42,7 @@ public class ViewPurchaseAssetAllUsecase {
         List<PurchaseAssetAllServiceResponse> serviceResponses =
                 purchaseAssetListService.viewPurchaseAssetList(
                         PurchaseAssetAllServiceRequest.builder()
+                                .assetRequestId(request.getAssetRequestId())
                                 .assetTypeId(request.getAssetTypeId())
                                 .searchWord(
                                         request.getSearchWord() == null || request.getSearchWord().trim().isEmpty()
@@ -84,10 +85,11 @@ public class ViewPurchaseAssetAllUsecase {
                                         PurchaseAssetDTOResponse.builder()
                                                 .assetCode(entity.assetCode)
                                                 .assetTypeName(AssetType.of(entity.assetTypeId).getName())
-                                                .assetStatusName(AssetStatus.of(entity.assetStatusId).getName())
                                                 .warrantyPeriod(entity.warrantyPeriod)
+                                                .receivedDate(entity.warrantyPeriod)
                                                 .originalPrice(entity.originalPrice)
-                                                .approvedDate(entity.approvedDate)
+                                                .description(entity.description)
+                                                .receivedDate(entity.receivedDate)
                                                 .build()
                                 )
                                 .toList()

@@ -17,17 +17,17 @@ public class PurchaseAssetAllServiceResponse {
     @Column(name = "asset_type_id")
     public String assetTypeId;
 
-    @Column(name = "asset_status_id")
-    public String assetStatusId;
-
     @Column(name = "warranty_period")
     public LocalDate warrantyPeriod;
 
     @Column(name = "original_price")
     public BigDecimal originalPrice;
 
-    @Column(name = "approved_date")
-    public LocalDate approvedDate;
+    @Column(name = "description")
+    public String description;
+
+    @Column(name = "received_date")
+    public LocalDate receivedDate;
 
     @Column(name = "total_items")
     public Integer totalItems;
