@@ -59,6 +59,7 @@ public class ViewPurchaseAssetAllUsecase {
                     .purchaseAssetDTOResponses(List.of())
                     .filterPurchaseAssetDTOResponse(
                             FilterPurchaseAssetDTOResponse.builder()
+                                    .assetRequestId(request.getAssetRequestId())
                                     .assetTypeId(request.getAssetTypeId())
                                     .searchWord(request.getSearchWord())
                                     .page(pageIndex)
@@ -96,6 +97,7 @@ public class ViewPurchaseAssetAllUsecase {
                 )
                 .filterPurchaseAssetDTOResponse(
                         FilterPurchaseAssetDTOResponse.builder()
+                                .assetRequestId(request.getAssetRequestId())
                                 .assetTypeId(request.getAssetTypeId())
                                 .searchWord(request.getSearchWord())
                                 .page(pageIndex)

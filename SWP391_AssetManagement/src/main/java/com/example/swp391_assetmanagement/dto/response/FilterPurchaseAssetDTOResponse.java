@@ -7,6 +7,8 @@ import lombok.Getter;
 @Builder
 public class FilterPurchaseAssetDTOResponse {
 
+    private final Long assetRequestId;
+
     private final String assetTypeId;
 
     private final String searchWord;
