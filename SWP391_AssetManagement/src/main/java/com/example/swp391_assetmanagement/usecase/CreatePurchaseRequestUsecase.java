@@ -46,7 +46,7 @@ public class CreatePurchaseRequestUsecase {
             assetRequest.setRequestedBy(userId);
             assetRequest.setRequestedDate(LocalDate.now());
             assetRequest.setRequestStatusId(
-                    request.isSubmitted()
+                    request.getIsSubmitted()
                             ? RequestStatus.PENDING_APPROVAL.getValue()
                             : RequestStatus.DRAFT.getValue()
             );
@@ -161,7 +161,7 @@ public class CreatePurchaseRequestUsecase {
             // Update AssetRequest if status = submit
             assetRequestService.findAssetRequestByIdForUpdate(request.getAssetRequestId()).ifPresent(
                     assetRequest -> {
-                        if (request.isSubmitted()) {
+                        if (request.getIsSubmitted()) {
                             assetRequest.setRequestStatusId(RequestStatus.PENDING_APPROVAL.getValue());
                             assetRequestService.updatePurchaseRequestStatus(assetRequest);
                         }

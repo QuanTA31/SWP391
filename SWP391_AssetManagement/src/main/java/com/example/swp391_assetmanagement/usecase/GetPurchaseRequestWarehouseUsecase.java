@@ -23,7 +23,7 @@ public class GetPurchaseRequestWarehouseUsecase {
         CreatePurchaseRequestDTORequest createPurchaseRequestDTORequest = new CreatePurchaseRequestDTORequest();
         if(assetRequestId == null) {
             createPurchaseRequestDTORequest.setCreatePurchaseRequestDetailDTORequestList(new ArrayList<>());
-            createPurchaseRequestDTORequest.setSubmitted(false);
+            createPurchaseRequestDTORequest.setIsSubmitted(false);
             createPurchaseRequestDTORequest.setAssetRequestId(null);
             createPurchaseRequestDTORequest.setRequestStatus(null);
             return createPurchaseRequestDTORequest;
@@ -47,7 +47,7 @@ public class GetPurchaseRequestWarehouseUsecase {
                 .toList();
         createPurchaseRequestDTORequest.setAssetRequestId(assetRequestId);
         createPurchaseRequestDTORequest.setCreatePurchaseRequestDetailDTORequestList(detailDTOs);
-        createPurchaseRequestDTORequest.setSubmitted(!RequestStatus.DRAFT.getValue()
+        createPurchaseRequestDTORequest.setIsSubmitted(!RequestStatus.DRAFT.getValue()
                 .equals(createPurchaseRequestDTORequest.getRequestStatus()));
         return createPurchaseRequestDTORequest;
     }

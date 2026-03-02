@@ -177,6 +177,19 @@
                     </button>
                   </form>
 
+                  <form th:if="${session.ROLE == '03'}"
+                        th:action="@{/purchase-requests/warehouse/createAssets}"
+                        method="post"
+                        style="display:inline">
+
+                    <input type="hidden" name="assetRequestId" th:value="${item.id}" />
+
+                    <button type="submit"
+                            class="btn btn-sm btn-info text-white">
+                      ABC
+                    </button>
+                  </form>
+
                 </th:block>
 
                 <!-- INTERNAL / EXTERNAL -->

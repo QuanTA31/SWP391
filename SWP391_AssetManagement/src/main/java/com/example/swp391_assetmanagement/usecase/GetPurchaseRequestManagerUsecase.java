@@ -39,7 +39,7 @@ public class GetPurchaseRequestManagerUsecase {
 
         createPurchaseRequestDTORequest.setAssetRequestId(assetRequestId);
         createPurchaseRequestDTORequest.setCreatePurchaseRequestDetailDTORequestList(detailsDTOs);
-        createPurchaseRequestDTORequest.setSubmitted(true);
+        createPurchaseRequestDTORequest.setIsSubmitted(true);
         return createPurchaseRequestDTORequest;
     }
 }
