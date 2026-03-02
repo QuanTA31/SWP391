@@ -31,6 +31,7 @@ public class GetPurchaseRequestManagerUsecase {
                         .assetExternalRequestDetailId(detail.getId())
                         .assetTypeId(detail.getAssetTypeId())
                         .assetTypeName(AssetType.of(detail.getAssetTypeId()).getName())
+                        .externalStatusId(detail.getExternalStatusId())
                         .quantity(detail.getQuantity())
                         .note(detail.getNote())
                         .build())

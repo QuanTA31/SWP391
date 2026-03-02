@@ -44,10 +44,11 @@ public class ManagerRejectAllOptionDetailUsecase {
             optionDetailService.updateRejectAll(optionDetails);
 
             Long assetRequestId = assetRequestService.findIdByAssetRequestDetailId(assetRequestDetailId);
+            Integer countBySelected = optionDetailService.countByIdAndIsSelected(assetRequestDetailId, assetRequestId);
 
             AssetRequest assetRequest = assetRequestService.findByUpdate(assetRequestId);
 
-            if (!ObjectUtils.isEmpty(assetRequest)) {
+            if (countBySelected == 0 && !ObjectUtils.isEmpty(assetRequest)){
                 assetRequest.setRequestStatusId(RequestStatus.APPROVED.getValue());
                 assetRequestService.updateIsSelected(assetRequest);
             }

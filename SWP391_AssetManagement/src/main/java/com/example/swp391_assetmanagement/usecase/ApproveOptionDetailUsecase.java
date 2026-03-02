@@ -3,6 +3,7 @@ package com.example.swp391_assetmanagement.usecase;
 import com.example.swp391_assetmanagement.entity.AssetExternalRequestDetail;
 import com.example.swp391_assetmanagement.entity.AssetRequest;
 import com.example.swp391_assetmanagement.entity.OptionDetail;
+import com.example.swp391_assetmanagement.enums.ExternalStatus;
 import com.example.swp391_assetmanagement.enums.RequestStatus;
 import com.example.swp391_assetmanagement.enums.Roles;
 import com.example.swp391_assetmanagement.service.AssetExternalRequestDetailService;
@@ -44,45 +45,55 @@ public class ApproveOptionDetailUsecase {
                     "Only manager can approve option detail"
             );
         }
+
         //Lấy option
         OptionDetail plan = optionDetailService
                 .getById(optionId)
                 .orElseThrow(() ->
                         new ResponseStatusException(
                                 HttpStatus.NOT_FOUND,
-                                "Option detail not found"
-                        )
-                );
+                                "Option detail not found"));
         Integer count = optionDetailService.countByIdAndStatus(requestDetailId, Boolean.TRUE);
 
-        if (count > 0 ){
+        if (count > 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
+
         String userCode = (String) session.getAttribute("USER_CODE");
         Long userId = userService.getIdByUserCode(userCode);
 
         if (selected && Objects.nonNull(plan)) {
 
-            //Lấy detail
             AssetExternalRequestDetail detail = assetExternalRequestDetailService.findToUpdate(requestDetailId);
-
             Long requestId = detail.getAssetRequestId();
 
             //Lấy asset_request
             AssetRequest assetRequest =
                     assetRequestService.findByUpdate(requestId);
 
-            //Check status ở đây
-            if (Objects.isNull(assetRequest)
-                    || !Objects.equals(RequestStatus.RESEARCH.getValue(), assetRequest.requestStatusId)) {
+            Integer countBySelected = optionDetailService.countByIdAndIsSelected(requestDetailId, assetRequest.getId());
+
+            //Check status nếu status kphai là research thì báo lỗi
+            if (!Objects.equals(RequestStatus.RESEARCH.getValue(), assetRequest.requestStatusId)) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
             }
 
-            //Update status
-            assetRequest.setRequestStatusId(RequestStatus.RESEARCH_DONE.getValue());
-            assetRequestService.updatePurchaseRequestStatus(assetRequest);
+            // Update external_status_id = 03
+            assetExternalRequestDetailService.updateExternalStatusId(
+                    requestDetailId,
+                    ExternalStatus.DONE.getValue()
+            );
 
-                optionDetailService.resetAllByRequestDetailId(requestDetailId, userId);
+            if (countBySelected == 0) {
+                Boolean isValidRequest = optionDetailService.checkValidRequest(requestDetailId, assetRequest.getId());
+                assetRequest.setRequestStatusId(isValidRequest
+                        ? RequestStatus.RESEARCH_DONE.getValue() : RequestStatus.APPROVED.getValue());
+                assetRequestService.updatePurchaseRequestStatus(assetRequest);
+            }
+
+
+
+            optionDetailService.resetAllByRequestDetailId(requestDetailId, userId);
 
             plan.setIsSelected(true);
 

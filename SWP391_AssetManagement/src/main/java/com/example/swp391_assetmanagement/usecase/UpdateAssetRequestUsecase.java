@@ -20,14 +20,14 @@ public class UpdateAssetRequestUsecase {
     private final AssetRequestService assetRequestService;
 
 
-    public void execute(Long requestDetailId, HttpSession session) {
+    public void execute(Long assetRequestId, HttpSession session) {
 
-        Integer count = assetExternalRequestDetailService.countOptionDetail(requestDetailId);
+        Integer count = assetExternalRequestDetailService.countOptionDetail(assetRequestId);
         if(count > 0){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request status is invalid !");
         }
 
-        AssetRequest assetRequest = assetRequestService.findByUpdate(requestDetailId);
+        AssetRequest assetRequest = assetRequestService.findByUpdate(assetRequestId);
         if (Objects.isNull(assetRequest)){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request status is invalid !");
         }

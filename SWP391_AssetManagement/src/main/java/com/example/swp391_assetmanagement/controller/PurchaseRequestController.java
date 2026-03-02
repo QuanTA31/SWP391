@@ -1,6 +1,7 @@
 package com.example.swp391_assetmanagement.controller;
 
 import com.example.swp391_assetmanagement.dto.request.*;
+import com.example.swp391_assetmanagement.dto.request.*;
 import com.example.swp391_assetmanagement.dto.response.ViewPurchaseAssetAllDTOResponse;
 import com.example.swp391_assetmanagement.enums.AssetType;
 import com.example.swp391_assetmanagement.usecase.*;
@@ -26,6 +27,7 @@ public class PurchaseRequestController {
     private final ManagerCreatePurchaseRequestUsecase managerCreatePurchaseRequestUsecase;
     private final ManagerRejectAllOptionDetailUsecase managerRejectAllOptionDetailUsecase;
     private final UpdateAssetRequestUsecase updateAssetRequestUsecase;
+    private final WarehouseCreateAssetsUsecase warehouseCreateAssetsUsecase;
     private final MoveAssetRequestToInProgressUsecase moveAssetRequestToInProgressUsecase;
     private final ViewPurchaseAssetAllUsecase viewPurchaseAssetAllUsecase;
 
@@ -37,10 +39,7 @@ public class PurchaseRequestController {
         model.addAttribute("purchaseRequest",createPurchaseRequestDTORequest);
         model.addAttribute("assetTypes",
                 Arrays.stream(AssetType.values())
-                        .map(a -> Map.of(
-                                "value", a.getValue(),
-                                "label", a.getName()
-                        ))
+                        .map(a -> new AssetTypeDTORequest(a.getValue(), a.getName()))
                         .toList());
         model.addAttribute("role",session.getAttribute("ROLE"));
         return "createPurchaseRequest";
@@ -62,10 +61,7 @@ public class PurchaseRequestController {
         model.addAttribute("purchaseRequest",createPurchaseRequestDTORequest);
         model.addAttribute("assetTypes",
                 Arrays.stream(AssetType.values())
-                        .map(a -> Map.of(
-                                "value", a.getValue(),
-                                "label", a.getName()
-                        ))
+                        .map(a -> new AssetTypeDTORequest(a.getValue(), a.getName()))
                         .toList());
         model.addAttribute("approvalRequest",new ApprovalPurchaseRequestDTORequest());
         model.addAttribute("role", session.getAttribute("ROLE"));
@@ -154,7 +150,7 @@ public class PurchaseRequestController {
     public String delete(@RequestParam  Long assetRequestId,
                          HttpSession session) {
         updateAssetRequestUsecase.execute(assetRequestId, session);
-        return "redirect:/purchase-requests/option-detail/list?asset_external_request_detail_id=" + assetRequestId;
+        return "redirect:/viewRequest";
     }
 
     // ================= APPROVAL =================
@@ -166,6 +162,13 @@ public class PurchaseRequestController {
     ) {
         approveUseCase.execute(optionId, requestDetailId,true, session);
         return "redirect:/purchase-requests/option-detail/list?asset_external_request_detail_id=" + requestDetailId;
+    }
+
+    @PostMapping("/warehouse/createAssets")
+    public String createAssets(@RequestParam  Long assetRequestId,
+                         HttpSession session) {
+        warehouseCreateAssetsUsecase.execute(assetRequestId, session);
+        return "redirect:/purchase-requests/option-detail/list?asset_external_request_detail_id=" + assetRequestId;
     }
 
     // ==================== IN_PROGRESS ===============
