@@ -143,7 +143,7 @@
                             <button type="button" class="btn btn-ghost"
                                     onclick="removeRow(this)">✕</button>
                         </td>
-                        <td th:if="${role == '04' and detail.externalStatusId == '02'}">
+                        <td th:if="${(role == '04' or role == '02') and (detail.externalStatusId == '02' or detail.externalStatusId == '03')}">
                             <a th:href="@{/purchase-requests/option-detail/list(asset_external_request_detail_id=${detail.assetExternalRequestDetailId})}"
                                class="btn btn-outline btn-sm">
                                 🔍 Options
