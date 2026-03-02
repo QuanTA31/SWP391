@@ -41,6 +41,11 @@
          th:href="@{/purchase-requests/warehouse/view(assetRequestId='')}" class="menu-item">
         Create Purchase Request
       </a>
+
+      <a th:if="${session.ROLE == '03'}"
+         th:href="@{/purchase-requests/viewPurchaseAsset}" class="menu-item">
+        View Purchase Asset
+      </a>
     </div>
 
     <!-- CONTENT -->
@@ -216,7 +221,7 @@
           <li class="page-item"
               th:classappend="${!data.filters.hasPreviousPage} ? 'disabled'">
             <a class="page-link"
-               th:href="@{/main/viewRequest(
+               th:href="@{/viewRequest(
                              pageIndex=${data.filters.page - 1},
                              requestStatusId=${data.filters.requestStatusId},
                              requestTypeId=${data.filters.requestTypeId}
@@ -234,7 +239,7 @@
               th:classappend="${i == data.filters.page} ? 'active'">
             <a class="page-link"
                th:text="${i}"
-               th:href="@{/main/viewRequest(
+               th:href="@{/viewRequest(
                                pageIndex=${i},
                                requestStatusId=${data.filters.requestStatusId},
                                requestTypeId=${data.filters.requestTypeId}
@@ -246,7 +251,7 @@
           <li class="page-item"
               th:classappend="${!data.filters.hasNextPage} ? 'disabled'">
             <a class="page-link"
-               th:href="@{/main/viewRequest(
+               th:href="@{/viewRequest(
                              pageIndex=${data.filters.page + 1},
                              requestStatusId=${data.filters.requestStatusId},
                              requestTypeId=${data.filters.requestTypeId}
