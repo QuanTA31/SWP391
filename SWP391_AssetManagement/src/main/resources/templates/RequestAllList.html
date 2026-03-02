@@ -42,10 +42,10 @@
         Create Purchase Request
       </a>
 
-      <a th:if="${session.ROLE == '03'}"
-         th:href="@{/purchase-requests/viewPurchaseAsset}" class="menu-item">
-        View Purchase Asset
-      </a>
+<!--      <a th:if="${session.ROLE == '03'}"-->
+<!--         th:href="@{/purchase-requests/viewPurchaseAsset}" class="menu-item">-->
+<!--        View Purchase Asset-->
+<!--      </a>-->
     </div>
 
     <!-- CONTENT -->
@@ -177,7 +177,7 @@
                     </button>
                   </form>
 
-                  <form th:if="${session.ROLE == '03'}"
+                  <form th:if="${session.ROLE == '03' and item.requestStatusName == 'IN_PROGRESS'}"
                         th:action="@{/purchase-requests/warehouse/createAssets}"
                         method="post"
                         style="display:inline">
@@ -189,6 +189,12 @@
                       ABC
                     </button>
                   </form>
+
+                  <a th:if="${session.ROLE == '03' and item.requestStatusName == 'STOCK_IN'}"
+                     th:href="@{/purchase-requests/viewPurchaseAsset(assetRequestId=${item.id})}"
+                      class="btn btn-sm btn-info text-white">
+                    View Purchase Asset
+                  </a>
 
                 </th:block>
 

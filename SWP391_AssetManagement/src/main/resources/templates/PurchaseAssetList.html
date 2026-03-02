@@ -36,10 +36,10 @@
         Create Purchase Request
       </a>
 
-      <a th:if="${session.ROLE == '03'}"
-         th:href="@{/purchase-requests/viewPurchaseAsset}" class="menu-item">
-        View Purchase Asset
-      </a>
+<!--      <a th:if="${session.ROLE == '03'}"-->
+<!--         th:href="@{/purchase-requests/viewPurchaseAsset}" class="menu-item">-->
+<!--        View Purchase Asset-->
+<!--      </a>-->
 
     </div>
 
@@ -55,6 +55,11 @@
         <form method="get"
               th:action="@{/purchase-requests/viewPurchaseAsset}"
               class="d-flex gap-2">
+
+          <!-- ✅ GIỮ LẠI assetRequestId khi search -->
+          <input type="hidden"
+                 name="assetRequestId"
+                 th:value="${purchaseAsset.filterPurchaseAssetDTOResponse.assetRequestId}" />
 
           <select name="assetTypeId"
                   class="form-select form-select-sm"
@@ -76,6 +81,9 @@
                  th:value="${purchaseAsset.filterPurchaseAssetDTOResponse.searchWord}"
                  style="width:220px">
 
+          <!-- (tuỳ chọn) reset về page 1 khi search -->
+          <input type="hidden" name="pageIndex" value="1"/>
+
           <button type="submit"
                   class="btn btn-sm btn-primary">
             Search
@@ -90,10 +98,11 @@
           <tr>
             <th>Asset Code</th>
             <th>Asset Type</th>
-            <th>Status</th>
+<!--            <th>Status</th>-->
             <th>Warranty</th>
             <th>Original Price</th>
-            <th>Approved Date</th>
+            <th>Description</th>
+            <th>Receive Date</th>
           </tr>
           </thead>
 
@@ -110,10 +119,11 @@
           <tr th:each="asset : ${purchaseAsset.purchaseAssetDTOResponses}">
             <td th:text="${asset.assetCode}"></td>
             <td th:text="${asset.assetTypeName}"></td>
-            <td th:text="${asset.assetStatusName}"></td>
+<!--            <td th:text="${asset.assetStatusName}"></td>-->
             <td th:text="${#temporals.format(asset.warrantyPeriod,'yyyy-MM-dd')}"></td>
             <td th:text="${#numbers.formatDecimal(asset.originalPrice,0,'COMMA',0,'POINT')}"></td>
-            <td th:text="${#temporals.format(asset.approvedDate,'yyyy-MM-dd')}"></td>
+            <td th:text="${asset.description}"></td>
+            <td th:text="${#temporals.format(asset.receivedDate,'yyyy-MM-dd')}"></td>
           </tr>
 
           </tbody>
@@ -146,7 +156,8 @@
                th:href="@{/purchase-requests/viewPurchaseAsset(
                                 pageIndex=${purchaseAsset.filterPurchaseAssetDTOResponse.page - 1},
                                 assetTypeId=${purchaseAsset.filterPurchaseAssetDTOResponse.assetTypeId},
-                                searchWord=${purchaseAsset.filterPurchaseAssetDTOResponse.searchWord}
+                                searchWord=${purchaseAsset.filterPurchaseAssetDTOResponse.searchWord},
+                                assetRequestId=${purchaseAsset.filterPurchaseAssetDTOResponse.assetRequestId}
                            )}">
               «
             </a>
@@ -161,7 +172,8 @@
                th:href="@{/purchase-requests/viewPurchaseAsset(
                                 pageIndex=${i},
                                 assetTypeId=${purchaseAsset.filterPurchaseAssetDTOResponse.assetTypeId},
-                                searchWord=${purchaseAsset.filterPurchaseAssetDTOResponse.searchWord}
+                                searchWord=${purchaseAsset.filterPurchaseAssetDTOResponse.searchWord},
+                                assetRequestId=${purchaseAsset.filterPurchaseAssetDTOResponse.assetRequestId}
                            )}">
             </a>
           </li>
@@ -172,7 +184,8 @@
                th:href="@{/purchase-requests/viewPurchaseAsset(
                                 pageIndex=${purchaseAsset.filterPurchaseAssetDTOResponse.page + 1},
                                 assetTypeId=${purchaseAsset.filterPurchaseAssetDTOResponse.assetTypeId},
-                                searchWord=${purchaseAsset.filterPurchaseAssetDTOResponse.searchWord}
+                                searchWord=${purchaseAsset.filterPurchaseAssetDTOResponse.searchWord},
+                                assetRequestId=${purchaseAsset.filterPurchaseAssetDTOResponse.assetRequestId}
                            )}">
               »
             </a>

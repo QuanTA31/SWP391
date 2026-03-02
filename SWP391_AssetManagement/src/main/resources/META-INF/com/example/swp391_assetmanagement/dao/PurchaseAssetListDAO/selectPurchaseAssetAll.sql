@@ -1,10 +1,10 @@
 SELECT
     a.asset_code,
     a.asset_type_id,
-    a.asset_status_id,
     a.description,
     a.warranty_period,
     a.original_price,
+    a.received_date,
     COUNT(1) OVER() AS total_items
 
 FROM assets a
