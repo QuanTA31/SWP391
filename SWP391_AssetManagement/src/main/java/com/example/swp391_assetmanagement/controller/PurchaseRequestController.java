@@ -1,6 +1,8 @@
 package com.example.swp391_assetmanagement.controller;
 
 import com.example.swp391_assetmanagement.dto.request.*;
+import com.example.swp391_assetmanagement.dto.request.*;
+import com.example.swp391_assetmanagement.dto.response.ViewPurchaseAssetAllDTOResponse;
 import com.example.swp391_assetmanagement.enums.AssetType;
 import com.example.swp391_assetmanagement.usecase.*;
 import jakarta.servlet.http.HttpSession;
@@ -26,6 +28,8 @@ public class PurchaseRequestController {
     private final ManagerRejectAllOptionDetailUsecase managerRejectAllOptionDetailUsecase;
     private final UpdateAssetRequestUsecase updateAssetRequestUsecase;
     private final WarehouseCreateAssetsUsecase warehouseCreateAssetsUsecase;
+    private final MoveAssetRequestToInProgressUsecase moveAssetRequestToInProgressUsecase;
+    private final ViewPurchaseAssetAllUsecase viewPurchaseAssetAllUsecase;
 
     @GetMapping("/warehouse/view")
     public String viewPurchaseRequestForm(@RequestParam(required = false) Long assetRequestId, Model model, HttpSession session) {
@@ -166,4 +170,23 @@ public class PurchaseRequestController {
         warehouseCreateAssetsUsecase.execute(assetRequestId, session);
         return "redirect:/purchase-requests/option-detail/list?asset_external_request_detail_id=" + assetRequestId;
     }
+
+    // ==================== IN_PROGRESS ===============
+    @PostMapping("/purchasing/progress")
+    public String progress(@RequestParam  Long requestId,
+                         HttpSession session) {
+        moveAssetRequestToInProgressUsecase.execute(requestId, session);
+        return "redirect:/viewRequest";
+    }
+
+    // ==================== STOCK_IN =====================
+    @GetMapping("/viewPurchaseAsset")
+    public String viewPurchaseAsset(@ModelAttribute ViewPurchaseAssetDTORequest request, HttpSession session, Model model) {
+
+        ViewPurchaseAssetAllDTOResponse response = viewPurchaseAssetAllUsecase.viewPurchaseAssetAllDTOResponse(request, session);
+        model.addAttribute("purchaseAsset", response);
+
+        return "PurchaseAssetList";
+    }
+
 }

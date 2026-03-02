@@ -36,4 +36,7 @@ public interface AssetRequestDAO {
 
     @Select
     Long findIdByAssetRequestDetailId(Long assetRequestDetailId);
+
+    @Update(sqlFile = true)
+    int moveInProgress(Long id, String researchDone, String inProgress);
 }

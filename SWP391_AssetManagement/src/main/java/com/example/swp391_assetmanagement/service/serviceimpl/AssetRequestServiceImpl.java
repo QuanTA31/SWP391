@@ -2,6 +2,7 @@ package com.example.swp391_assetmanagement.service.serviceimpl;
 
 import com.example.swp391_assetmanagement.dao.AssetRequestDAO;
 import com.example.swp391_assetmanagement.entity.AssetRequest;
+import com.example.swp391_assetmanagement.enums.RequestStatus;
 import com.example.swp391_assetmanagement.service.AssetRequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -53,5 +54,11 @@ public class AssetRequestServiceImpl implements AssetRequestService {
     @Override
     public Long findIdByAssetRequestDetailId(Long assetRequestDetailId) {
         return assetRequestDAO.findIdByAssetRequestDetailId(assetRequestDetailId);
+    }
+
+    @Override
+    public int moveInProgress(Long requestId) {
+        return assetRequestDAO.moveInProgress(requestId, RequestStatus.RESEARCH_DONE.getValue(),
+                RequestStatus.IN_PROGRESS.getValue());
     }
 }
