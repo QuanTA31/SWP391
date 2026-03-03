@@ -53,6 +53,9 @@ public class ApproveOptionDetailUsecase {
                         new ResponseStatusException(
                                 HttpStatus.NOT_FOUND,
                                 "Option detail not found"));
+        if (Objects.nonNull(plan.isSelected)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
         Integer count = optionDetailService.countByIdAndStatus(requestDetailId, Boolean.TRUE);
 
         if (count > 0) {

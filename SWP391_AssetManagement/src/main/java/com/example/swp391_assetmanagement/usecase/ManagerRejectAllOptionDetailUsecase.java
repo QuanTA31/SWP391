@@ -15,6 +15,7 @@ import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -48,7 +49,7 @@ public class ManagerRejectAllOptionDetailUsecase {
 
             AssetRequest assetRequest = assetRequestService.findByUpdate(assetRequestId);
 
-            if (countBySelected == 0 && !ObjectUtils.isEmpty(assetRequest)){
+            if (countBySelected == 0 && !ObjectUtils.isEmpty(assetRequest) && Objects.equals(assetRequest.requestStatusId, RequestStatus.RESEARCH.getValue())){
                 assetRequest.setRequestStatusId(RequestStatus.APPROVED.getValue());
                 assetRequestService.updateIsSelected(assetRequest);
             }
