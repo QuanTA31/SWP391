@@ -30,6 +30,7 @@ public class PurchaseRequestController {
     private final WarehouseCreateAssetsUsecase warehouseCreateAssetsUsecase;
     private final MoveAssetRequestToInProgressUsecase moveAssetRequestToInProgressUsecase;
     private final ViewPurchaseAssetAllUsecase viewPurchaseAssetAllUsecase;
+    private final WarehouseCompleteUsecase warehouseCompleteUsecase;
 
     @GetMapping("/warehouse/view")
     public String viewPurchaseRequestForm(@RequestParam(required = false) Long assetRequestId, Model model, HttpSession session) {
@@ -188,5 +189,10 @@ public class PurchaseRequestController {
 
         return "PurchaseAssetList";
     }
-
+    @PostMapping("/warehouse/complete")
+    public String wareHouseComplete(
+            @RequestParam Long assetRequestId, HttpSession session, Model model) {
+        warehouseCompleteUsecase.execute(assetRequestId,session);
+        return "redirect:/viewRequest";
+    }
 }
