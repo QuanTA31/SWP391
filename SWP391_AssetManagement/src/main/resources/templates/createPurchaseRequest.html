@@ -295,6 +295,7 @@
     }
 
     function saveDraft() {
+        if(!validateRows()) return;
         document.getElementById('isSubmittedField').value = 'false';
         document.getElementById('purchaseForm').submit();
     }
