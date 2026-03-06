@@ -5,24 +5,24 @@ import com.example.swp391_assetmanagement.entity.AssetRequest;
 import com.example.swp391_assetmanagement.entity.AssetSequences;
 import com.example.swp391_assetmanagement.entity.Assets;
 import com.example.swp391_assetmanagement.entity.AssetsAssetRequestExternal;
-import com.example.swp391_assetmanagement.enums.AssetStatus;
-import com.example.swp391_assetmanagement.enums.AssetType;
-import com.example.swp391_assetmanagement.enums.Location;
-import com.example.swp391_assetmanagement.enums.RequestStatus;
+import com.example.swp391_assetmanagement.enums.*;
 import com.example.swp391_assetmanagement.service.*;
 import com.example.swp391_assetmanagement.service.serviceresponse.AssetExternalRequestDetailServiceResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +36,14 @@ public class WarehouseCreateAssetsUsecase {
 
     @Transactional
     public void execute(Long assetRequestId, HttpSession session) {
+
+        // Check type request
+        String assetRequestType = assetRequestService.findRequestTypeById(assetRequestId);
+
+        if (!(ObjectUtils.isEmpty(assetRequestType)
+                || !Objects.equals(RequestType.of(assetRequestType).getValue(), RequestType.PROCUREMENT.getValue()))) {
+            throw new ValidationException();
+        }
 
         List<AssetExternalRequestDetailServiceResponse> externalRequestDetailServiceResponses =
                 assetExternalRequestDetailService.findByAssetRequestId(assetRequestId);
