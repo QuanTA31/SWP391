@@ -1,9 +1,11 @@
 package com.example.swp391_assetmanagement.controller;
 
+import com.example.swp391_assetmanagement.common.RoleChecker;
 import com.example.swp391_assetmanagement.dto.request.*;
 import com.example.swp391_assetmanagement.dto.request.*;
 import com.example.swp391_assetmanagement.dto.response.ViewPurchaseAssetAllDTOResponse;
 import com.example.swp391_assetmanagement.enums.AssetType;
+import com.example.swp391_assetmanagement.enums.Roles;
 import com.example.swp391_assetmanagement.usecase.*;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,8 @@ public class PurchaseRequestController {
     private final ViewPurchaseAssetAllUsecase viewPurchaseAssetAllUsecase;
     private final WarehouseCompleteUsecase warehouseCompleteUsecase;
 
+    private final RoleChecker roleChecker;
+
     @GetMapping("/warehouse/view")
     public String viewPurchaseRequestForm(@RequestParam(required = false) Long assetRequestId, Model model, HttpSession session) {
 
@@ -49,6 +53,8 @@ public class PurchaseRequestController {
     @PostMapping("/warehouse/create")
     public String createPurchaseRequestForm(
             @ModelAttribute CreatePurchaseRequestDTORequest request, HttpSession session, Model model) {
+
+        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.WAREHOUSE);
 
         createPurchaseRequestUsecase.execute(request, session);
 
@@ -73,6 +79,7 @@ public class PurchaseRequestController {
     public String managerViewPurchaseRequest(
             @ModelAttribute ApprovalPurchaseRequestDTORequest request, HttpSession session, Model model) {
 
+        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.MANAGER);
         managerCreatePurchaseRequestUsecase.execute(request, session);
         return "redirect:/viewRequest";
     }
@@ -80,6 +87,7 @@ public class PurchaseRequestController {
     @PostMapping("/manager/optionDetailRejectAll")
     public String managerOptionDetail(@RequestParam Long assetRequestDetailId, HttpSession session, Model model) {
 
+        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.MANAGER);
         managerRejectAllOptionDetailUsecase.execute(assetRequestDetailId, session);
         return "redirect:/viewRequest";
     }
@@ -168,6 +176,8 @@ public class PurchaseRequestController {
     @PostMapping("/warehouse/createAssets")
     public String createAssets(@RequestParam  Long assetRequestId,
                          HttpSession session) {
+
+        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.WAREHOUSE);
         warehouseCreateAssetsUsecase.execute(assetRequestId, session);
         return "redirect:/purchase-requests/viewPurchaseAsset?assetRequestId=" + assetRequestId;
     }
@@ -192,6 +202,8 @@ public class PurchaseRequestController {
     @PostMapping("/warehouse/complete")
     public String wareHouseComplete(
             @RequestParam Long assetRequestId, HttpSession session, Model model) {
+
+        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.WAREHOUSE);
         warehouseCompleteUsecase.execute(assetRequestId,session);
         return "redirect:/viewRequest";
     }
