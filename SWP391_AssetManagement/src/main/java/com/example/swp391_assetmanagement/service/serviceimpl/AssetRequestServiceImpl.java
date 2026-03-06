@@ -16,6 +16,11 @@ public class AssetRequestServiceImpl implements AssetRequestService {
     private final AssetRequestDAO assetRequestDAO;
 
     @Override
+    public String findRequestTypeById(Long assetRequestId) {
+        return assetRequestDAO.findRequestTypeById(assetRequestId);
+    }
+
+    @Override
     public Long createPurchaseRequestForm(AssetRequest assetRequest) {
         assetRequestDAO.insert(assetRequest);
         return assetRequestDAO.getLastId();

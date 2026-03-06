@@ -6,6 +6,8 @@ import java.util.Optional;
 
 public interface AssetRequestService {
 
+    String findRequestTypeById(Long assetRequestId);
+
     Long createPurchaseRequestForm(AssetRequest assetRequest);
 
     Optional<AssetRequest> findAssetRequestByIdForUpdate(Long assetRequestId);

@@ -11,6 +11,9 @@ import java.util.Optional;
 public interface AssetRequestDAO {
 
     @Select
+    String findRequestTypeById(Long assetRequestId);
+
+    @Select
     Optional<AssetRequest> findAssetRequestByIdForUpdate(Long assetRequestId);
 
     @Insert(sqlFile = true)
