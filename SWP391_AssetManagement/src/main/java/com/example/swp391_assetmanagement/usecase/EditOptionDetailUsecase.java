@@ -1,6 +1,6 @@
 package com.example.swp391_assetmanagement.usecase;
 
-import com.example.swp391_assetmanagement.dto.request.OptionDetailFormRequest;
+import com.example.swp391_assetmanagement.dto.request.OptionDetailFormDTORequest;
 import com.example.swp391_assetmanagement.entity.OptionDetail;
 import com.example.swp391_assetmanagement.enums.Roles;
 import com.example.swp391_assetmanagement.service.OptionDetailService;
@@ -17,8 +17,7 @@ public class EditOptionDetailUsecase {
     private final OptionDetailService optionDetailService;
 
     public void execute(
-            Long requestDetailId,
-            OptionDetailFormRequest form,
+            OptionDetailFormDTORequest form,
             HttpSession session
     ) {
 
@@ -44,10 +43,10 @@ public class EditOptionDetailUsecase {
         option.setUnitPrice(form.getUnitPrice());
         option.setWarrantyPeriod(form.getWarrantyPeriod());
 
-        optionDetailService.update(option);
+        optionDetailService.edit(option);
     }
 
-    private void validate(OptionDetailFormRequest form) {
+    private void validate(OptionDetailFormDTORequest form) {
         if (form == null) {
             throw new IllegalArgumentException("Form must not be null");
         }

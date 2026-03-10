@@ -1,6 +1,5 @@
 package com.example.swp391_assetmanagement.entity;
 
-import lombok.Getter;
 import lombok.Setter;
 import org.seasar.doma.*;
 
@@ -11,7 +10,6 @@ import org.seasar.doma.Column;
 
 @Entity
 @Table(name = "option_detail")
-@Getter
 @Setter
 public class OptionDetail {
 
@@ -25,7 +23,7 @@ public class OptionDetail {
     @Column(name = "unit_price")
     public BigDecimal unitPrice;
 
-    @Column(name = "describe")
+    @Column(name = "description")
     public String description;
 
     @Column(name = "merchant")
@@ -43,9 +41,6 @@ public class OptionDetail {
     @Column(name = "approver_by")
     public Long approverBy;
 
-    @Column(name = "approver_name", insertable = false, updatable = false)
-    public String approverName;
-
-    @Column(name = "created_at", insertable = false, updatable = false)
+    @Column(name = "created_at")
     public LocalDateTime createdAt;
 }

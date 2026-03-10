@@ -1,9 +1,11 @@
 package com.example.swp391_assetmanagement.dao;
 
 import com.example.swp391_assetmanagement.entity.OptionDetail;
+import com.example.swp391_assetmanagement.service.serviceresponse.OptionDetailServiceResponse;
 import org.seasar.doma.*;
 import org.seasar.doma.boot.ConfigAutowireable;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +23,7 @@ public interface OptionDetailDao {
     int update(OptionDetail optionDetail);
 
     @Select
-    List<OptionDetail> getByRequestDetailId(
+    List<OptionDetailServiceResponse> getByRequestDetailId(
             Long requestDetailId,
             Boolean isSelected,
             int offset,
@@ -42,4 +44,29 @@ public interface OptionDetailDao {
 
     @Select
     int existsRequestDetail(Long requestDetailId);
+
+    @Select
+    List<OptionDetail> selectByUpdate(Long assetExternalRequestDetailId);
+
+    @BatchUpdate(sqlFile = true)
+    int[] batchUpdate(List<OptionDetail> details);
+
+    @Select
+    Integer countByIdAndStatus(Long requestDetailId, Boolean status);
+
+    @Select
+    Integer countByIdAndIsSelected(Long requestDetailId, Long assetRequestId);
+
+    @Select
+    Boolean checkValidRequest(Long requestDetailId, Long assetRequestId);
+
+    @Update
+    int edit(OptionDetail entity);
+
+    @Update(sqlFile = true)
+    int resetAllByRequestDetailId(
+            Long requestDetailId,
+            LocalDate approvedDate,
+            Long approverBy
+    );
 }

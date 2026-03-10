@@ -41,6 +41,11 @@
          th:href="@{/purchase-requests/warehouse/view(assetRequestId='')}" class="menu-item">
         Create Purchase Request
       </a>
+
+<!--      <a th:if="${session.ROLE == '03'}"-->
+<!--         th:href="@{/purchase-requests/viewPurchaseAsset}" class="menu-item">-->
+<!--        View Purchase Asset-->
+<!--      </a>-->
     </div>
 
     <!-- CONTENT -->
@@ -134,40 +139,78 @@
               <td th:text="${item.note}"></td>
               <td th:text="${#temporals.format(item.createdAt, 'yyyy-MM-dd')}"></td>
               <td>
-                <th:block th:if="${item.requestTypeName == 'PROCUREMENT'}">
+                <!-- PROCUREMENT -->
+                <th:block th:if="${#strings.equalsIgnoreCase(item.requestTypeName,'PROCUREMENT')}">
 
+                  <!-- VIEW -->
                   <a th:if="${session.ROLE == '03'}"
                      class="btn btn-sm btn-info text-white"
                      th:href="@{/purchase-requests/warehouse/view(assetRequestId=${item.id})}">
-                    <i class="bi bi-eye"></i> View
+                    View
                   </a>
 
                   <a th:if="${session.ROLE == '02'}"
                      class="btn btn-sm btn-info text-white"
                      th:href="@{/purchase-requests/manager/view(assetRequestId=${item.id})}">
-                    <i class="bi bi-eye"></i> View
+                    View
                   </a>
 
                   <a th:if="${session.ROLE == '04'}"
                      class="btn btn-sm btn-info text-white"
                      th:href="@{/purchase-requests/warehouse/view(assetRequestId=${item.id})}">
-                    <i class="bi bi-eye"></i> View
+                    View
+                  </a>
+
+                  <form th:if="${item.requestStatusName == 'RESEARCH_DONE'
+              and item.requestTypeName == 'PROCUREMENT'
+              and session.ROLE == '04'}"
+                        th:action="@{/purchase-requests/purchasing/progress}"
+                        method="post"
+                        style="display:inline">
+
+                    <input type="hidden" name="requestId" th:value="${item.id}" />
+
+                    <button type="submit"
+                            class="btn btn-sm btn-success"
+                            onclick="return confirm('Move this request to IN_PROGRESS?')">
+                      Move To In Progress
+                    </button>
+                  </form>
+
+                  <form th:if="${session.ROLE == '03' and item.requestStatusName == 'IN_PROGRESS'}"
+                        th:action="@{/purchase-requests/warehouse/createAssets}"
+                        method="post"
+                        style="display:inline">
+
+                    <input type="hidden" name="assetRequestId" th:value="${item.id}" />
+
+                    <button type="submit"
+                            class="btn btn-sm btn-info text-white">
+                      Create asset
+                    </button>
+                  </form>
+
+                  <a th:if="${session.ROLE == '03' and item.requestStatusName == 'STOCK_IN'}"
+                     th:href="@{/purchase-requests/viewPurchaseAsset(assetRequestId=${item.id})}"
+                      class="btn btn-sm btn-info text-white">
+                    View Purchase Asset
                   </a>
 
                 </th:block>
 
-                <th:block th:unless="${item.requestTypeName == 'PROCUREMENT'}">
+                <!-- INTERNAL / EXTERNAL -->
+                <th:block th:unless="${#strings.equalsIgnoreCase(item.requestTypeName,'PROCUREMENT')}">
 
                   <a th:if="${item.internal}"
                      class="btn btn-sm btn-primary"
                      th:href="@{/viewInternalRequest/detail(id=${item.id})}">
-                    <i class="bi bi-eye"></i> View
+                    View
                   </a>
 
                   <a th:if="${!item.internal}"
                      class="btn btn-sm btn-warning text-dark"
                      th:href="@{/viewExternalRequest/detail(id=${item.id})}">
-                    <i class="bi bi-eye"></i> View
+                    View
                   </a>
 
                 </th:block>
@@ -177,11 +220,6 @@
             </tbody>
           </table>
         </div>
-      </div>
-      <div>
-
-        <input type="submit" value="Create">
-
       </div>
 
       <!-- PAGINATION -->
@@ -202,7 +240,7 @@
           <li class="page-item"
               th:classappend="${!data.filters.hasPreviousPage} ? 'disabled'">
             <a class="page-link"
-               th:href="@{/main/viewRequest(
+               th:href="@{/viewRequest(
                              pageIndex=${data.filters.page - 1},
                              requestStatusId=${data.filters.requestStatusId},
                              requestTypeId=${data.filters.requestTypeId}
@@ -220,7 +258,7 @@
               th:classappend="${i == data.filters.page} ? 'active'">
             <a class="page-link"
                th:text="${i}"
-               th:href="@{/main/viewRequest(
+               th:href="@{/viewRequest(
                                pageIndex=${i},
                                requestStatusId=${data.filters.requestStatusId},
                                requestTypeId=${data.filters.requestTypeId}
@@ -232,7 +270,7 @@
           <li class="page-item"
               th:classappend="${!data.filters.hasNextPage} ? 'disabled'">
             <a class="page-link"
-               th:href="@{/main/viewRequest(
+               th:href="@{/viewRequest(
                              pageIndex=${data.filters.page + 1},
                              requestStatusId=${data.filters.requestStatusId},
                              requestTypeId=${data.filters.requestTypeId}

@@ -1,6 +1,6 @@
 package com.example.swp391_assetmanagement.dto.response;
 
-import com.example.swp391_assetmanagement.entity.OptionDetail;
+import com.example.swp391_assetmanagement.service.serviceresponse.OptionDetailServiceResponse;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -13,8 +13,7 @@ import java.util.Map;
 public class OptionDetailListDTOResponse {
 
     private Long requestDetailId;
-    private List<OptionDetail> plans;
-    //private final OptionDetailService optionDetailService;
+    private List<OptionDetailServiceResponse> plans;
 
     private String status;
     private int page;

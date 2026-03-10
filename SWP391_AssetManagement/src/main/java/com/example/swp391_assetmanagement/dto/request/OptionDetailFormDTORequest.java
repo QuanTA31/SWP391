@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-public class OptionDetailFormRequest {
+public class OptionDetailFormDTORequest {
 
     private Long id; // dùng cho edit
 

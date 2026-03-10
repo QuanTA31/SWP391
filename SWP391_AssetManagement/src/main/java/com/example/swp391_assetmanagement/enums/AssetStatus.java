@@ -9,6 +9,7 @@ import org.seasar.doma.Domain;
 @Domain(valueType = String.class, factoryMethod = "of")
 public enum AssetStatus implements EnumBase<AssetStatus> {
 
+    STOCK_IN("00", "STOCK_IN"),
     NEW("01", "NEW"),
     ASSIGNED("02", "ASSIGNED"),
     TRANSFERRING("03", "TRANSFERRING"),

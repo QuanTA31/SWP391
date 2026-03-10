@@ -2,6 +2,7 @@ package com.example.swp391_assetmanagement.service.serviceimpl;
 
 import com.example.swp391_assetmanagement.dao.AssetRequestDAO;
 import com.example.swp391_assetmanagement.entity.AssetRequest;
+import com.example.swp391_assetmanagement.enums.RequestStatus;
 import com.example.swp391_assetmanagement.service.AssetRequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,11 @@ import java.util.Optional;
 public class AssetRequestServiceImpl implements AssetRequestService {
 
     private final AssetRequestDAO assetRequestDAO;
+
+    @Override
+    public String findRequestTypeById(Long assetRequestId) {
+        return assetRequestDAO.findRequestTypeById(assetRequestId);
+    }
 
     @Override
     public Long createPurchaseRequestForm(AssetRequest assetRequest) {
@@ -38,5 +44,26 @@ public class AssetRequestServiceImpl implements AssetRequestService {
     @Override
     public Integer countById(Long assetRequestId, String status) {
         return assetRequestDAO.countById(assetRequestId, status);
+    }
+
+    @Override
+    public AssetRequest findByUpdate(Long assetRequestId) {
+        return assetRequestDAO.selectByUpdate(assetRequestId);
+    }
+
+    @Override
+    public int updateIsSelected(AssetRequest assetRequest) {
+        return assetRequestDAO.updateIsSelected(assetRequest);
+    }
+
+    @Override
+    public Long findIdByAssetRequestDetailId(Long assetRequestDetailId) {
+        return assetRequestDAO.findIdByAssetRequestDetailId(assetRequestDetailId);
+    }
+
+    @Override
+    public int moveInProgress(Long requestId) {
+        return assetRequestDAO.moveInProgress(requestId, RequestStatus.RESEARCH_DONE.getValue(),
+                RequestStatus.IN_PROGRESS.getValue());
     }
 }

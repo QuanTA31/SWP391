@@ -12,11 +12,13 @@ import com.example.swp391_assetmanagement.service.AssetExternalRequestDetailServ
 import com.example.swp391_assetmanagement.service.AssetRequestService;
 import com.example.swp391_assetmanagement.service.UserService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
@@ -36,6 +38,14 @@ public class CreatePurchaseRequestUsecase {
 
         Long userId = userService.getIdByUserCode(session.getAttribute("USER_CODE").toString());
 
+        // Check type request
+        String assetRequestType = assetRequestService.findRequestTypeById(request.getAssetRequestId());
+
+        if (!(ObjectUtils.isEmpty(assetRequestType)
+                || !Objects.equals(RequestType.of(assetRequestType).getValue(), RequestType.PROCUREMENT.getValue()))) {
+            throw new ValidationException();
+        }
+
         // Check update or insert
         // insert
         if (Objects.isNull(request.getAssetRequestId())) {
@@ -46,7 +56,7 @@ public class CreatePurchaseRequestUsecase {
             assetRequest.setRequestedBy(userId);
             assetRequest.setRequestedDate(LocalDate.now());
             assetRequest.setRequestStatusId(
-                    request.isSubmitted()
+                    request.getIsSubmitted()
                             ? RequestStatus.PENDING_APPROVAL.getValue()
                             : RequestStatus.DRAFT.getValue()
             );
@@ -134,9 +144,7 @@ public class CreatePurchaseRequestUsecase {
                             AssetExternalRequestDetail entity = new AssetExternalRequestDetail();
                             entity.setAssetRequestId(request.getAssetRequestId());
                             entity.setAssetTypeId(AssetType.of(dto.getAssetTypeId()).getValue());
-                            entity.setExternalStatusId(request.isSubmitted()
-                                    ? ExternalStatus.IN_PROGRESS.getValue()
-                                    : ExternalStatus.DRAFT.getValue());
+                            entity.setExternalStatusId(ExternalStatus.DRAFT.getValue());
                             entity.setNote(dto.getNote());
                             entity.setQuantity(dto.getQuantity());
                             return entity;
@@ -152,9 +160,7 @@ public class CreatePurchaseRequestUsecase {
                             entity.setId(dto.getAssetExternalRequestDetailId());
                             entity.setAssetRequestId(request.getAssetRequestId());
                             entity.setAssetTypeId(AssetType.of(dto.getAssetTypeId()).getValue());
-                            entity.setExternalStatusId(request.isSubmitted()
-                                    ? ExternalStatus.IN_PROGRESS.getValue()
-                                    : ExternalStatus.DRAFT.getValue());
+                            entity.setExternalStatusId(ExternalStatus.DRAFT.getValue());
                             entity.setNote(dto.getNote());
                             entity.setQuantity(dto.getQuantity());
                             return entity;
@@ -165,7 +171,7 @@ public class CreatePurchaseRequestUsecase {
             // Update AssetRequest if status = submit
             assetRequestService.findAssetRequestByIdForUpdate(request.getAssetRequestId()).ifPresent(
                     assetRequest -> {
-                        if (request.isSubmitted()) {
+                        if (request.getIsSubmitted()) {
                             assetRequest.setRequestStatusId(RequestStatus.PENDING_APPROVAL.getValue());
                             assetRequestService.updatePurchaseRequestStatus(assetRequest);
                         }

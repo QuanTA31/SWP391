@@ -3,10 +3,12 @@ package com.example.swp391_assetmanagement.service.serviceimpl;
 import com.example.swp391_assetmanagement.dao.OptionDetailDao;
 import com.example.swp391_assetmanagement.entity.OptionDetail;
 import com.example.swp391_assetmanagement.service.OptionDetailService;
-import com.example.swp391_assetmanagement.dto.request.OptionDetailListRequest;
+import com.example.swp391_assetmanagement.dto.request.OptionDetailListDTORequest;
+import com.example.swp391_assetmanagement.service.serviceresponse.OptionDetailServiceResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,20 +24,6 @@ public class OptionDetailServiceImpl implements OptionDetailService {
     @Override
     public Optional<OptionDetail> getById(Long id) {
         return optionDetailDao.findById(id);
-    }
-
-    @Override
-    @Transactional
-    public void saveAll(List<OptionDetail> plans) {
-        for (OptionDetail plan : plans) {
-            optionDetailDao.insert(plan);
-        }
-    }
-
-    @Override
-    @Transactional
-    public void unselectByRequestDetailId(Long requestDetailId) {
-        optionDetailDao.unselectByRequestDetailId(requestDetailId);
     }
 
     @Override
@@ -57,21 +45,6 @@ public class OptionDetailServiceImpl implements OptionDetailService {
     }
 
     @Override
-    public List<OptionDetail> getByRequestDetailId(
-            Long requestDetailId,
-            Boolean isSelected,
-            int offset,
-            int pageSize
-    ) {
-        return optionDetailDao.getByRequestDetailId(
-                requestDetailId,
-                isSelected,
-                offset,
-                pageSize
-        );
-    }
-
-    @Override
     public int countByRequestDetailId(
             Long requestDetailId,
             Boolean isSelected
@@ -83,7 +56,7 @@ public class OptionDetailServiceImpl implements OptionDetailService {
     }
 
     @Override
-    public List<OptionDetail> getList(OptionDetailListRequest request) {
+    public List<OptionDetailServiceResponse> getList(OptionDetailListDTORequest request) {
         return optionDetailDao.getByRequestDetailId(
                 request.getRequestDetailId(),
                 request.getIsSelected(),
@@ -93,7 +66,7 @@ public class OptionDetailServiceImpl implements OptionDetailService {
     }
 
     @Override
-    public int count(OptionDetailListRequest request) {
+    public int count(OptionDetailListDTORequest request) {
         return optionDetailDao.countByRequestDetailId(
                 request.getRequestDetailId(),
                 request.getIsSelected()
@@ -103,6 +76,46 @@ public class OptionDetailServiceImpl implements OptionDetailService {
     @Override
     public boolean existsRequestDetail(Long requestDetailId) {
         return optionDetailDao.existsRequestDetail(requestDetailId) > 0;
+    }
+
+    @Override
+    public Integer countByIdAndStatus(Long id, Boolean status) {
+        return optionDetailDao.countByIdAndStatus(id, status);
+    }
+
+    @Override
+    public Integer countByIdAndIsSelected(Long assetRequestDetailId, Long assetRequestId) {
+        return optionDetailDao.countByIdAndIsSelected(assetRequestDetailId,assetRequestId);
+    }
+
+    @Override
+    public Boolean checkValidRequest(Long assetRequestDetailId, Long assetRequestId) {
+        return optionDetailDao.checkValidRequest(assetRequestDetailId, assetRequestId);
+    }
+
+    @Override
+    public List<OptionDetail> getListByRequestDetailId(Long requestDetailId) {
+        return optionDetailDao.selectByUpdate(requestDetailId);
+    }
+
+    @Override
+    public int[] updateRejectAll(List<OptionDetail> optionDetails) {
+        return optionDetailDao.batchUpdate(optionDetails);
+    }
+
+    @Override
+    public void edit(OptionDetail plan) {
+        optionDetailDao.edit(plan);
+    }
+
+    @Override
+    @Transactional
+    public void resetAllByRequestDetailId(Long requestDetailId, Long userId) {
+        optionDetailDao.resetAllByRequestDetailId(
+                requestDetailId,
+                LocalDate.now(),
+                userId
+        );
     }
 
 }
