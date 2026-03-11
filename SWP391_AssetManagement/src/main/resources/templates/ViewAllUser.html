@@ -54,6 +54,15 @@
                             </option>
                         </select>
 
+                        <select name="status" class="form-select form-select-sm">
+                            <option value="">All Status</option>
+                            <option th:each="userStatus : ${T(com.example.swp391_assetmanagement.enums.UserStatus).values()}"
+                                    th:value="${userStatus.value}"
+                                    th:text="${userStatus.name}"
+                                    th:selected="${users.filters.status == userStatus.value}">
+                            </option>
+                        </select>
+
                         <input type="text"
                                name="name"
                                class="form-control form-control-sm"
@@ -78,6 +87,7 @@
                             <th>Phone</th>
                             <th>Location</th>
                             <th>Role</th>
+                            <th>Status</th>
                         </tr>
                         </thead>
 
@@ -94,6 +104,16 @@
                             <td th:text="${u.locationName}"></td>
                             <td>
                                 <span class="badge bg-info text-dark" th:text="${u.roleName}"></span>
+                            </td>
+                            <td>
+                                <select class="form-select form-select-sm"
+                                        th:onchange="changeStatus([[${u.username}]], this.value)">
+                                    <option th:each="status : ${T(com.example.swp391_assetmanagement.enums.UserStatus).values()}"
+                                            th:value="${status.value}"
+                                            th:text="${status.name}"
+                                            th:selected="${u.status == status.value}">
+                                    </option>
+                                </select>
                             </td>
                         </tr>
                         </tbody>
@@ -135,4 +155,37 @@
 </div>
 
 </body>
+<script>
+    function changeStatus(username, newStatus) {
+    if (!confirm("Are you sure update status for this user?")) {
+        location.reload();
+        return;
+    }
+
+    // Sử dụng URLSearchParams để đóng gói dữ liệu an toàn
+    const params = new URLSearchParams();
+    params.append('username', username);
+    params.append('status', newStatus);
+
+    fetch(`/admin/viewUser/updateStatus`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: params // Gửi dữ liệu trong Body thay vì trên URL
+    })
+    .then(response => {
+        if (response.ok) {
+            alert("Update status success!");
+        } else {
+            alert("Update status fail (Code: " + response.status + ")");
+            location.reload();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert("Something went wrong.");
+    });
+}
+</script>
 </html>

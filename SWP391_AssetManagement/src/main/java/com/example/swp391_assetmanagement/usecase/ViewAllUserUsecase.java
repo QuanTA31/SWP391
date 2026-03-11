@@ -39,6 +39,7 @@ public class ViewAllUserUsecase {
                 ViewAllUserServiceRequest.builder()
                         .locationId(request.getLocationId())
                         .roleID(request.getRoleID())
+                        .userStatus(request.getStatus())
                         .name(ObjectUtils.isEmpty(request.getName()) ? null : request.getName().trim())
                         .offset((pageIndex - 1) * PAGE_SIZE)
                         .pageSize(PAGE_SIZE)
@@ -51,6 +52,7 @@ public class ViewAllUserUsecase {
                             .locationId(request.getLocationId())
                             .roleId(request.getRoleID())
                             .name(request.getName())
+                            .status(request.getStatus())
                             .page(pageIndex)
                             .pageSize(PAGE_SIZE)
                             .totalUser(0)
@@ -70,7 +72,7 @@ public class ViewAllUserUsecase {
                 .userDTOResponses(
                         serviceResponses.stream().map(
                                 entity -> UserDTOResponse.builder()
-                                        .userStatus(entity.userStatus)
+                                        .status(entity.userStatus)
                                         .name(entity.name)
                                         .phone(entity.phone)
                                         .email(entity.email)
@@ -84,6 +86,7 @@ public class ViewAllUserUsecase {
                 .filters(FilterUserDTOResponse.builder()
                         .locationId(request.getLocationId())
                         .roleId(request.getRoleID())
+                        .status(request.getStatus())
                         .name(request.getName())
                         .page(pageIndex)
                         .pageSize(PAGE_SIZE)

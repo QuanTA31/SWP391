@@ -17,6 +17,9 @@ WHERE 1 = 1
 /*%if request.roleID != null && request.roleID != "" */
   AND role_id = /* request.roleID */''
 /*%end */
+/*%if request.userStatus != null && request.userStatus != "" */
+  AND status_id = /* request.userStatus */''
+/*%end */
 /*%if request.name != null && request.name != "" */
   AND Lower(ud.name) LIKE Lower(/* request.name */'%a%')
 /*%end */
