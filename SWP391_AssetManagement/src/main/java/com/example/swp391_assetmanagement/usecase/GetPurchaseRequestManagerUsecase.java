@@ -19,27 +19,28 @@ public class GetPurchaseRequestManagerUsecase {
 
     public CreatePurchaseRequestDTORequest execute(Long assetRequestId) {
 
-        CreatePurchaseRequestDTORequest createPurchaseRequestDTORequest = new CreatePurchaseRequestDTORequest();
+        CreatePurchaseRequestDTORequest.CreatePurchaseRequestDTORequestBuilder
+                createPurchaseRequestDTORequest = CreatePurchaseRequestDTORequest.builder();
 
         assetRequestService.findAssetRequestByIdForUpdate(assetRequestId).ifPresent(assetRequest -> {
-            createPurchaseRequestDTORequest.setRequestStatus(assetRequest.getRequestStatusId());
+            createPurchaseRequestDTORequest.requestStatus(assetRequest.requestStatusId);
         });
         List<AssetExternalRequestDetail> details = assetExternalRequestDetailService.getByAssetRequestId(assetRequestId);
 
         List<CreatePurchaseRequestDetailDTORequest> detailsDTOs = details.stream()
                 .map(detail -> CreatePurchaseRequestDetailDTORequest.builder()
-                        .assetExternalRequestDetailId(detail.getId())
-                        .assetTypeId(detail.getAssetTypeId())
-                        .assetTypeName(AssetType.of(detail.getAssetTypeId()).getName())
-                        .externalStatusId(detail.getExternalStatusId())
-                        .quantity(detail.getQuantity())
-                        .note(detail.getNote())
+                        .assetExternalRequestDetailId(detail.id)
+                        .assetTypeId(detail.assetTypeId)
+                        .assetTypeName(AssetType.of(detail.assetTypeId).getName())
+                        .externalStatusId(detail.externalStatusId)
+                        .quantity(detail.quantity)
+                        .note(detail.note)
                         .build())
                 .toList();
 
-        createPurchaseRequestDTORequest.setAssetRequestId(assetRequestId);
-        createPurchaseRequestDTORequest.setCreatePurchaseRequestDetailDTORequestList(detailsDTOs);
-        createPurchaseRequestDTORequest.setIsSubmitted(true);
-        return createPurchaseRequestDTORequest;
+        createPurchaseRequestDTORequest.assetRequestId(assetRequestId);
+        createPurchaseRequestDTORequest.createPurchaseRequestDetailDTORequestList(detailsDTOs);
+        createPurchaseRequestDTORequest.isSubmitted(true);
+        return createPurchaseRequestDTORequest.build();
     }
 }

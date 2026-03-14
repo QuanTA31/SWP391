@@ -42,17 +42,17 @@ public class GetPurchaseRequestWarehouseUsecase {
         List<CreatePurchaseRequestDetailDTORequest> detailDTOs = details.stream()
                 .map(detail -> CreatePurchaseRequestDetailDTORequest.builder()
                         .assetExternalRequestDetailId(detail.id)
-                        .assetTypeId(detail.getAssetTypeId())
-                        .assetTypeName(AssetType.of(detail.getAssetTypeId()).getName())
-                        .externalStatusId(detail.getExternalStatusId())
-                        .quantity(detail.getQuantity())
-                        .note(detail.getNote())
+                        .assetTypeId(detail.assetTypeId)
+                        .assetTypeName(AssetType.of(detail.assetTypeId).getName())
+                        .externalStatusId(detail.externalStatusId)
+                        .quantity(detail.quantity)
+                        .note(detail.note)
                         .build())
                 .toList();
-        createPurchaseRequestDTORequest.setAssetRequestId(assetRequestId);
-        createPurchaseRequestDTORequest.setCreatePurchaseRequestDetailDTORequestList(detailDTOs);
-        createPurchaseRequestDTORequest.setIsSubmitted(!RequestStatus.DRAFT.getValue()
-                .equals(createPurchaseRequestDTORequest.getRequestStatus()));
+        createPurchaseRequestDTORequest.assetRequestId(assetRequestId);
+        createPurchaseRequestDTORequest.createPurchaseRequestDetailDTORequestList(detailDTOs);
+        createPurchaseRequestDTORequest.isSubmitted(!RequestStatus.DRAFT.getValue()
+                .equals(createPurchaseRequestDTORequest.build().getRequestStatus()));
         return createPurchaseRequestDTORequest.build();
     }
 }

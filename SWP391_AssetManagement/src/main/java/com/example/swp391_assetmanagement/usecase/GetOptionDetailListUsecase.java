@@ -80,12 +80,12 @@ public class GetOptionDetailListUsecase {
                 assetExternalRequestDetailService.findToUpdate(requestDetailId);
 
         AssetRequest assetRequest =
-                assetRequestService.findByUpdate(detail.getAssetRequestId());
+                assetRequestService.findByUpdate(detail.assetRequestId);
 
         boolean isApproved =
                 Objects.equals(
                         RequestStatus.APPROVED.getValue(),
-                        assetRequest.getRequestStatusId()
+                        assetRequest.requestStatusId
                 );
 
         boolean isManager = Roles.MANAGER.getValue().equals(role);
