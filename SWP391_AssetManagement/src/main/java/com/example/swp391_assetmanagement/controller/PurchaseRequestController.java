@@ -186,6 +186,8 @@ public class PurchaseRequestController {
     @PostMapping("/purchasing/progress")
     public String progress(@RequestParam  Long requestId,
                          HttpSession session) {
+        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.PURCHASING);
+
         moveAssetRequestToInProgressUsecase.execute(requestId, session);
         return "redirect:/viewRequest";
     }
@@ -193,6 +195,8 @@ public class PurchaseRequestController {
     // ==================== STOCK_IN =====================
     @GetMapping("/viewPurchaseAsset")
     public String viewPurchaseAsset(@ModelAttribute ViewPurchaseAssetDTORequest request, HttpSession session, Model model) {
+
+        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.WAREHOUSE);
 
         ViewPurchaseAssetAllDTOResponse response = viewPurchaseAssetAllUsecase.viewPurchaseAssetAllDTOResponse(request, session);
         model.addAttribute("purchaseAsset", response);

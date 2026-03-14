@@ -3,10 +3,12 @@ package com.example.swp391_assetmanagement.usecase;
 import com.example.swp391_assetmanagement.entity.AssetRequest;
 import com.example.swp391_assetmanagement.entity.OptionDetail;
 import com.example.swp391_assetmanagement.enums.RequestStatus;
+import com.example.swp391_assetmanagement.enums.RequestType;
 import com.example.swp391_assetmanagement.service.AssetRequestService;
 import com.example.swp391_assetmanagement.service.OptionDetailService;
 import com.example.swp391_assetmanagement.service.UserService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +54,14 @@ public class ManagerRejectAllOptionDetailUsecase {
             if (countBySelected == 0 && !ObjectUtils.isEmpty(assetRequest) && Objects.equals(assetRequest.requestStatusId, RequestStatus.RESEARCH.getValue())){
                 assetRequest.setRequestStatusId(RequestStatus.APPROVED.getValue());
                 assetRequestService.updateIsSelected(assetRequest);
+            }
+
+            // Check type request
+            String assetRequestType = assetRequestService.findRequestTypeById(assetRequestId);
+
+            if (!(ObjectUtils.isEmpty(assetRequestType)
+                    || !Objects.equals(RequestType.of(assetRequestType).getValue(), RequestType.PROCUREMENT.getValue()))) {
+                throw new ValidationException();
             }
         }
 

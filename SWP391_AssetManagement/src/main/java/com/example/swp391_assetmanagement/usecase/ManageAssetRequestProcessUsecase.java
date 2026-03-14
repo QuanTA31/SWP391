@@ -100,7 +100,7 @@ public class ManageAssetRequestProcessUsecase {
                         .build());
 
         if (allProcessResponses.isEmpty()) {
-            return ViewAllProcessDTOResponse.builder()
+            return ViewAllProcessDTOResponse.builder()    // ViewAllProcessDTOResponse có 2 phương thức
                     .allProcessResponses(Collections.emptyList())
                     .filters(FilterAllDTOResponse.builder()
                             .requestStatusId(request.getRequestStatusId())
@@ -125,7 +125,7 @@ public class ManageAssetRequestProcessUsecase {
         return ViewAllProcessDTOResponse.builder()
                 .allProcessResponses(
                         allProcessResponses.stream().map(
-                                        entity -> {  // <--- 1. Thêm dấu mở khối {
+                                        entity -> {
 
                                             // --- Logic tính toán chèn vào ---
                                             // (Kiểm tra xem requestType có phải là Internal không)
