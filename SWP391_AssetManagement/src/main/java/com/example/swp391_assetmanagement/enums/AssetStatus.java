@@ -16,7 +16,8 @@ public enum AssetStatus implements EnumBase<AssetStatus> {
     MAINTENANCE("04", "MAINTENANCE"),
     BROKEN("05", "BROKEN"),
     DISPOSED("06", "DISPOSED"),
-    LOST("07", "LOST");
+    LOST("07", "LOST"),
+    STOCKED("08", "STOCKED");
 
     private final String value;
     private final String name;
