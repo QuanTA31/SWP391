@@ -44,7 +44,10 @@ public class PurchaseRequestController {
         model.addAttribute("purchaseRequest",createPurchaseRequestDTORequest);
         model.addAttribute("assetTypes",
                 Arrays.stream(AssetType.values())
-                        .map(a -> new AssetTypeDTORequest(a.getValue(), a.getName()))
+                        .map(a -> AssetTypeDTORequest.builder()
+                                .value(a.getValue())
+                                .label(a.getName())
+                                .build())
                         .toList());
         model.addAttribute("role",session.getAttribute("ROLE"));
         return "createPurchaseRequest";
@@ -68,9 +71,12 @@ public class PurchaseRequestController {
         model.addAttribute("purchaseRequest",createPurchaseRequestDTORequest);
         model.addAttribute("assetTypes",
                 Arrays.stream(AssetType.values())
-                        .map(a -> new AssetTypeDTORequest(a.getValue(), a.getName()))
+                        .map(a ->  AssetTypeDTORequest.builder()
+                                .value(a.getValue())
+                                .label(a.getName())
+                                .build())
                         .toList());
-        model.addAttribute("approvalRequest",new ApprovalPurchaseRequestDTORequest());
+        model.addAttribute("approvalRequest",ApprovalPurchaseRequestDTORequest.builder().build());
         model.addAttribute("role", session.getAttribute("ROLE"));
         return "createPurchaseRequest";
     }

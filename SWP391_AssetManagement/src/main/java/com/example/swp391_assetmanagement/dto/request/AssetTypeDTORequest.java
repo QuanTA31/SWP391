@@ -1,10 +1,10 @@
 package com.example.swp391_assetmanagement.dto.request;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor
+@Builder
 public class AssetTypeDTORequest {
     private String value;
     private String label;

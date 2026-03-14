@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -20,24 +21,27 @@ public class GetPurchaseRequestWarehouseUsecase {
     private final AssetRequestService assetRequestService;
 
     public CreatePurchaseRequestDTORequest execute(Long assetRequestId) {
-        CreatePurchaseRequestDTORequest createPurchaseRequestDTORequest = new CreatePurchaseRequestDTORequest();
+
+        CreatePurchaseRequestDTORequest.CreatePurchaseRequestDTORequestBuilder
+                createPurchaseRequestDTORequest = CreatePurchaseRequestDTORequest.builder();
+
         if(assetRequestId == null) {
-            createPurchaseRequestDTORequest.setCreatePurchaseRequestDetailDTORequestList(new ArrayList<>());
-            createPurchaseRequestDTORequest.setIsSubmitted(false);
-            createPurchaseRequestDTORequest.setAssetRequestId(null);
-            createPurchaseRequestDTORequest.setRequestStatus(null);
-            return createPurchaseRequestDTORequest;
+            createPurchaseRequestDTORequest.createPurchaseRequestDetailDTORequestList(Collections.emptyList());
+            createPurchaseRequestDTORequest.isSubmitted(false);
+            createPurchaseRequestDTORequest.assetRequestId(null);
+            createPurchaseRequestDTORequest.requestStatus(null);
+            return createPurchaseRequestDTORequest.build();
         }
 
         assetRequestService.findAssetRequestByIdForUpdate(assetRequestId).ifPresent(assetRequest -> {
-            createPurchaseRequestDTORequest.setRequestStatus(assetRequest.getRequestStatusId());
+            createPurchaseRequestDTORequest.requestStatus(assetRequest.requestStatusId);
         });
 
         List<AssetExternalRequestDetail> details = assetExternalRequestDetailService.getByAssetRequestId(assetRequestId);
 
         List<CreatePurchaseRequestDetailDTORequest> detailDTOs = details.stream()
                 .map(detail -> CreatePurchaseRequestDetailDTORequest.builder()
-                        .assetExternalRequestDetailId(detail.getId())
+                        .assetExternalRequestDetailId(detail.id)
                         .assetTypeId(detail.getAssetTypeId())
                         .assetTypeName(AssetType.of(detail.getAssetTypeId()).getName())
                         .externalStatusId(detail.getExternalStatusId())
@@ -49,6 +53,6 @@ public class GetPurchaseRequestWarehouseUsecase {
         createPurchaseRequestDTORequest.setCreatePurchaseRequestDetailDTORequestList(detailDTOs);
         createPurchaseRequestDTORequest.setIsSubmitted(!RequestStatus.DRAFT.getValue()
                 .equals(createPurchaseRequestDTORequest.getRequestStatus()));
-        return createPurchaseRequestDTORequest;
+        return createPurchaseRequestDTORequest.build();
     }
 }
