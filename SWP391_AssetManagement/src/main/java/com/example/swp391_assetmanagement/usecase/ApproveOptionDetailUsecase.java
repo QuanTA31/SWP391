@@ -68,13 +68,13 @@ public class ApproveOptionDetailUsecase {
         if (selected && Objects.nonNull(plan)) {
 
             AssetExternalRequestDetail detail = assetExternalRequestDetailService.findToUpdate(requestDetailId);
-            Long requestId = detail.getAssetRequestId();
+            Long requestId = detail.assetRequestId;
 
             //Lấy asset_request
             AssetRequest assetRequest =
                     assetRequestService.findByUpdate(requestId);
 
-            Integer countBySelected = optionDetailService.countByIdAndIsSelected(requestDetailId, assetRequest.getId());
+            Integer countBySelected = optionDetailService.countByIdAndIsSelected(requestDetailId, assetRequest.id);
 
             //Check status nếu status kphai là research thì báo lỗi
             if (!Objects.equals(RequestStatus.RESEARCH.getValue(), assetRequest.requestStatusId)) {
@@ -88,7 +88,7 @@ public class ApproveOptionDetailUsecase {
             );
 
             if (countBySelected == 0) {
-                Boolean isValidRequest = optionDetailService.checkValidRequest(requestDetailId, assetRequest.getId());
+                Boolean isValidRequest = optionDetailService.checkValidRequest(requestDetailId, assetRequest.id);
                 assetRequest.setRequestStatusId(isValidRequest
                         ? RequestStatus.RESEARCH_DONE.getValue() : RequestStatus.APPROVED.getValue());
                 assetRequestService.updatePurchaseRequestStatus(assetRequest);
