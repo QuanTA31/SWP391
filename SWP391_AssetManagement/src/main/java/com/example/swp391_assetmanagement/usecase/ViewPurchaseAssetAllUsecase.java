@@ -32,7 +32,7 @@ public class ViewPurchaseAssetAllUsecase {
 
     @Transactional(readOnly = true)
     public ViewPurchaseAssetAllDTOResponse viewPurchaseAssetAllDTOResponse (ViewPurchaseAssetDTORequest request, HttpSession session) {
-        validatePurchaseAssetRequest(request, session);
+//        validatePurchaseAssetRequest(request, session);
 
         int pageIndex = (request.getPageIndex() != null && request.getPageIndex() != 0)
                 ? request.getPageIndex()
@@ -111,13 +111,13 @@ public class ViewPurchaseAssetAllUsecase {
                 .build();
     }
 
-    private void validatePurchaseAssetRequest(ViewPurchaseAssetDTORequest request, HttpSession session) {
-
-        // Check role
-        if (!Objects.equals(session.getAttribute("ROLE"), Roles.WAREHOUSE.getValue())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền truy cập vào trang này !");
-        }
-
-    }
+//    private void validatePurchaseAssetRequest(ViewPurchaseAssetDTORequest request, HttpSession session) {
+//
+//        // Check role
+//        if (!Objects.equals(session.getAttribute("ROLE"), Roles.WAREHOUSE.getValue())) {
+//            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền truy cập vào trang này !");
+//        }
+//
+//    }
 
 }
