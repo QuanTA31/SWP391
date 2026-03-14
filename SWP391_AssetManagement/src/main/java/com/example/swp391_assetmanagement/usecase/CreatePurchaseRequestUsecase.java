@@ -96,11 +96,9 @@ public class CreatePurchaseRequestUsecase {
             List<AssetExternalRequestDetail> dbDetails =
                     assetExternalRequestDetailService.getByAssetRequestIdForUpdate(request.getAssetRequestId());
 
-
             Set<Long> dbIds = dbDetails.stream()
-                    .map(AssetExternalRequestDetail::getId)
+                    .map(detail -> detail.id)
                     .collect(Collectors.toSet());
-
 
             List<CreatePurchaseRequestDetailDTORequest> updateDTOs = Collections.emptyList();
             List<CreatePurchaseRequestDetailDTORequest> insertDTOs = Collections.emptyList();
