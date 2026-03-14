@@ -1,6 +1,5 @@
 package com.example.swp391_assetmanagement.entity;
 
-import lombok.Getter;
 import lombok.Setter;
 import org.seasar.doma.Column;
 import org.seasar.doma.Entity;
@@ -10,7 +9,6 @@ import org.seasar.doma.Table;
 import java.time.LocalDateTime;
 
 @Setter
-@Getter
 @Entity
 @Table(name = "assets_asset_request_external")
 public class AssetsAssetRequestExternal {
