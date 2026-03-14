@@ -3,6 +3,7 @@ import com.example.swp391_assetmanagement.dto.request.CreateUserDTORequest;
 import com.example.swp391_assetmanagement.dto.request.ViewAllUserDTORequest;
 import com.example.swp391_assetmanagement.dto.response.ViewAllUserDTOResponse;
 import com.example.swp391_assetmanagement.usecase.CreateUserUsecase;
+import com.example.swp391_assetmanagement.usecase.UpdateUserStatusUsecase;
 import com.example.swp391_assetmanagement.usecase.ViewAllUserUsecase;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @Controller
 @RequestMapping("/admin")
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final ViewAllUserUsecase viewAllUserUsecase;
     private final CreateUserUsecase createNewUser;
+    private final UpdateUserStatusUsecase updateStatusUsecase;
 
     @GetMapping("/viewUser")
     public String viewUser(@ModelAttribute ViewAllUserDTORequest request, HttpSession session, Model model) {
@@ -27,20 +30,20 @@ public class UserController {
 
         return "ViewAllUser";
     }
-    @PostMapping("/viewUser/updateStatus") // Đường dẫn đầy đủ sẽ là /admin/viewUser/updateStatus
-    @ResponseBody // Phải có cái này để trả về kết quả trực tiếp, không tìm file HTML
+    @PostMapping("/viewUser/updateStatus")
+    @ResponseBody
     public ResponseEntity<?> updateStatus(@RequestParam("username") String username,
-                                          @RequestParam("status") String status) {
+                                          @RequestParam("status") String status,
+                                          HttpSession session) {
         try {
-            // In log để kiểm tra xem dữ liệu đã xuống tới đây chưa
-            System.out.println("Update Status - User: " + username + ", New Status: " + status);
+            // Gọi Usecase xử lý
+            updateStatusUsecase.execute(username, status, session);
 
-            // Gọi Usecase xử lý logic DB ở đây
-            // updateStatusUsecase.execute(username, status);
-
-            return ResponseEntity.ok("Success");
+            return ResponseEntity.ok("Update success!");
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal error");
         }
     }
     @GetMapping("/createUser")
