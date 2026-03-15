@@ -198,8 +198,35 @@
 
                 </th:block>
 
-                <!-- INTERNAL / EXTERNAL -->
-                <th:block th:unless="${#strings.equalsIgnoreCase(item.requestTypeName,'PROCUREMENT')}">
+                <!-- LIQUIDATION -->
+                <th:block th:if="${#strings.equalsIgnoreCase(item.requestTypeName,'LIQUIDATION')}">
+
+                  <!-- WAREHOUSE -->
+                  <a th:if="${session.ROLE == '03'}"
+                     class="btn btn-sm btn-info text-white"
+                     th:href="@{/liquidate/warehouse/view(assetRequestId=${item.id})}">
+                    View
+                  </a>
+
+                  <!-- MANAGER -->
+                  <a th:if="${session.ROLE == '02'}"
+                     class="btn btn-sm btn-info text-white"
+                     th:href="@{/liquidate/manager/view(assetRequestId=${item.id})}">
+                    View
+                  </a>
+
+                  <!-- PURCHASING -->
+                  <a th:if="${session.ROLE == '04'}"
+                     class="btn btn-sm btn-info text-white"
+                     th:href="@{/liquidate/warehouse/view(assetRequestId=${item.id})}">
+                    View
+                  </a>
+
+                </th:block>
+
+                <!-- INTERNAL / EXTERNAL --> <!-- check lại do đá liquidation-->
+                <th:block th:if="${#strings.equalsIgnoreCase(item.requestTypeName,'INTERNAL')
+              or #strings.equalsIgnoreCase(item.requestTypeName,'EXTERNAL')}">
 
                   <a th:if="${item.internal}"
                      class="btn btn-sm btn-primary"

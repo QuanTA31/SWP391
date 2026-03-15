@@ -37,6 +37,11 @@ public class AssetRequestServiceImpl implements AssetRequestService {
     }
 
     @Override
+    public void updateLiquidationRequest(AssetRequest assetRequest) {
+        assetRequestDAO.update(assetRequest);
+    }
+
+    @Override
     public void updatePurchaseRequestStatus(AssetRequest assetRequest) {
         assetRequestDAO.updateStatus(assetRequest);
     }

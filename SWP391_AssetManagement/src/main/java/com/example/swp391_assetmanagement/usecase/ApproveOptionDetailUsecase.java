@@ -5,16 +5,19 @@ import com.example.swp391_assetmanagement.entity.AssetRequest;
 import com.example.swp391_assetmanagement.entity.OptionDetail;
 import com.example.swp391_assetmanagement.enums.ExternalStatus;
 import com.example.swp391_assetmanagement.enums.RequestStatus;
+import com.example.swp391_assetmanagement.enums.RequestType;
 import com.example.swp391_assetmanagement.enums.Roles;
 import com.example.swp391_assetmanagement.service.AssetExternalRequestDetailService;
 import com.example.swp391_assetmanagement.service.AssetRequestService;
 import com.example.swp391_assetmanagement.service.OptionDetailService;
 import com.example.swp391_assetmanagement.service.UserService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
@@ -36,6 +39,17 @@ public class ApproveOptionDetailUsecase {
             boolean selected,
             HttpSession session
     ) {
+        AssetExternalRequestDetail detail = assetExternalRequestDetailService.findToUpdate(requestDetailId);
+        Long requestId = detail.getAssetRequestId();
+
+        // Check type request
+        String assetRequestType = assetRequestService.findRequestTypeById(requestId);
+
+        if ((ObjectUtils.isEmpty(assetRequestType)
+                || !Objects.equals(RequestType.of(assetRequestType).getValue(), RequestType.PROCUREMENT.getValue()))) {
+            throw new ValidationException("Invalid request type");
+        }
+
         //Check role
         String role = (String) session.getAttribute("ROLE");
 
@@ -67,8 +81,8 @@ public class ApproveOptionDetailUsecase {
 
         if (selected && Objects.nonNull(plan)) {
 
-            AssetExternalRequestDetail detail = assetExternalRequestDetailService.findToUpdate(requestDetailId);
-            Long requestId = detail.getAssetRequestId();
+            //AssetExternalRequestDetail detail = assetExternalRequestDetailService.findToUpdate(requestDetailId);
+            //Long requestId = detail.getAssetRequestId();
 
             //Lấy asset_request
             AssetRequest assetRequest =

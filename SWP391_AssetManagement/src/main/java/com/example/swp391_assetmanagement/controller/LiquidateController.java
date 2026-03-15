@@ -15,19 +15,18 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Arrays;
 
 @Controller
-@RequestMapping("/purchase-requests")
+@RequestMapping("/liquidate")
 @RequiredArgsConstructor
-public class PurchaseRequestController {
+public class LiquidateController {
 
-    private final CreatePurchaseRequestUsecase createPurchaseRequestUsecase;
-    private final GetPurchaseRequestWarehouseUsecase getPurchaseRequestWarehouseUsecase;
-    private final GetPurchaseRequestManagerUsecase getPurchaseRequestManagerUsecase;
-    private final ManagerCreatePurchaseRequestUsecase managerCreatePurchaseRequestUsecase;
+    private final CreateLiquidationRequestUsecase createLiquidationRequestUsecase;//xong
+    private final GetLiquidationWarehouseUsecase getLiquidationWarehouseUsecase;//xong
+    private final GetLiquidationManagerUsecase getLiquidationManagerUsecase;//xong
+    private final ManagerCreateLiquidationUsecase managerCreateLiquidationUsecase;//xong
     private final ManagerRejectAllOptionDetailUsecase managerRejectAllOptionDetailUsecase;
     private final UpdateAssetRequestUsecase updateAssetRequestUsecase;
-    private final WarehouseCreateAssetsUsecase warehouseCreateAssetsUsecase;
     private final MoveAssetRequestToInProgressUsecase moveAssetRequestToInProgressUsecase;
-    private final ViewPurchaseAssetAllUsecase viewPurchaseAssetAllUsecase;
+    private final ViewPurchaseAssetAllUsecase viewPurchaseAssetAllUsecase;//check lại
     private final WarehouseCompleteUsecase warehouseCompleteUsecase;
 
     private final RoleChecker roleChecker;
@@ -35,48 +34,48 @@ public class PurchaseRequestController {
     @GetMapping("/warehouse/view")
     public String viewPurchaseRequestForm(@RequestParam(required = false) Long assetRequestId, Model model, HttpSession session) {
 
-        CreatePurchaseRequestDTORequest createPurchaseRequestDTORequest = getPurchaseRequestWarehouseUsecase.execute(assetRequestId);
+        CreateLiquidationDTORequest createLiquidationDTORequest = getLiquidationWarehouseUsecase.execute(assetRequestId);
 
-        model.addAttribute("purchaseRequest",createPurchaseRequestDTORequest);
+        model.addAttribute("liquidationRequest", createLiquidationDTORequest);
         model.addAttribute("assetTypes",
                 Arrays.stream(AssetType.values())
                         .map(a -> new AssetTypeDTORequest(a.getValue(), a.getName()))
                         .toList());
         model.addAttribute("role",session.getAttribute("ROLE"));
-        return "createPurchaseRequest";
+        return "createLiquidationRequest";
     }
 
     @PostMapping("/warehouse/create")
-    public String createPurchaseRequestForm(
-            @ModelAttribute CreatePurchaseRequestDTORequest request, HttpSession session, Model model) {
+    public String createLiquidationRequestForm(
+            @ModelAttribute CreateLiquidationDTORequest request, HttpSession session, Model model) {
 
         roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.WAREHOUSE);
 
-        createPurchaseRequestUsecase.execute(request, session);
+        createLiquidationRequestUsecase.execute(request, session);
 
         return "redirect:/viewRequest";
     }
 
     @GetMapping("/manager/view")
     public String managerViewPurchaseRequest(@RequestParam Long assetRequestId, Model model, HttpSession session) {
-        CreatePurchaseRequestDTORequest createPurchaseRequestDTORequest = getPurchaseRequestManagerUsecase.execute(assetRequestId);
+        CreateLiquidationDTORequest createLiquidationDTORequest = getLiquidationManagerUsecase.execute(assetRequestId);
 
-        model.addAttribute("purchaseRequest",createPurchaseRequestDTORequest);
+        model.addAttribute("liquidationRequest", createLiquidationDTORequest);
         model.addAttribute("assetTypes",
                 Arrays.stream(AssetType.values())
                         .map(a -> new AssetTypeDTORequest(a.getValue(), a.getName()))
                         .toList());
         model.addAttribute("approvalRequest",new ApprovalPurchaseRequestDTORequest());
         model.addAttribute("role", session.getAttribute("ROLE"));
-        return "createPurchaseRequest";
+        return "createLiquidationRequest";
     }
 
     @PostMapping("/manager/approval")
     public String managerViewPurchaseRequest(
-            @ModelAttribute ApprovalPurchaseRequestDTORequest request, HttpSession session, Model model) {
+            @ModelAttribute ApprovalLiquidationDTORequest request, HttpSession session, Model model) {
 
         roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.MANAGER);
-        managerCreatePurchaseRequestUsecase.execute(request, session);
+        managerCreateLiquidationUsecase.execute(request, session);
         return "redirect:/viewRequest";
     }
 
@@ -148,7 +147,7 @@ public class PurchaseRequestController {
     public String delete(@PathVariable Long id, @RequestParam("asset_external_request_detail_id") Long requestDetailId,
                          HttpSession session) {
         deleteUseCase.execute(requestDetailId,id, session);
-        return "redirect:/purchase-requests/option-detail/list?asset_external_request_detail_id=" + requestDetailId;
+        return "redirect:/liquidate/option-detail/list?asset_external_request_detail_id=" + requestDetailId;
     }
 
     @PostMapping("/purchasing/research")
@@ -166,22 +165,13 @@ public class PurchaseRequestController {
                           //@RequestParam(value = "selected", required = false) String selected
     ) {
         approveUseCase.execute(optionId, requestDetailId,true, session);
-        return "redirect:/purchase-requests/option-detail/list?asset_external_request_detail_id=" + requestDetailId;
-    }
-
-    @PostMapping("/warehouse/createAssets")
-    public String createAssets(@RequestParam  Long assetRequestId,
-                         HttpSession session) {
-
-        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.WAREHOUSE);
-        warehouseCreateAssetsUsecase.execute(assetRequestId, session);
-        return "redirect:/purchase-requests/viewPurchaseAsset?assetRequestId=" + assetRequestId;
+        return "redirect:/liquidate/option-detail/list?asset_external_request_detail_id=" + requestDetailId;
     }
 
     // ==================== IN_PROGRESS ===============
     @PostMapping("/purchasing/progress")
     public String progress(@RequestParam  Long requestId,
-                         HttpSession session) {
+                           HttpSession session) {
         roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.PURCHASING);
 
         moveAssetRequestToInProgressUsecase.execute(requestId, session);
