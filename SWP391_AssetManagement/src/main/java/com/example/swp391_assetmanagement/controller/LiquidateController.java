@@ -2,6 +2,7 @@ package com.example.swp391_assetmanagement.controller;
 
 import com.example.swp391_assetmanagement.common.RoleChecker;
 import com.example.swp391_assetmanagement.dto.request.*;
+import com.example.swp391_assetmanagement.dto.response.LiquiDateCreateDTOResponse;
 import com.example.swp391_assetmanagement.dto.response.ViewPurchaseAssetAllDTOResponse;
 import com.example.swp391_assetmanagement.enums.AssetType;
 import com.example.swp391_assetmanagement.enums.Roles;
@@ -13,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Controller
 @RequestMapping("/liquidate")
@@ -20,7 +22,7 @@ import java.util.Arrays;
 public class LiquidateController {
 
     private final CreateLiquidationRequestUsecase createLiquidationRequestUsecase;//xong
-    private final GetLiquidationWarehouseUsecase getLiquidationWarehouseUsecase;//xong
+    private final LiquiAssetManagerUsecase liquiAssetManagerUsecase;//xong
     private final GetLiquidationManagerUsecase getLiquidationManagerUsecase;//xong
     private final ManagerCreateLiquidationUsecase managerCreateLiquidationUsecase;//xong
     private final ManagerRejectAllOptionDetailUsecase managerRejectAllOptionDetailUsecase;
@@ -31,29 +33,28 @@ public class LiquidateController {
 
     private final RoleChecker roleChecker;
 
-    @GetMapping("/warehouse/view")
-    public String viewPurchaseRequestForm(@RequestParam(required = false) Long assetRequestId, Model model, HttpSession session) {
+    // Manager access to screen view asset can liquidate
+    @GetMapping("/manager/viewAsset")
+    public String viewAssets(@ModelAttribute LiquiDateCreateDTORequest liquiDateCreateDTORequest,HttpSession session, Model model) {
 
-        CreateLiquidationDTORequest createLiquidationDTORequest = getLiquidationWarehouseUsecase.execute(assetRequestId);
+//        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.MANAGER);
 
-        model.addAttribute("liquidationRequest", createLiquidationDTORequest);
-        model.addAttribute("assetTypes",
-                Arrays.stream(AssetType.values())
-                        .map(a -> new AssetTypeDTORequest(a.getValue(), a.getName()))
-                        .toList());
-        model.addAttribute("role",session.getAttribute("ROLE"));
+        LiquiDateCreateDTOResponse assets = liquiAssetManagerUsecase.execute(liquiDateCreateDTORequest, session);
+        model.addAttribute("assets", assets);
+
         return "createLiquidationRequest";
     }
 
-    @PostMapping("/warehouse/create")
+    // Manager access to screen view asset and create request
+    @PostMapping("/manager/create")
     public String createLiquidationRequestForm(
-            @ModelAttribute CreateLiquidationDTORequest request, HttpSession session, Model model) {
+            @RequestParam(value = "selectedAssetIds", required = false) List<Long> requests, HttpSession session) {
 
-        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.WAREHOUSE);
+//        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.MANAGER);
 
-        createLiquidationRequestUsecase.execute(request, session);
+        createLiquidationRequestUsecase.execute(requests, session);
 
-        return "redirect:/viewRequest";
+        return "redirect:/liquidate/manager/viewAsset";
     }
 
     @GetMapping("/manager/view")
