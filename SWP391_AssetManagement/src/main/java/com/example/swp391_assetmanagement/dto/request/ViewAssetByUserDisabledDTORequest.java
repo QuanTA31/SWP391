@@ -13,5 +13,7 @@ public class ViewAssetByUserDisabledDTORequest {
 
     private String assetTypeId;
 
+    private String assetStatusId;
+
     private Integer pageIndex;
 }
