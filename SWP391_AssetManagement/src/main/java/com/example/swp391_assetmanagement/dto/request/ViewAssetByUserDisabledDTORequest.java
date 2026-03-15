@@ -7,7 +7,7 @@ import lombok.Getter;
 @Builder
 public class ViewAssetByUserDisabledDTORequest {
 
-    private String name;
+    private String assetCode;
 
     private String locationId;
 

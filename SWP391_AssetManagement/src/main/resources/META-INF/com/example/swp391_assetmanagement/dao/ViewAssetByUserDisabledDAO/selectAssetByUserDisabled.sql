@@ -6,20 +6,21 @@ SELECT a.asset_code,
        a.current_user_id,
        a.asset_type_id,
        u.username,
-       u.name,
+       ud.name,
        u.status_id,
        COUNT(1) OVER() AS total_items
 FROM users AS u
 INNER JOIN assets AS a ON u.id = a.current_user_id
+INNER JOIN user_detail AS ud ON u.id = ud.user_id
 WHERE u.status_id = /* request.userStatus */'03'
-  /*%if request.locationId != null */
-  AND a.location_id = /* request.locationId */'L01'
+  /*%if @isNotEmpty(request.locationId) */
+  AND a.location_id = /* request.locationId */'01'
   /*%end*/
-  /*%if request.assetTypeId != null */
-  AND a.asset_type_id = /* request.assetTypeId */'T01'
+  /*%if @isNotEmpty(request.assetTypeId) */
+  AND a.asset_type_id = /* request.assetTypeId */'01'
   /*%end*/
-  /*%if request.name != null */
-  AND Lower(u.name) LIKE Lower (/* request.name */'%a%')
+  /*%if @isNotEmpty(request.assetCode) */
+  AND Lower(a.asset_code) LIKE Lower(CONCAT('%', /* request.assetCode */'lap', '%'))
   /*%end*/
 ORDER BY a.received_date DESC
 LIMIT /* request.pageSize */15

@@ -2,6 +2,8 @@ package com.example.swp391_assetmanagement.usecase;
 
 import com.example.swp391_assetmanagement.dto.request.ViewAssetByUserDisabledDTORequest;
 import com.example.swp391_assetmanagement.dto.response.ViewAssetByUserDisabledDTOResponse;
+import com.example.swp391_assetmanagement.enums.AssetStatus;
+import com.example.swp391_assetmanagement.enums.AssetType;
 import com.example.swp391_assetmanagement.enums.Location;
 import com.example.swp391_assetmanagement.service.ViewAssetByUserDisabledService;
 import com.example.swp391_assetmanagement.service.servicerequest.ViewAssetByUserDisabledServiceRequest;
@@ -32,7 +34,7 @@ public class ViewAssetByUserDisabledUsecase {
         // 2. Map request sang ServiceRequest
         ViewAssetByUserDisabledServiceRequest serviceRequest = ViewAssetByUserDisabledServiceRequest.builder()
                 .userStatus("03") // Trạng thái Disable
-                .name(request.getName())
+                .assetCode(request.getAssetCode())
                 .locationId(request.getLocationId())
                 .assetTypeId(request.getAssetTypeId())
                 .offset((pageIndex - 1) * PAGE_SIZE)
@@ -44,6 +46,11 @@ public class ViewAssetByUserDisabledUsecase {
         if (serviceResponses.isEmpty()) {
             return ViewAssetByUserDisabledDTOResponse.builder()
                     .assets(Collections.emptyList())
+                    .filters(ViewAssetByUserDisabledDTOResponse.FilterUserDTOResponse.builder() // ĐỪNG QUÊN DÒNG NÀY
+                            .assetCode(request.getAssetCode())
+                            .locationId(request.getLocationId())
+                            .assetTypeId(request.getAssetTypeId())
+                            .build())
                     .page(pageIndex).pageSize(PAGE_SIZE).totalAsset(0).totalPages(0)
                     .build();
         }
@@ -53,10 +60,17 @@ public class ViewAssetByUserDisabledUsecase {
         int totalPages = (int) Math.ceil((double) totalAssets / PAGE_SIZE);
 
         // 4. Map Response (Lưu ý: Bạn nên tạo một List bên trong ViewAssetByUserDisabledDTOResponse)
+        // Trong hàm viewAssetDisabled của ViewAssetByUserDisabledUsecase
         return ViewAssetByUserDisabledDTOResponse.builder()
                 .assets(serviceResponses.stream()
                         .map(this::mapToItemResponse)
                         .toList())
+                // THÊM ĐOẠN NÀY ĐỂ GIỮ FILTER
+                .filters(ViewAssetByUserDisabledDTOResponse.FilterUserDTOResponse.builder()
+                        .assetCode(request.getAssetCode())
+                        .locationId(request.getLocationId())
+                        .assetTypeId(request.getAssetTypeId())
+                        .build())
                 .page(pageIndex)
                 .pageSize(PAGE_SIZE)
                 .totalAsset(totalAssets)
@@ -80,8 +94,8 @@ public class ViewAssetByUserDisabledUsecase {
                 .description(entity.getDescription())
                 .receivedDate(entity.getReceivedDate())
                 .locationName(Location.of(entity.getLocationId()).getName())
-                .assetStatusId(entity.getAssetStatusId())
-                .assetTypeId(entity.getAssetTypeId())
+                .assetTypeName(AssetType.of(entity.getAssetTypeId()).getName())
+                .assetStatusName(AssetStatus.of(entity.getAssetStatusId()).getName())
                 .username(entity.getUsername())
                 .userStatus(entity.getUserStatus())
                 .build();

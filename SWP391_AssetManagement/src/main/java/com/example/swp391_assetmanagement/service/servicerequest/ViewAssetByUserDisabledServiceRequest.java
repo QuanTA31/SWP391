@@ -9,7 +9,7 @@ public class ViewAssetByUserDisabledServiceRequest {
 
     private String userStatus;
 
-    private String name;
+    private String assetCode;
 
     private String locationId;
 
