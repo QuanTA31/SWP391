@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Tạo Yêu Cầu Sửa Chữa | Asset Tracker</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" th:href="@{/css/MainView.css}">
+    <link rel="stylesheet" th:href="@{/css/createPurchaseRequest.css}">
+
+
+</head>
+
+<body>
+
+<!-- Navigation bar (dùng chung với các trang khác) -->
+<div class="app-wrapper" th:if="${role != null}">
+    <div class="app-header">
+        <span>Asset Tracker</span>
+        <span>Department Manager</span>
+    </div>
+
+    <div class="app-content">
+        <div class="sidebar">
+            <div class="fw-semibold mb-2">Menu</div>
+            <a class="menu-item" th:href="@{/viewAsset}">Danh sách tài sản</a>
+            <a class="menu-item active" th:href="@{/maintenance-requests/create}">Tạo yêu cầu sửa chữa</a>
+            <a class="menu-item" th:href="@{/viewRequest}">Danh sách yêu cầu</a>
+        </div>
+
+        <div class="content-right">
+            <div class="page-card">
+
+                <!-- ── Page header ── -->
+                <div class="page-header">
+                    <div class="icon-box"><i class="bi bi-tools"></i></div>
+                    <div>
+                        <h4>Tạo Yêu Cầu Sửa Chữa Tài Sản</h4>
+                        <small>Department Manager → Gửi trực tiếp, không cần phê duyệt</small>
+                    </div>
+                </div>
+
+                <!-- ── Error message ── -->
+                <div class="alert-error" th:if="${errorMessage}">
+                    <i class="bi bi-exclamation-circle-fill"></i>
+                    <span th:text="${errorMessage}">Có lỗi xảy ra!</span>
+                </div>
+
+                <!-- ── Form ── -->
+                <form th:action="@{/maintenance-requests/create}"
+                      th:object="${request}"
+                      method="POST"
+                      id="maintenanceForm">
+
+                    <!-- Hidden field isSubmitted (set by JS buttons) -->
+                    <input type="hidden" th:field="*{isSubmitted}" id="isSubmittedField" value="false">
+
+                    <!-- Section 1: Chọn tài sản -->
+                    <div class="section-label"><i class="bi bi-box-seam me-1"></i>1 — Chọn tài sản cần sửa chữa</div>
+
+                    <div class="mb-3 asset-select-wrap">
+                        <label for="assetId" class="form-label">
+                            Tài sản <span class="text-danger">*</span>
+                        </label>
+                        <select class="form-select" id="assetId" th:field="*{assetId}" required>
+                            <option value="" selected disabled>-- Chọn tài sản từ danh sách phòng ban --</option>
+                            <option th:each="asset : ${assets}"
+                                    th:value="${asset.id}"
+                                    th:text="${asset.assetCode + ' | ' + asset.assetTypeId + (asset.description != null ? ' — ' + asset.description : '')}">
+                            </option>
+                        </select>
+                        <div class="form-text text-secondary mt-1">
+                            <i class="bi bi-info-circle"></i>
+                            Chỉ hiển thị tài sản thuộc phòng ban của bạn.
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    <!-- Section 2: Mô tả lỗi & Mức độ ưu tiên -->
+                    <div class="section-label"><i class="bi bi-clipboard2-pulse me-1"></i>2 — Mô tả lỗi &amp; Mức độ ưu tiên</div>
+
+                    <div class="mb-3">
+                        <label for="issueDescription" class="form-label">
+                            Mô tả vấn đề / lỗi <span class="text-danger">*</span>
+                        </label>
+                        <textarea class="form-control"
+                                  id="issueDescription"
+                                  th:field="*{issueDescription}"
+                                  rows="4"
+                                  placeholder="Mô tả chi tiết triệu chứng, khi nào xảy ra, ảnh hưởng như thế nào..."
+                                  required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Mức độ ưu tiên <span class="text-danger">*</span>
+                        </label>
+                        <div class="priority-group">
+
+                            <div class="priority-option low">
+                                <input type="radio" id="priorityLow"
+                                       th:field="*{priority}" value="LOW" required>
+                                <label for="priorityLow">
+                                    <i class="bi bi-arrow-down-circle"></i> Thấp
+                                </label>
+                            </div>
+
+                            <div class="priority-option medium">
+                                <input type="radio" id="priorityMedium"
+                                       th:field="*{priority}" value="MEDIUM">
+                                <label for="priorityMedium">
+                                    <i class="bi bi-dash-circle"></i> Trung bình
+                                </label>
+                            </div>
+
+                            <div class="priority-option high">
+                                <input type="radio" id="priorityHigh"
+                                       th:field="*{priority}" value="HIGH">
+                                <label for="priorityHigh">
+                                    <i class="bi bi-arrow-up-circle"></i> Cao
+                                </label>
+                            </div>
+
+                            <div class="priority-option critical">
+                                <input type="radio" id="priorityCritical"
+                                       th:field="*{priority}" value="CRITICAL">
+                                <label for="priorityCritical">
+                                    <i class="bi bi-exclamation-octagon"></i> Khẩn cấp
+                                </label>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    <!-- Section 3: Ghi chú thêm -->
+                    <div class="section-label"><i class="bi bi-journal-text me-1"></i>3 — Ghi chú thêm (tuỳ chọn)</div>
+
+                    <div class="mb-1">
+                        <textarea class="form-control"
+                                  th:field="*{note}"
+                                  rows="2"
+                                  placeholder="Yêu cầu đặc biệt, cần gấp, liên hệ kỹ thuật..."></textarea>
+                    </div>
+
+                    <!-- ── Buttons ── -->
+                    <div class="action-bar">
+                        <a th:href="@{/viewRequest}" class="btn btn-sm btn-outline-secondary px-4"
+                           style="border-radius:8px; font-weight:600;">
+                            <i class="bi bi-x-lg me-1"></i>Hủy bỏ
+                        </a>
+
+                        <button type="submit"
+                                class="btn-save-draft"
+                                onclick="setSubmit(false)">
+                            <i class="bi bi-floppy me-1"></i>Lưu nháp
+                        </button>
+
+                        <button type="submit"
+                                class="btn-submit-req"
+                                onclick="setSubmit(true)">
+                            <i class="bi bi-send-fill me-1"></i>Gửi Yêu Cầu
+                        </button>
+                    </div>
+
+                </form>
+
+            </div><!-- /page-card -->
+        </div><!-- /content-right -->
+    </div><!-- /app-content -->
+</div><!-- /app-wrapper -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function setSubmit(value) {
+        document.getElementById('isSubmittedField').value = value;
+    }
+</script>
+
+</body>
+</html>

@@ -62,7 +62,8 @@ public class ManageAssetRequestProcessUsecase {
             requestTypeIdList.addAll(List.of(
                     RequestType.PROCUREMENT.getValue(),
                     RequestType.RETRIEVAL.getValue(),
-                    RequestType.ALLOCATION.getValue()
+                    RequestType.ALLOCATION.getValue(),
+                    RequestType.MAINTENANCE.getValue()
             ));
 
         }
@@ -79,8 +80,11 @@ public class ManageAssetRequestProcessUsecase {
 // DEPARTMENT_MANAGER
         else if (Objects.equals(role, Roles.DEPARTMENT_MANAGER.getValue())) {
 
-            requestTypeIdList.add(RequestType.ALLOCATION.getValue());
-
+           // requestTypeIdList.add(RequestType.ALLOCATION.getValue());
+            requestTypeIdList.addAll(List.of(
+                    RequestType.MAINTENANCE.getValue(),
+                    RequestType.ALLOCATION.getValue()
+            ));
         }
 // ROLE KHÁC → CẤM
         else {
