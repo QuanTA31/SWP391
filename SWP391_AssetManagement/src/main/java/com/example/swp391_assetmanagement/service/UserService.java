@@ -12,5 +12,5 @@ public interface UserService {
 
     Long getIdByUserCode(String userCode);
 
-    String getRoleCodesByUserCode(String userCode);
+    String getRoleIdByUserCode(String userCode);
 }
