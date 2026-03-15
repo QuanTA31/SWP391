@@ -15,6 +15,8 @@ public class ViewAssetByUserDisabledServiceRequest {
 
     private String assetTypeId;
 
+    private String assetStatusId;
+
     private int offset;
 
     private int pageSize;

@@ -34,6 +34,7 @@ public class ViewAssetByUserDisabledUsecase {
         // 2. Map request sang ServiceRequest
         ViewAssetByUserDisabledServiceRequest serviceRequest = ViewAssetByUserDisabledServiceRequest.builder()
                 .userStatus("03") // Trạng thái Disable
+                .assetStatusId("02") //Trạng thái đang sử dụng
                 .assetCode(request.getAssetCode())
                 .locationId(request.getLocationId())
                 .assetTypeId(request.getAssetTypeId())
