@@ -25,7 +25,7 @@ import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
-public class GetOptionDetailListUsecase {
+public class GetLiquidationOptionListUsecase {
 
     private static final int PAGE_SIZE = 10;
 
@@ -46,7 +46,7 @@ public class GetOptionDetailListUsecase {
         String assetRequestType = assetRequestService.findRequestTypeById(requestId);
 
         if ((ObjectUtils.isEmpty(assetRequestType)
-                || !Objects.equals(RequestType.of(assetRequestType).getValue(), RequestType.PROCUREMENT.getValue()))) {
+                || !Objects.equals(RequestType.of(assetRequestType).getValue(), RequestType.LIQUIDATION.getValue()))) {
             throw new ValidationException("Invalid request type");
         }
 

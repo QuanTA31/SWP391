@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>New Liquidation Request</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/MainView.css}">
+    <link rel="stylesheet" th:href="@{/css/createPurchaseRequest.css}">
+</head>
+<body>
+
+<div class="page-wrapper">
+
+    <!-- ===== PAGE HEADER ===== -->
+    <div class="page-header">
+        <div class="page-title">📋 Liquidation Request</div>
+
+        <span class="badge badge-draft"
+              th:if="${liquidationRequest.requestStatus == null}">New Request</span>
+        <span class="badge badge-draft"
+              th:if="${liquidationRequest.requestStatus == '01'}">Draft</span>
+        <span class="badge badge-pending"
+              th:if="${liquidationRequest.requestStatus == '02'}">Pending Approval</span>
+        <span class="badge badge-view"
+              th:if="${liquidationRequest.requestStatus == '03'}">Approved</span>
+        <span class="badge badge-info"
+              th:if="${liquidationRequest.requestStatus == '04'}">Research</span>
+        <span class="badge badge-info"
+              th:if="${liquidationRequest.requestStatus == '05'}">In Progress</span>
+        <span class="badge badge-success"
+              th:if="${liquidationRequest.requestStatus == '06'}">Completed</span>
+        <span class="badge badge-danger"
+              th:if="${liquidationRequest.requestStatus == '07'}">Cancelled</span>
+    </div>
+
+    <!-- ===== MAIN FORM ===== -->
+    <form th:action="@{/liquidate/warehouse/create}"
+          th:object="${liquidationRequest}"
+          method="post"
+          id="purchaseForm">
+
+        <input type="hidden" th:field="*{assetRequestId}"/>
+        <input type="hidden" th:field="*{isSubmitted}" id="isSubmittedField"/>
+        <input type="hidden" th:field="*{requestStatus}"/>
+
+        <!-- Request Info (chỉ hiện khi đã có ID) -->
+        <div class="card" th:if="${liquidationRequest.assetRequestId != null}">
+            <div class="card-header"><div class="icon">📄</div> Request Information</div>
+            <div class="card-body">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>Request Id</label>
+                        <span th:text="'#' + ${liquidationRequest.assetRequestId}">—</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Request Type</label>
+                        <span>Liquidation</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Request Date</label>
+                        <span th:text="${#temporals.format(liquidationRequest.requestedDate,'yyyy-MM-dd')}">—</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Asset List -->
+        <div class="card">
+            <div class="card-header"><div class="icon">📦</div> Asset Request List</div>
+            <div class="table-wrapper">
+                <table id="detailTable">
+                    <thead>
+                    <tr>
+                        <th style="width:40px">#</th>
+                        <th>Asset Type</th>
+                        <th style="width:120px">Quantity</th>
+                        <th>Note</th>
+                        <!-- Cột xóa: chỉ WAREHOUSE + DRAFT/NEW -->
+                        <th th:if="${role == '03' and (liquidationRequest.requestStatus == '01' or liquidationRequest.requestStatus == null)}"
+                            style="width:50px"></th>
+                        <!-- Cột actions: chỉ PURCHASING + APPROVED -->
+                        <th th:if="${role == '04' and liquidationRequest.requestStatus == '03'}"
+                            style="width:200px">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="detailBody">
+
+                    <tr th:each="detail, stat : *{createLiquidationDetailDTORequestList}"
+                        th:id="'row-' + ${stat.index}">
+
+                        <td style="display:none">
+                            <input type="hidden" class="detail-id"
+                                   th:name="'createLiquidationDetailDTORequestList[' + ${stat.index} + '].assetExternalRequestDetailId'"
+                                   th:value="${detail.assetExternalRequestDetailId}"/>
+                        </td>
+
+                        <td class="row-index" th:text="${stat.index + 1}">1</td>
+
+                        <!-- Asset Type -->
+                        <td>
+                            <span th:if="${!(role == '03' and (liquidationRequest.requestStatus == '01' or liquidationRequest.requestStatus == null))}"
+                                  class="readonly-cell"
+                                  th:text="${detail.assetTypeName}">—</span>
+                            <select th:if="${role == '03' and (liquidationRequest.requestStatus == '01' or liquidationRequest.requestStatus == null)}"
+                                    class="asset-type-select"
+                                    th:name="'createLiquidationDetailDTORequestList[' + ${stat.index} + '].assetTypeId'">
+                                <option value="">-- Asset Type --</option>
+                                <option th:each="type : ${assetTypes}"
+                                        th:value="${type.value}"
+                                        th:text="${type.label}"
+                                        th:selected="${type.value == detail.assetTypeId}">
+                                </option>
+                            </select>
+                        </td>
+
+                        <!-- Quantity -->
+                        <td>
+                            <span th:if="${!(role == '03' and (liquidationRequest.requestStatus == '01' or liquidationRequest.requestStatus == null))}"
+                                  class="readonly-cell"
+                                  th:text="${detail.quantity}">—</span>
+                            <input th:if="${role == '03' and (liquidationRequest.requestStatus == '01' or liquidationRequest.requestStatus == null)}"
+                                   class="quantity-input" type="number" min="1"
+                                   th:name="'createLiquidationDetailDTORequestList[' + ${stat.index} + '].quantity'"
+                                   th:value="${detail.quantity}" placeholder="0"/>
+                        </td>
+
+                        <!-- Note -->
+                        <td>
+                            <span th:if="${!(role == '03' and (liquidationRequest.requestStatus == '01' or liquidationRequest.requestStatus == null))}"
+                                  class="readonly-cell"
+                                  th:text="${detail.note}">—</span>
+                            <textarea th:if="${role == '03' and (liquidationRequest.requestStatus == '01' or liquidationRequest.requestStatus == null)}"
+                                      class="note-input"
+                                      th:name="'createLiquidationDetailDTORequestList[' + ${stat.index} + '].note'"
+                                      rows="1" placeholder="Note..."
+                                      th:text="${detail.note}"></textarea>
+                        </td>
+
+                        <!-- Xóa: chỉ WAREHOUSE + DRAFT/NEW -->
+                        <td th:if="${role == '03' and (liquidationRequest.requestStatus == '01' or liquidationRequest.requestStatus == null)}">
+                            <button type="button" class="btn btn-ghost"
+                                    onclick="removeRow(this)">✕</button>
+                        </td>
+                        <td th:if="${(role == '04' or role == '02') and (detail.externalStatusId == '02' or detail.externalStatusId == '03')}">
+                            <a th:href="@{/liquidate/option-detail/list(asset_external_request_detail_id=${detail.assetExternalRequestDetailId})}"
+                               class="btn btn-outline btn-sm">
+                                🔍 Options
+                            </a>
+                        </td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Thêm dòng: chỉ WAREHOUSE + DRAFT/NEW -->
+            <div class="add-row-area"
+                 th:if="${role == '03' and (liquidationRequest.requestStatus == '01' or liquidationRequest.requestStatus == null)}">
+                <button type="button" class="btn btn-outline" onclick="addRow()">+ Add Row</button>
+            </div>
+
+            <!-- Footer WAREHOUSE: Save Draft + Submit -->
+            <div class="form-footer"
+                 th:if="${role == '03' and (liquidationRequest.requestStatus == '01' or liquidationRequest.requestStatus == null)}">
+                <button type="button" class="btn btn-sm btn-secondary" onclick="history.back()">Cancel</button>
+                <button type="button" class="btn btn-outline" onclick="saveDraft()">💾 Save Draft</button>
+                <button type="button" class="btn btn-primary" onclick="submitForm()">📤 Submit</button>
+            </div>
+
+            <!-- Footer PURCHASING: View Option Details (chỉ khi APPROVED) -->
+            <div class="form-footer"
+                 th:if="${role == '04' and liquidationRequest.requestStatus == '03'}">
+                <button type="button" class="btn btn-sm btn-secondary" onclick="history.back()">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="submitResearch()">📤 Submit</button>
+            </div>
+
+        </div>
+
+        <!-- Approval Card: chỉ MANAGER + PENDING_APPROVAL -->
+        <div class="card"
+             th:if="${role == '02' and liquidationRequest.requestStatus == '02' and approvalRequest != null}">
+            <div class="card-header"><div class="icon">✅</div> Request Approval</div>
+            <div class="card-body">
+                <div class="approval-section">
+                    <button type="button" class="btn btn-sm btn-secondary" onclick="history.back()">Cancel</button>
+                    <button type="button" class="btn btn-success" onclick="approveRequest()">✅ Approve</button>
+                    <button type="button" class="btn btn-danger"  onclick="rejectRequest()">❌ Reject</button>
+                </div>
+            </div>
+        </div>
+
+    </form>
+    <!-- Forms riêng cho PURCHASING research - mỗi detail 1 form -->
+    <form th:if="${role == '04' and liquidationRequest.requestStatus == '03'}"
+          id="researchForm"
+          th:action="@{/liquidate/purchasing/research}"
+          method="post">
+        <input type="hidden" name="assetRequestId" th:value="${liquidationRequest.assetRequestId}"/>
+    </form>
+
+    <!-- Form riêng cho Approval POST -->
+    <form th:if="${role == '02' and liquidationRequest.requestStatus == '02' and approvalRequest != null}"
+          id="approvalForm"
+          th:action="@{/liquidate/manager/approval}"
+          method="post">
+        <input type="hidden" name="assetRequestId" th:value="${liquidationRequest.assetRequestId}"/>
+        <input type="hidden" name="isApproved" id="approvedField" value=""/>
+    </form>
+
+</div>
+
+<script th:inline="javascript">
+    const assetTypes = /*[[${assetTypes}]]*/ [];
+    let rowIndex = document.querySelectorAll('#detailBody tr').length;
+
+    function buildSelectOptions(selectedValue) {
+        let html = '<option value="">-- Select Asset Type --</option>';
+        if (assetTypes && assetTypes.length) {
+            assetTypes.forEach(function(type) {
+                const val   = type.value;
+                const label = type.label || type.value;
+                const sel   = (val === selectedValue) ? 'selected' : '';
+                html += `<option value="${val}" ${sel}>${label}</option>`;
+            });
+        }
+        return html;
+    }
+    function submitResearch() {
+        document.getElementById('researchForm').submit();
+    }
+
+    function addRow() {
+        const tbody = document.getElementById('detailBody');
+        const i = rowIndex;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td style="display:none">
+                <input type="hidden" class="detail-id"
+                       name="createLiquidationDetailDTORequestList[${i}].assetExternalRequestDetailId"
+                       value=""/>
+            </td>
+            <td class="row-index"></td>
+            <td>
+                <select class="asset-type-select"
+                        name="createLiquidationDetailDTORequestList[${i}].assetTypeId">
+                    ${buildSelectOptions('')}
+                </select>
+            </td>
+            <td>
+                <input type="number" class="quantity-input" min="1"
+                       name="createLiquidationDetailDTORequestList[${i}].quantity"
+                       placeholder="0"/>
+            </td>
+            <td>
+                <textarea class="note-input"
+                          name="createLiquidationDetailDTORequestList[${i}].note"
+                          rows="1" placeholder="Note..."></textarea>
+            </td>
+            <td>
+                <button type="button" class="btn btn-ghost" onclick="removeRow(this)">✕</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+        rowIndex++;
+        reIndex();
+    }
+
+    function removeRow(btn) {
+        btn.closest('tr').remove();
+        reIndex();
+    }
+
+    function reIndex() {
+        const rows = document.querySelectorAll('#detailBody tr');
+        rows.forEach(function(row, i) {
+            const indexCell = row.querySelector('.row-index');
+            if (indexCell) indexCell.textContent = i + 1;
+
+            const prefix = `createLiquidationDetailDTORequestList[${i}]`;
+
+            const detailId = row.querySelector('.detail-id');
+            if (detailId) detailId.name = `${prefix}.assetExternalRequestDetailId`;
+
+            const typeSelect = row.querySelector('.asset-type-select');
+            if (typeSelect) typeSelect.name = `${prefix}.assetTypeId`;
+
+            const qtyInput = row.querySelector('.quantity-input');
+            if (qtyInput) qtyInput.name = `${prefix}.quantity`;
+
+            const noteInput = row.querySelector('.note-input');
+            if (noteInput) noteInput.name = `${prefix}.note`;
+        });
+    }
+
+    function saveDraft() {
+        if(!validateRows()) return;
+        document.getElementById('isSubmittedField').value = 'false';
+        document.getElementById('purchaseForm').submit();
+    }
+
+    function submitForm() {
+        if (!validateRows()) return;
+        document.getElementById('isSubmittedField').value = 'true';
+        document.getElementById('purchaseForm').submit();
+    }
+
+    function validateRows() {
+        const rows = document.querySelectorAll('#detailBody tr');
+        if (rows.length === 0) {
+            alert('Please add at least one asset type.');
+            return false;
+        }
+        for (let s of document.querySelectorAll('#detailBody .asset-type-select')) {
+            if (!s.value) {
+                alert('Please select asset type for all rows.');
+                s.focus();
+                return false;
+            }
+        }
+        for (let inp of document.querySelectorAll('#detailBody .quantity-input')) {
+            if (!inp.value || parseInt(inp.value) < 1) {
+                alert('Quantity must be greater than 0.');
+                inp.focus();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function approveRequest() {
+        document.getElementById('approvedField').value = 'true';
+        document.getElementById('approvalForm').submit();
+    }
+
+    function rejectRequest() {
+        document.getElementById('approvedField').value = 'false';
+        document.getElementById('approvalForm').submit();
+    }
+</script>
+
+</body>
+</html>

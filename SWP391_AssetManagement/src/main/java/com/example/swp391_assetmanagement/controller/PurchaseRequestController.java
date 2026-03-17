@@ -88,11 +88,11 @@ public class PurchaseRequestController {
         return "redirect:/viewRequest";
     }
 
-    private final CreateOptionDetailUsecase createUseCase;
-    private final EditOptionDetailUsecase editUseCase;
-    private final ApproveOptionDetailUsecase approveUseCase;
-    private final DeleteOptionDetailUsecase deleteUseCase;
-    private final GetOptionDetailListUsecase getOptionDetailListUseCase;
+    private final CreatePurchaseOptionUsecase createUseCase;
+    private final EditPurchaseOptionUsecase editUseCase;
+    private final ApprovePurchaseOptionUsecase approveUseCase;
+    private final DeletePurchaseOptionUsecase deleteUseCase;
+    private final GetPurchaseOptionListUsecase getPurchaseOptionListUseCase;
 
     // ================= CREATE =================
     @PostMapping("/option-detail/create")
@@ -107,9 +107,9 @@ public class PurchaseRequestController {
             model.addAttribute("errorMessage", ex.getMessage());
             model.addAttribute("createForm", form);
         }
-        getOptionDetailListUseCase.loadToModel(requestDetailId, null, null, session, model);
+        getPurchaseOptionListUseCase.loadToModel(requestDetailId, null, null, session, model);
         model.addAttribute("editForm", new OptionDetailFormDTORequest());
-        return "optiondetail/list";
+        return "optiondetail/listPurchase";
     }
 
     // ================= LIST =================
@@ -118,10 +118,10 @@ public class PurchaseRequestController {
                        @RequestParam(value = "status", required = false) String status,
                        @RequestParam(value = "page", required = false) Integer page,
                        HttpSession session, Model model) {
-        model.addAllAttributes(getOptionDetailListUseCase.execute(requestDetailId, status, page, session).toModel());
+        model.addAllAttributes(getPurchaseOptionListUseCase.execute(requestDetailId, status, page, session).toModel());
         model.addAttribute("createForm", model.containsAttribute("createForm") ? model.getAttribute("createForm") : new OptionDetailFormDTORequest());
         model.addAttribute("editForm", model.containsAttribute("editForm") ? model.getAttribute("editForm") : new OptionDetailFormDTORequest());
-        return "optiondetail/list";
+        return "optiondetail/listPurchase";
     }
 
     // ================= EDIT =================
@@ -138,9 +138,9 @@ public class PurchaseRequestController {
             model.addAttribute("editForm", form);
             model.addAttribute("openEditModal", true);
         }
-        getOptionDetailListUseCase.loadToModel(requestDetailId, null, null, session, model);
+        getPurchaseOptionListUseCase.loadToModel(requestDetailId, null, null, session, model);
         model.addAttribute("createForm", new OptionDetailFormDTORequest());
-        return "optiondetail/list";
+        return "optiondetail/listPurchase";
     }
 
     // ================= DELETE =================

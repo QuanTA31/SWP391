@@ -17,7 +17,7 @@ SELECT a.id,
        COUNT(1)   OVER() AS total_items
 FROM assets a
 /*%if request.assetRequestId != null */
-         LEFT JOIN asset_internal_request_detail d ON a.asset_id = d.asset_id
+         LEFT JOIN asset_internal_request_detail d ON a.id = d.asset_id
 /*%end */
 
 WHERE a.location_id = '05'

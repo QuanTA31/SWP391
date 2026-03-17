@@ -19,7 +19,11 @@ public class GetLiquidationManagerUsecase {
 
     public CreateLiquidationDTORequest execute(Long assetRequestId) {
 
-        CreateLiquidationDTORequest createLiquidationDTORequest = new CreateLiquidationDTORequest();
+        CreateLiquidationDTORequest createLiquidationDTORequest =
+                CreateLiquidationDTORequest.builder()
+                        .assetRequestId(assetRequestId)
+                        .isSubmitted(true)
+                        .build();
 
         assetRequestService.findAssetRequestByIdForUpdate(assetRequestId).ifPresent(assetRequest -> {
             createLiquidationDTORequest.setRequestStatus(assetRequest.getRequestStatusId());

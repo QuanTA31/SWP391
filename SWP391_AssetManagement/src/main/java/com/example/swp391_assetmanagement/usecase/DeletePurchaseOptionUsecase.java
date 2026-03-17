@@ -18,7 +18,7 @@ import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
-public class DeleteOptionDetailUsecase {
+public class DeletePurchaseOptionUsecase {
 
     private final OptionDetailService optionDetailService;
     private final AssetExternalRequestDetailService assetExternalRequestDetailService;

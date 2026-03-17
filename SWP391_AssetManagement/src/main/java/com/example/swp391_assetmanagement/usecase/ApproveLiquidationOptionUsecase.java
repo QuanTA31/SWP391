@@ -20,12 +20,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDate;
 import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
-public class ApproveOptionDetailUsecase {
+public class ApproveLiquidationOptionUsecase {
 
     private final OptionDetailService optionDetailService;
     private final UserService userService;
@@ -46,7 +45,7 @@ public class ApproveOptionDetailUsecase {
         String assetRequestType = assetRequestService.findRequestTypeById(requestId);
 
         if ((ObjectUtils.isEmpty(assetRequestType)
-                || !Objects.equals(RequestType.of(assetRequestType).getValue(), RequestType.PROCUREMENT.getValue()))) {
+                || !Objects.equals(RequestType.of(assetRequestType).getValue(), RequestType.LIQUIDATION.getValue()))) {
             throw new ValidationException("Invalid request type");
         }
 

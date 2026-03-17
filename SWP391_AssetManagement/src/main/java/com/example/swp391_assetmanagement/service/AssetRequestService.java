@@ -27,4 +27,6 @@ public interface AssetRequestService {
     Long findIdByAssetRequestDetailId(Long assetRequestDetailId);
 
     int moveInProgress(Long requestId);
+
+    int moveCompleted(Long requestId);
 }

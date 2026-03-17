@@ -25,9 +25,10 @@ public class LiquidateController {
     private final LiquiAssetManagerUsecase liquiAssetManagerUsecase;//xong
     private final GetLiquidationManagerUsecase getLiquidationManagerUsecase;//xong
     private final ManagerCreateLiquidationUsecase managerCreateLiquidationUsecase;//xong
-    private final ManagerRejectAllOptionDetailUsecase managerRejectAllOptionDetailUsecase;
+    private final ManagerRejectAllLiquidationUsecase managerRejectAllOptionDetailUsecase;
     private final UpdateAssetRequestUsecase updateAssetRequestUsecase;
     private final MoveAssetRequestToInProgressUsecase moveAssetRequestToInProgressUsecase;
+    private final MoveAssetRequestToCompletedUsecase moveAssetRequestToCompletedUsecase;
     private final ViewPurchaseAssetAllUsecase viewPurchaseAssetAllUsecase;//check lại
     private final WarehouseCompleteUsecase warehouseCompleteUsecase;
 
@@ -58,9 +59,10 @@ public class LiquidateController {
     }
 
     @GetMapping("/manager/view")
-    public String managerViewPurchaseRequest(@RequestParam Long assetRequestId, Model model, HttpSession session) {
+    public String managerViewPurchaseRequest(@RequestParam Long assetRequestId,@ModelAttribute LiquiDateCreateDTORequest liquiDateCreateDTORequest, Model model, HttpSession session) {
         CreateLiquidationDTORequest createLiquidationDTORequest = getLiquidationManagerUsecase.execute(assetRequestId);
-
+        LiquiDateCreateDTOResponse assets = liquiAssetManagerUsecase.execute(liquiDateCreateDTORequest, session);
+        model.addAttribute("assets", assets);
         model.addAttribute("liquidationRequest", createLiquidationDTORequest);
         model.addAttribute("assetTypes",
                 Arrays.stream(AssetType.values())
@@ -68,7 +70,7 @@ public class LiquidateController {
                         .toList());
         model.addAttribute("approvalRequest",new ApprovalPurchaseRequestDTORequest());
         model.addAttribute("role", session.getAttribute("ROLE"));
-        return "createLiquidationRequest";
+        return "viewLiquidationRequest";
     }
 
     @PostMapping("/manager/approval")
@@ -88,11 +90,11 @@ public class LiquidateController {
         return "redirect:/viewRequest";
     }
 
-    private final CreateOptionDetailUsecase createUseCase;
-    private final EditOptionDetailUsecase editUseCase;
-    private final ApproveOptionDetailUsecase approveUseCase;
-    private final DeleteOptionDetailUsecase deleteUseCase;
-    private final GetOptionDetailListUsecase getOptionDetailListUseCase;
+    private final CreateLiquidationOptionUsecase createUseCase;
+    private final EditLiquidationOptionUsecase editUseCase;
+    private final ApproveLiquidationOptionUsecase approveUseCase;
+    private final DeleteLiquidationOptionUsecase deleteUseCase;
+    private final GetLiquidationOptionListUsecase getOptionDetailListUseCase;
 
     // ================= CREATE =================
     @PostMapping("/option-detail/create")
@@ -109,7 +111,7 @@ public class LiquidateController {
         }
         getOptionDetailListUseCase.loadToModel(requestDetailId, null, null, session, model);
         model.addAttribute("editForm", new OptionDetailFormDTORequest());
-        return "optiondetail/list";
+        return "optiondetail/listLiquidation";
     }
 
     // ================= LIST =================
@@ -121,7 +123,7 @@ public class LiquidateController {
         model.addAllAttributes(getOptionDetailListUseCase.execute(requestDetailId, status, page, session).toModel());
         model.addAttribute("createForm", model.containsAttribute("createForm") ? model.getAttribute("createForm") : new OptionDetailFormDTORequest());
         model.addAttribute("editForm", model.containsAttribute("editForm") ? model.getAttribute("editForm") : new OptionDetailFormDTORequest());
-        return "optiondetail/list";
+        return "optiondetail/listLiquidation";
     }
 
     // ================= EDIT =================
@@ -140,7 +142,7 @@ public class LiquidateController {
         }
         getOptionDetailListUseCase.loadToModel(requestDetailId, null, null, session, model);
         model.addAttribute("createForm", new OptionDetailFormDTORequest());
-        return "optiondetail/list";
+        return "optiondetail/listLiquidation";
     }
 
     // ================= DELETE =================
@@ -176,6 +178,16 @@ public class LiquidateController {
         roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.PURCHASING);
 
         moveAssetRequestToInProgressUsecase.execute(requestId, session);
+        return "redirect:/viewRequest";
+    }
+
+    // ==================== COMPLETED ===============
+    @PostMapping("/purchasing/complete")
+    public String complete(@RequestParam  Long requestId,
+                           HttpSession session) {
+        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.PURCHASING);
+
+        moveAssetRequestToCompletedUsecase.execute(requestId, session);
         return "redirect:/viewRequest";
     }
 

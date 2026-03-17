@@ -20,7 +20,7 @@ import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
-public class CreateOptionDetailUsecase {
+public class EditLiquidationOptionUsecase {
 
     private final OptionDetailService optionDetailService;
     private final AssetExternalRequestDetailService assetExternalRequestDetailService;
@@ -38,32 +38,33 @@ public class CreateOptionDetailUsecase {
         String assetRequestType = assetRequestService.findRequestTypeById(requestId);
 
         if ((ObjectUtils.isEmpty(assetRequestType)
-                || !Objects.equals(RequestType.of(assetRequestType).getValue(), RequestType.PROCUREMENT.getValue()))) {
+                || !Objects.equals(RequestType.of(assetRequestType).getValue(), RequestType.LIQUIDATION.getValue()))) {
             throw new ValidationException("Invalid request type");
         }
 
+        //check role
         String role = (String) session.getAttribute("ROLE");
 
-        if (!Objects.equals(role, Roles.MANAGER.getValue())
-                && !Objects.equals(role, Roles.PURCHASING.getValue())) {
+        if (!Roles.MANAGER.getValue().equals(role)
+                && !Roles.PURCHASING.getValue().equals(role)) {
 
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
                     "Bạn không có quyền truy cập chức năng này"
             );
         }
+
         validate(form);
-        OptionDetail option = new OptionDetail();
-        option.setAssetExternalRequestDetailId(requestDetailId);
+
+        OptionDetail option = optionDetailService.getById(form.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
         option.setMerchant(form.getMerchant());
         option.setDescription(form.getDescription());
         option.setUnitPrice(form.getUnitPrice());
         option.setWarrantyPeriod(form.getWarrantyPeriod());
-        option.setIsSelected(null);
-        option.setApprovedDate(null);
-        option.setApproverBy(null);
 
-        optionDetailService.create(option);
+        optionDetailService.edit(option);
     }
 
     private void validate(OptionDetailFormDTORequest form) {
