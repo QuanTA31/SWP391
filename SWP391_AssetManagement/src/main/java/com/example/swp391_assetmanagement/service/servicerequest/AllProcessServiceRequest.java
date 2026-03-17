@@ -17,6 +17,8 @@ public class AllProcessServiceRequest {
 
     private List<String> requestTypeIdList;
 
+    private List<String> excludeStatusIdList;
+
     private Integer offset;
 
     private Integer pageSize;
