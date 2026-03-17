@@ -27,7 +27,7 @@ public class UserController {
 
         ViewAllUserDTOResponse response = viewAllUserUsecase.viewUser(request, session);
         model.addAttribute("users", response);
-
+        model.addAttribute("activePage", "viewUser");
         return "ViewAllUser";
     }
     @PostMapping("/viewUser/updateStatus")
@@ -49,13 +49,15 @@ public class UserController {
     @GetMapping("/createUser")
     public String showCreateForm(Model model) {
         model.addAttribute("userRequest", CreateUserDTORequest.builder().build());
+        model.addAttribute("activePage", "createUser");
         return "CreateNewUser";
     }
 
     @PostMapping("/createUser")
-    public String processCreate(@ModelAttribute("userRequest") CreateUserDTORequest request, HttpSession session) {
+    public String processCreate(@ModelAttribute("userRequest") CreateUserDTORequest request, HttpSession session, Model model) {
 
         createNewUser.createUser(request, session);
+        model.addAttribute("activePage", "viewUser");
 
         return "redirect:/admin/viewUser";
     }
