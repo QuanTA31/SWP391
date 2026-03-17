@@ -41,8 +41,17 @@
     <div class="app-content">
         <aside class="sidebar">
             <div class="fw-bold mb-3">Menu</div>
-            <a href="#" class="menu-item">View Asset</a>
-            <a href="#" class="menu-item active">Recover Asset</a>
+            <a th:href="@{/viewAsset}" class="menu-item">
+                View Asset
+            </a>
+
+            <a th:href="@{/viewRequest}" class="menu-item">
+                View Request
+            </a>
+
+            <a th:href="@{/recover-asset/manager/recoverAsset}" class="menu-item">
+                Recover Asset
+            </a>
         </aside>
 
         <main class="content-right">

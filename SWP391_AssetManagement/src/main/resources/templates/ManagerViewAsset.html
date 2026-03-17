@@ -36,6 +36,10 @@
                 View Request
             </a>
 
+            <a th:href="@{/recover-asset/manager/recoverAsset}" class="menu-item">
+                Recover Asset
+            </a>
+
             <a th:if="${session.ROLE == '03'}"
                th:href="@{/purchase-requests/warehouse/view(assetRequestId='')}" class="menu-item">
                 Create Purchase Request
