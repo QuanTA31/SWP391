@@ -56,16 +56,16 @@ public class CreateUserUsecase {
 
         // 6. Map to Response (Hàm map thủ công như đã giải thích)
         return CreateUserDTORequest.builder()
-                .userCode(userEntity.getUserCode())
-                .username(userEntity.getUsername())
-                .name(detailEntity.getName())
-                .email(detailEntity.getEmail())
-                .roleId(userEntity.getRoleId())
-                .statusId(userEntity.getStatusId())
-                .locationId(detailEntity.getLocationId())
-                .phone(detailEntity.getPhone())
-                .dateOfBirth(detailEntity.getDateOfBirth())
-                .password(userEntity.getPassword())
+                .userCode(userEntity.userCode)
+                .username(userEntity.username)
+                .name(detailEntity.name)
+                .email(detailEntity.email)
+                .roleId(userEntity.roleId)
+                .statusId(userEntity.statusId)
+                .locationId(detailEntity.locationId)
+                .phone(detailEntity.phone)
+                .dateOfBirth(detailEntity.dateOfBirth)
+                .password(userEntity.password)
                 .build();
     }
 

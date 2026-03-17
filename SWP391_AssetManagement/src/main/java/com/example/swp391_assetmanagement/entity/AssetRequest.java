@@ -1,6 +1,5 @@
 package com.example.swp391_assetmanagement.entity;
 
-import lombok.Getter;
 import lombok.Setter;
 import org.seasar.doma.*;
 
@@ -9,8 +8,6 @@ import java.time.LocalDateTime;
 
 @Setter
 @Entity
-@Getter
-
 @Table(name = "asset_request")
 public class AssetRequest {
 

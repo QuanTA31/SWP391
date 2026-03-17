@@ -16,8 +16,6 @@ public class UserDTOResponse {
 
     private final String roleName;
 
-    private final String userStatus;
-
     private final String locationName;
 
     private final String name;
@@ -25,4 +23,6 @@ public class UserDTOResponse {
     private final String phone;
 
     private final String email;
+
+    private final String status;
 }

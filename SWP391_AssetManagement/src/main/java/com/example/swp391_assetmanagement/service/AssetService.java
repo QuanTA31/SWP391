@@ -17,9 +17,13 @@ public interface AssetService {
 
     List<Assets> findIdByStatus(String status);
 
+    List<Assets> findByTypeAndStatus(String typeId, String statusId);
+
     int[] updateAsset(List<Assets> assetsList);
 
     List<LiquiAssetViewAllServiceResponse> liquiViewAllAsset(LiquiAssetViewAllServiceRequest assetRequest);
 
     List<AssetLiquiServiceResponse> findByIdOfLiquidation(List<Long> assetId);
+
+    Assets findById(Long id);
 }

@@ -43,6 +43,11 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
+    public List<Assets> findByTypeAndStatus(String typeId, String statusId) {
+        return assetsDAO.findByTypeAndStatus(typeId, statusId);
+    }
+
+    @Override
     public int[] updateAsset(List<Assets> assetsList) {
         return assetsDAO.batchUpdate(assetsList);
     }
@@ -63,4 +68,9 @@ public class AssetServiceImpl implements AssetService {
     public List<AssetLiquiServiceResponse> findByIdOfLiquidation(List<Long> assetId) {
         return assetsDAO.findById(assetId);
     }
+    @Override
+    public Assets findById(Long id) {
+        return assetsDAO.findById(id);
+    }
+
 }

@@ -7,11 +7,13 @@ import lombok.Getter;
 @Builder
 public class FilterUserDTOResponse {
 
-    private final String roleId;      // Thay cho assetTypeId
+    private final String roleId;
 
     private final String locationId;
 
-    private final String name;  // Tìm theo Name
+    private final String status;
+
+    private final String name;
 
     private final Integer page;
 

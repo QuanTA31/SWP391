@@ -11,9 +11,6 @@
           <entry name="$MAVEN_REPOSITORY$/org/seasar/doma/doma-processor/2.61.0/doma-processor-2.61.0.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/seasar/doma/doma-core/2.61.0/doma-core-2.61.0.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.32/lombok-1.18.32.jar" />
-          <entry name="$MAVEN_REPOSITORY$/org/seasar/doma/doma-processor/2.61.0/doma-processor-2.61.0.jar" />
-          <entry name="$MAVEN_REPOSITORY$/org/seasar/doma/doma-core/2.61.0/doma-core-2.61.0.jar" />
-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.32/lombok-1.18.32.jar" />
         </processorPath>
         <module name="SWP391_AssetManagement" />
       </profile>

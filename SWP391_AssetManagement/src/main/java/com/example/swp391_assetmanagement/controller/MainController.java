@@ -39,8 +39,12 @@ public class MainController {
             session.setAttribute("USER_NAME", userResponse.getUserName());
             session.setAttribute("ROLE", userResponse.getRoleId());
             session.setAttribute("USER_CODE", userResponse.getUserCode());
+            session.setAttribute("LOCATION_ID", userResponse.getLocationId());
             if(Objects.equals(Roles.ADMIN.getValue(),userResponse.getRoleId())){
                 return "redirect:/admin/viewUser";
+            }
+            if(Objects.equals(Roles.DEPARTMENT_MANAGER.getValue(),userResponse.getRoleId())){
+                return "redirect:/viewRequest";
             }
             return "redirect:/viewAsset";
         }else {
@@ -107,5 +111,14 @@ public class MainController {
         model.addAttribute("assets", response);
 
         return "ManagerViewAsset";
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        // Xóa toàn bộ dữ liệu trong session
+        session.invalidate();
+
+        // Điều hướng về trang login
+        return "redirect:/";
     }
 }

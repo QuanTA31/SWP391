@@ -53,7 +53,6 @@ public class ViewAssetUsecase {
             locationIdList.add(Location.BRANCH_OFFICE.getValue());
             locationIdList.add(Location.MEETING_ROOM.getValue());
             locationIdList.add(Location.IT_ROOM.getValue());
-            //Warehouse phai check duoc all chu anh
             locationIdList.add(Location.WAREHOUSE.getValue());
             locationIdList.add(Location.OUTSIDE_COMPANY.getValue());
 

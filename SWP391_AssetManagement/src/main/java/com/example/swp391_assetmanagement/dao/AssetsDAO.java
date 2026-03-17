@@ -28,7 +28,13 @@ public interface AssetsDAO {
     @Select
     List<Assets> findByStatus(String status);
 
-    @BatchUpdate(sqlFile = true)
+    @Select
+    List<Assets> findByTypeAndStatus(String typeId, String statusId);
+
+    @Select
+    Assets findById(Long id);
+
+    @BatchUpdate
     int[] batchUpdate(List<Assets> assetsList);
 
     @Select

@@ -1,13 +1,11 @@
 package com.example.swp391_assetmanagement.entity;
 
-import lombok.Getter;
 import lombok.Setter;
 import org.seasar.doma.*;
 
 import java.time.LocalDateTime;
 
 @Setter
-@Getter
 @Entity
 @Table(name = "users")
 public class Users {

@@ -10,4 +10,5 @@ public class OptionDetailSelectDTORequest {
     private Long optionDetailId;
 
     private boolean isSelected;
+    // AnhTV
 }
