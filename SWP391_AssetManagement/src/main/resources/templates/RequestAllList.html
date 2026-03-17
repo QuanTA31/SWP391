@@ -199,7 +199,7 @@
                 </th:block>
 
                 <!-- INTERNAL / EXTERNAL -->
-                <th:block th:unless="${#strings.equalsIgnoreCase(item.requestTypeName,'PROCUREMENT')}">
+                <th:block th:if="${#strings.equalsIgnoreCase(item.requestTypeName,'ALLOCATION') or #strings.equalsIgnoreCase(item.requestTypeName,'RETRIEVAL') or #strings.equalsIgnoreCase(item.requestTypeName,'LIQUIDATION')}">
 
                   <a th:if="${item.internal}"
                      class="btn btn-sm btn-primary"
@@ -210,6 +210,16 @@
                   <a th:if="${!item.internal}"
                      class="btn btn-sm btn-warning text-dark"
                      th:href="@{/viewExternalRequest/detail(id=${item.id})}">
+                    View
+                  </a>
+
+                </th:block>
+
+                <!-- MAINTENANCE -->
+                <th:block th:if="${#strings.equalsIgnoreCase(item.requestTypeName,'MAINTENANCE')}">
+                  
+                  <a class="btn btn-sm btn-info text-white"
+                     th:href="@{/maintenance-requests/view(assetRequestId=${item.id})}">
                     View
                   </a>
 

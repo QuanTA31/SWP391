@@ -24,4 +24,14 @@ public class AssetInternalRequestDetailServiceImpl implements AssetInternalReque
     public List<AssetForRepairServiceResponse> findAssetsByLocationId(String locationId) {
         return assetInternalRequestDetailDAO.findByLocationId(locationId);
     }
+
+    @Override
+    public AssetInternalRequestDetail findByAssetRequestId(Long assetRequestId) {
+        return assetInternalRequestDetailDAO.findByAssetRequestId(assetRequestId);
+    }
+
+    @Override
+    public int update(AssetInternalRequestDetail detail) {
+        return assetInternalRequestDetailDAO.update(detail);
+    }
 }

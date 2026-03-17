@@ -10,4 +10,8 @@ public interface AssetInternalRequestDetailService {
     int insert(AssetInternalRequestDetail detail);
 
     List<AssetForRepairServiceResponse> findAssetsByLocationId(String locationId);
+
+    AssetInternalRequestDetail findByAssetRequestId(Long assetRequestId);
+
+    int update(AssetInternalRequestDetail detail);
 }

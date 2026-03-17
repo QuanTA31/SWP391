@@ -46,12 +46,13 @@
                     <i class="bi bi-exclamation-circle-fill"></i>
                     <span th:text="${errorMessage}">Có lỗi xảy ra!</span>
                 </div>
-
-                <!-- ── Form ── -->
-                <form th:action="@{/maintenance-requests/create}"
+                    <!-- ── Form ── -->
+                <form th:action="@{${requestId == null ? '/maintenance-requests/create' : '/maintenance-requests/update'}}"
                       th:object="${request}"
                       method="POST"
                       id="maintenanceForm">
+
+                    <input th:if="${requestId != null}" type="hidden" name="requestId" th:value="${requestId}" />
 
                     <!-- Hidden field isSubmitted (set by JS buttons) -->
                     <input type="hidden" th:field="*{isSubmitted}" id="isSubmittedField" value="false">
@@ -63,13 +64,15 @@
                         <label for="assetId" class="form-label">
                             Tài sản <span class="text-danger">*</span>
                         </label>
-                        <select class="form-select" id="assetId" th:field="*{assetId}" required>
+                        <select class="form-select" id="assetId" th:field="*{assetId}" required th:disabled="${requestStatusId != null and requestStatusId != '01'}">
                             <option value="" selected disabled>-- Chọn tài sản từ danh sách phòng ban --</option>
                             <option th:each="asset : ${assets}"
                                     th:value="${asset.id}"
                                     th:text="${asset.assetCode + ' | ' + asset.assetTypeId + (asset.description != null ? ' — ' + asset.description : '')}">
                             </option>
                         </select>
+                        <input th:if="${requestStatusId != null and requestStatusId != '01'}" type="hidden" th:field="*{assetId}" />
+
                         <div class="form-text text-secondary mt-1">
                             <i class="bi bi-info-circle"></i>
                             Chỉ hiển thị tài sản thuộc phòng ban của bạn.
@@ -90,10 +93,10 @@
                                   th:field="*{issueDescription}"
                                   rows="4"
                                   placeholder="Mô tả chi tiết triệu chứng, khi nào xảy ra, ảnh hưởng như thế nào..."
-                                  required></textarea>
+                                  required th:readonly="${requestStatusId != null and requestStatusId != '01'}"></textarea>
                     </div>
 
-                    <div class="mb-3">
+                    <div class="mb-3" th:classappend="${requestStatusId != null and requestStatusId != '01'} ? 'pe-none opacity-75' : ''">
                         <label class="form-label">
                             Mức độ ưu tiên <span class="text-danger">*</span>
                         </label>
@@ -143,36 +146,39 @@
                         <textarea class="form-control"
                                   th:field="*{note}"
                                   rows="2"
-                                  placeholder="Yêu cầu đặc biệt, cần gấp, liên hệ kỹ thuật..."></textarea>
+                                  placeholder="Yêu cầu đặc biệt, cần gấp, liên hệ kỹ thuật..." th:readonly="${requestStatusId != null and requestStatusId != '01'}"></textarea>
                     </div>
 
                     <!-- ── Buttons ── -->
                     <div class="action-bar">
-                        <a th:href="@{/viewRequest}" class="btn btn-sm btn-outline-secondary px-4"
+                        <a th:href="@{/viewAsset}" class="btn btn-sm btn-outline-secondary px-4"
                            style="border-radius:8px; font-weight:600;">
                             <i class="bi bi-x-lg me-1"></i>Hủy bỏ
                         </a>
 
-                        <button type="submit"
+                        <button th:if="${requestStatusId == null or (requestStatusId == '01' and isOwner != null and isOwner)}"
+                                type="submit"
                                 class="btn-save-draft"
                                 onclick="setSubmit(false)">
                             <i class="bi bi-floppy me-1"></i>Lưu nháp
                         </button>
 
-                        <button type="submit"
+                        <button th:if="${requestStatusId == null or (requestStatusId == '01' and isOwner != null and isOwner)}"
+                                type="submit"
                                 class="btn-submit-req"
                                 onclick="setSubmit(true)">
                             <i class="bi bi-send-fill me-1"></i>Gửi Yêu Cầu
                         </button>
                     </div>
-
                 </form>
+
+
 
             </div><!-- /page-card -->
         </div><!-- /content-right -->
     </div><!-- /app-content -->
 </div><!-- /app-wrapper -->
-
+</div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     function setSubmit(value) {
