@@ -14,5 +14,9 @@ public interface AssetService {
 
     List<Assets> findIdByStatus(String status);
 
+    List<Assets> findByTypeAndStatus(String typeId, String statusId);
+
     int[] updateAsset(List<Assets> assetsList);
+
+    Assets findById(Long id);
 }

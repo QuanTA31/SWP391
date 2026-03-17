@@ -13,6 +13,8 @@ public class AllProcessDTOResponse {
 
     private final String requestTypeName;
 
+    private final String assetTypeName;
+
     private final boolean isInternal;
 
     private final String requestedBy;
@@ -20,6 +22,8 @@ public class AllProcessDTOResponse {
     private final LocalDate requestedDate;
 
     private final String requestStatusName;
+
+    private final String requestStatusId;
 
     private final String approvalBy;
 

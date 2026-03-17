@@ -41,6 +41,9 @@ public class AssetInternalRequestDetail {
     @Column(name = "note")
     public String note;
 
+    @Column(name = "is_done")
+    public Boolean isDone;
+
     @Column(name = "created_at")
     public LocalDateTime createdAt;
 

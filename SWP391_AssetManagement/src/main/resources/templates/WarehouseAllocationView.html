@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asset Tracker - Xác Nhận Giao Tài Sản</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --orange: #f97316;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 260px;
+            background: #fff;
+            border-right: 1px solid var(--border);
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+        .menu-item {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .menu-item:hover, .menu-item.active { background: #e0e7ff; color: var(--primary); }
+        .main-content {
+            flex: 1;
+            padding: 2.5rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .header-title { font-size: 1.75rem; font-weight: 700; color: #0f172a; }
+        .summary-card {
+            background: var(--bg-card);
+            border-radius: 1rem;
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.25rem; }
+        .summary-item label { display: block; font-size:0.7rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:0.25rem; }
+        .summary-item span { font-size:0.95rem; font-weight:500; color:var(--text-main); }
+        .asset-table-card {
+            background: #fff;
+            border-radius: 1rem;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+        }
+        .asset-table { width:100%; border-collapse:collapse; }
+        .asset-table th {
+            background:#f8fafc;
+            padding:0.875rem 1rem;
+            text-align:left;
+            font-size:0.72rem;
+            font-weight:600;
+            color:var(--text-secondary);
+            text-transform:uppercase;
+            border-bottom:1px solid var(--border);
+        }
+        .asset-table td { padding:0.875rem 1rem; border-bottom:1px solid var(--border); vertical-align:middle; font-size:0.9rem; }
+        .asset-table tr:last-child td { border-bottom:none; }
+        .action-bar {
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            background:#fff;
+            padding:1.25rem 1.5rem;
+            border-radius:1rem;
+            border:1px solid var(--border);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07);
+        }
+        .btn-dispatch {
+            background: var(--orange);
+            color: #fff;
+            padding: 0.7rem 2rem;
+            border-radius:0.5rem;
+            font-weight:600;
+            border:none;
+            font-size:0.95rem;
+            cursor:pointer;
+            transition:all 0.2s;
+        }
+        .btn-dispatch:hover { background:#ea580c; transform:translateY(-1px); }
+        .btn-back { color:var(--text-secondary); text-decoration:none; font-weight:600; display:flex; align-items:center; gap:0.5rem; }
+        .btn-back:hover { color:var(--text-main); }
+        .dispatched-badge {
+            background:#dcfce7;
+            color:#166534;
+            padding:0.5rem 1rem;
+            border-radius:9999px;
+            font-size:0.85rem;
+            font-weight:600;
+        }
+        .info-banner {
+            background:#fff7ed;
+            border:1px solid #fed7aa;
+            border-radius:0.75rem;
+            padding:1rem 1.25rem;
+            margin-bottom:1.5rem;
+            font-size:0.875rem;
+            color:#9a3412;
+        }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+        .animate-fade { animation:fadeIn 0.35s ease-out forwards; }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="fw-bold fs-5 mb-4 text-primary">Asset Tracker</div>
+        <a th:href="@{/viewRequest}" class="menu-item active">
+            <i class="fas fa-list-check"></i> Danh Sách Yêu Cầu
+        </a>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <div class="header-section animate-fade mb-4">
+            <a th:href="@{/viewRequest}" class="btn-back mb-3">
+                <i class="fas fa-arrow-left"></i> Quay lại danh sách
+            </a>
+            <h1 class="header-title">Xác Nhận Giao Tài Sản</h1>
+            <p class="text-secondary mb-0">Kiểm tra danh sách tài sản và bấm <strong>"Cấp phát"</strong> để xác nhận đã giao cho phòng ban.</p>
+        </div>
+
+        <!-- FLASH MESSAGES -->
+        <div th:if="${successMessage}" class="alert alert-success animate-fade" th:text="${successMessage}"></div>
+        <div th:if="${errorMessage}" class="alert alert-danger animate-fade" th:text="${errorMessage}"></div>
+
+        <!-- ALREADY DISPATCHED BANNER -->
+        <div class="info-banner animate-fade" th:if="${detail.isDone != null}">
+            <i class="fas fa-check-circle me-2"></i>
+            Tài sản đã được <strong>giao đi</strong>. Đang chờ phòng ban xác nhận nhận hàng.
+        </div>
+
+        <!-- NOT YET DISPATCHED BANNER -->
+        <div class="info-banner animate-fade" th:if="${detail.isDone == null}">
+            <i class="fas fa-truck me-2"></i>
+            Tài sản chưa được giao. Bấm <strong>"Cấp phát"</strong> để xác nhận giao tài sản cho phòng ban.
+        </div>
+
+        <!-- REQUEST SUMMARY -->
+        <div class="summary-card animate-fade">
+            <div class="fw-semibold mb-3" style="font-size:0.8rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-secondary);">
+                Thông Tin Yêu Cầu
+            </div>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <label>Loại tài sản</label>
+                    <span th:text="${detail.assetTypeId != null ? T(com.example.swp391_assetmanagement.enums.AssetType).of(detail.assetTypeId).getName() : 'N/A'}">Laptop</span>
+                </div>
+                <div class="summary-item">
+                    <label>Số lượng yêu cầu</label>
+                    <span th:text="${detail.quantity != null ? detail.quantity : 0}">5</span>
+                </div>
+                <div class="summary-item">
+                    <label>Số lượng cấp phát</label>
+                    <span th:text="${assignedAssets.size()}">3</span>
+                </div>
+                <div class="summary-item">
+                    <label>Địa điểm nhận</label>
+                    <span th:text="${detail.toLocationId != null ? T(com.example.swp391_assetmanagement.enums.Location).of(detail.toLocationId).getName() : 'N/A'}">Phòng IT</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ASSET LIST -->
+        <div class="asset-table-card animate-fade">
+            <div class="px-4 py-3 border-bottom fw-semibold" style="font-size:0.875rem;">
+                <i class="fas fa-boxes me-2 text-primary"></i>
+                Tài Sản Manager Đã Phân Công
+                <span class="badge bg-primary ms-2" th:text="${assignedAssets.size()}">0</span>
+            </div>
+            <table class="asset-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Mã Tài Sản</th>
+                        <th>Mô Tả</th>
+                        <th>Vị Trí Hiện Tại</th>
+                        <th>Trạng Thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="asset,iter : ${assignedAssets}">
+                        <td th:text="${iter.count}">1</td>
+                        <td><span class="fw-semibold" th:text="${asset.assetCode}">AS-001</span></td>
+                        <td th:text="${asset.description}">MacBook Pro</td>
+                        <td th:text="${asset.locationId != null ? T(com.example.swp391_assetmanagement.enums.Location).of(asset.locationId).getName() : 'N/A'}">Kho</td>
+                        <td>
+                            <span class="badge bg-success-subtle text-success-emphasis">Sẵn sàng</span>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(assignedAssets)}">
+                        <td colspan="5" class="text-center py-4 text-muted">
+                            <i class="fas fa-exclamation-circle me-1"></i>
+                            Chưa có tài sản nào được phân công.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ACTION BAR -->
+        <div class="action-bar animate-fade">
+            <a th:href="@{/viewRequest}" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Quay lại
+            </a>
+
+            <!-- Not dispatched yet: show dispatch button -->
+            <form th:if="${canDispatch and !#lists.isEmpty(assignedAssets)}"
+                  th:action="@{/allocation/warehouse/dispatch}" method="POST">
+                <input type="hidden" name="requestId" th:value="${request.id}">
+                <button type="submit" class="btn-dispatch"
+                        onclick="return confirm('Xác nhận đã giao tài sản cho phòng ban?')">
+                    <i class="fas fa-truck me-2"></i>
+                    Cấp phát
+                </button>
+            </form>
+
+            <!-- Already dispatched -->
+            <span class="dispatched-badge" th:if="${!canDispatch}">
+                <i class="fas fa-check-circle me-1"></i> Đã giao — Chờ phòng ban xác nhận
+            </span>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

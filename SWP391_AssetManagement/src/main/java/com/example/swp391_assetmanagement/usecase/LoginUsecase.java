@@ -31,6 +31,7 @@ public class LoginUsecase {
                     .userName(loginResponse.getUsername())
                     .roleId(loginResponse.getRoleId())
                     .userCode(loginResponse.getUserCode())
+                    .locationId(loginResponse.getLocationId())
                     .build();
         }else {
             return null;

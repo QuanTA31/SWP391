@@ -14,4 +14,6 @@ public class LoginDTOResponse {
     private final String userCode;
 
     private final String roleId;
+
+    private final String locationId;
 }

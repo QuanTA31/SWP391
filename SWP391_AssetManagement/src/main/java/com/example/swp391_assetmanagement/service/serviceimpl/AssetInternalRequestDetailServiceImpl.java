@@ -7,6 +7,11 @@ import com.example.swp391_assetmanagement.service.serviceresponse.AssetForRepair
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import com.example.swp391_assetmanagement.dao.CreateRequestRecoverDAO;
+import com.example.swp391_assetmanagement.entity.AssetInternalRequestDetail;
+import com.example.swp391_assetmanagement.service.AssetInternalRequestDetailService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
@@ -33,5 +38,20 @@ public class AssetInternalRequestDetailServiceImpl implements AssetInternalReque
     @Override
     public int update(AssetInternalRequestDetail detail) {
         return assetInternalRequestDetailDAO.updateOfMaintain(detail);
+    }
+}
+    private final CreateRequestRecoverDAO createRequestRecoverDAO;
+
+    @Override
+    public void createDetail(AssetInternalRequestDetail detail) {
+        createRequestRecoverDAO.inrsertAssetRecoverToSigleRequest(detail);
+    }
+
+    @Override
+    public void batchInsert(List<AssetInternalRequestDetail> details) {
+        if (details == null || details.isEmpty()) return;
+        for (AssetInternalRequestDetail detail : details) {
+            createRequestRecoverDAO.inrsertAssetRecoverToSigleRequest(detail);
+        }
     }
 }

@@ -9,6 +9,7 @@ SELECT
     ar.handover_date,
     ar.note,
     ar.created_at,
+    aid.asset_type_id,
     COUNT(1) OVER()   AS total_items
 FROM asset_request ar
          LEFT JOIN users ru
@@ -19,6 +20,9 @@ FROM asset_request ar
                     ON ar.request_type_id = rt.id
          LEFT JOIN request_status rs
                     ON ar.request_status_id = rs.id
+--     them cho allocation
+         LEFT JOIN asset_internal_request_detail aid
+                    ON ar.id = aid.asset_request_id
 WHERE 1 = 1
 
 /*%if request.requestTypeIdList != null && !request.requestTypeIdList.isEmpty() */
@@ -31,6 +35,11 @@ WHERE 1 = 1
 
 /*%if request.requestStatusId != null && request.requestStatusId != "" */
   AND ar.request_status_id = /* request.requestStatusId */''
+/*%end */
+
+-- Allocation
+/*%if request.excludeStatusIdList != null && !request.excludeStatusIdList.isEmpty() */
+  AND ar.request_status_id NOT IN /* request.excludeStatusIdList */('00')
 /*%end */
 
 -- /*%if request.requestedBy != null && request.requestedBy != "" */

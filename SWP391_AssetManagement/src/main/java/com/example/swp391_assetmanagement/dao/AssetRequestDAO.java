@@ -14,7 +14,7 @@ public interface AssetRequestDAO {
     String findRequestTypeById(Long assetRequestId);
 
     @Select
-    Optional<AssetRequest> findAssetRequestByIdForUpdate(Long assetRequestId);
+    java.util.Optional<AssetRequest> findAssetRequestByIdForUpdate(Long assetRequestId);
 
     @Insert(sqlFile = true)
     int insert(AssetRequest assetRequest);

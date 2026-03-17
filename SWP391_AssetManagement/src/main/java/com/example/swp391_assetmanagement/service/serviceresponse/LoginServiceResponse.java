@@ -22,4 +22,7 @@ public class LoginServiceResponse {
 
     @Column(name = "user_code")
     public String userCode;
+
+    @Column(name = "location_id")
+    public String locationId;
 }

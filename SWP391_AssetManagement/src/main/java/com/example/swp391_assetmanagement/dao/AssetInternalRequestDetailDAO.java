@@ -25,4 +25,14 @@ public interface AssetInternalRequestDetailDAO {
 
     @Update(sqlFile = true)
     int updateOfMaintain(AssetInternalRequestDetail entity);
+    int insert(AssetInternalRequestDetail detail);
+
+    @Update(sqlFile = true)
+    int update(AssetInternalRequestDetail detail);
+
+    @Update(sqlFile = true)
+    int updateIsDone(AssetInternalRequestDetail detail);
+
+    @Select
+    AssetInternalRequestDetail findByAssetRequestId(Long assetRequestId);
 }
