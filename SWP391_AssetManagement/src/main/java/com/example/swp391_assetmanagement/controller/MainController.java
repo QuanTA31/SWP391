@@ -112,4 +112,13 @@ public class MainController {
 
         return "ManagerViewAsset";
     }
+
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        // Xóa toàn bộ dữ liệu trong session
+        session.invalidate();
+
+        // Điều hướng về trang login
+        return "redirect:/";
+    }
 }
