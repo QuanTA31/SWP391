@@ -19,6 +19,7 @@ import java.util.List;
 public class AssetInternalRequestDetailServiceImpl implements AssetInternalRequestDetailService {
 
     private final AssetInternalRequestDetailDAO assetInternalRequestDetailDAO;
+    private final CreateRequestRecoverDAO createRequestRecoverDAO;
 
     @Override
     public int insert(AssetInternalRequestDetail detail) {
@@ -39,8 +40,7 @@ public class AssetInternalRequestDetailServiceImpl implements AssetInternalReque
     public int update(AssetInternalRequestDetail detail) {
         return assetInternalRequestDetailDAO.updateOfMaintain(detail);
     }
-}
-    private final CreateRequestRecoverDAO createRequestRecoverDAO;
+
 
     @Override
     public void createDetail(AssetInternalRequestDetail detail) {
