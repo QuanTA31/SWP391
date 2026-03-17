@@ -25,6 +25,7 @@ public interface AssetInternalRequestDetailDAO {
 
     @Update(sqlFile = true)
     int updateOfMaintain(AssetInternalRequestDetail entity);
+    @Insert(sqlFile = true)
     int insert(AssetInternalRequestDetail detail);
 
     @Update(sqlFile = true)

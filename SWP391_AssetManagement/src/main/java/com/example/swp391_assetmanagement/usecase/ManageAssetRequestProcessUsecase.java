@@ -61,7 +61,7 @@ public class ManageAssetRequestProcessUsecase {
                     RequestType.ALLOCATION.getValue(),
                     RequestType.MAINTENANCE.getValue()
             ));
-
+        }
 // WAREHOUSE (03): xem yêu cầu internal (Cấp phát, Mua sắm, Bảo trì) - Trừ Draft
         else if (Objects.equals(role, "03")) {
             requestTypeIdList.addAll(List.of("01", "03", "04"));
