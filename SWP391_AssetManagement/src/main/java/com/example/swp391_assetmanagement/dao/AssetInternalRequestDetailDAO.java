@@ -15,14 +15,14 @@ import java.util.List;
 public interface AssetInternalRequestDetailDAO {
 
     @Insert(sqlFile = true)
-    int insert(AssetInternalRequestDetail entity);
+    int insertOfMaintain(AssetInternalRequestDetail entity);
 
     @Select
     List<AssetForRepairServiceResponse> findByLocationId(String locationId);
 
     @Select
-    AssetInternalRequestDetail findByAssetRequestId(Long assetRequestId);
+    AssetInternalRequestDetail findByAssetRequestIdOfMaintain(Long assetRequestId);
 
     @Update(sqlFile = true)
-    int update(AssetInternalRequestDetail entity);
+    int updateOfMaintain(AssetInternalRequestDetail entity);
 }

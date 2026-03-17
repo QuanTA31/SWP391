@@ -17,7 +17,7 @@ public class AssetInternalRequestDetailServiceImpl implements AssetInternalReque
 
     @Override
     public int insert(AssetInternalRequestDetail detail) {
-        return assetInternalRequestDetailDAO.insert(detail);
+        return assetInternalRequestDetailDAO.insertOfMaintain(detail);
     }
 
     @Override
@@ -27,11 +27,11 @@ public class AssetInternalRequestDetailServiceImpl implements AssetInternalReque
 
     @Override
     public AssetInternalRequestDetail findByAssetRequestId(Long assetRequestId) {
-        return assetInternalRequestDetailDAO.findByAssetRequestId(assetRequestId);
+        return assetInternalRequestDetailDAO.findByAssetRequestIdOfMaintain(assetRequestId);
     }
 
     @Override
     public int update(AssetInternalRequestDetail detail) {
-        return assetInternalRequestDetailDAO.update(detail);
+        return assetInternalRequestDetailDAO.updateOfMaintain(detail);
     }
 }
