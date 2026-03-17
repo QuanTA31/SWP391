@@ -52,7 +52,7 @@ public class ExecuteRecoverUsecase {
                     detail.setFromLocationId(asset.locationId);
                     detail.setToLocationId("05");
                     detail.setFromUserId(asset.currentUserId);
-                    detail.setDone(false);
+                    detail.setIsDone(false);
 
                     // Lưu từng detail bằng hàm của bạn
                     recoverService.createRequestInternalRecover(detail);
