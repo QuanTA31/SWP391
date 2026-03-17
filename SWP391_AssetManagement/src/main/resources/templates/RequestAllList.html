@@ -106,35 +106,11 @@
                                th:href="@{/purchase-requests/viewPurchaseAsset(assetRequestId=${item.id})}"
                                class="btn btn-sm btn-info text-white">View Purchase Asset</a>
                         </th:block>
-                  <a th:if="${session.ROLE == '03' and item.requestStatusName == 'STOCK_IN'}"
-                     th:href="@{/purchase-requests/viewPurchaseAsset(assetRequestId=${item.id})}"
-                      class="btn btn-sm btn-info text-white">
-                    View Purchase Asset
-                  </a>
 
-                </th:block>
                 <!-- LIQUIDATION -->
-                <th:block th:if="${#strings.equalsIgnoreCase(item.requestTypeName,'LIQUIDATION')}">
+                <th:block th:if="${item.requestTypeName != null
+                  and #strings.equalsIgnoreCase(item.requestTypeName,'LIQUIDATION')}">
 
-                  <!-- WAREHOUSE -->
-                  <a th:if="${session.ROLE == '03'}"
-                     class="btn btn-sm btn-info text-white"
-                     th:href="@{/liquidate/warehouse/view(assetRequestId=${item.id})}">
-                    View
-                  </a>
-
-                        <th:block th:unless="${#strings.equalsIgnoreCase(item.requestTypeName,'PROCUREMENT')}">
-                            <th:block th:if="${item.isInternal}">
-                                <a th:if="${#strings.containsIgnoreCase(item.requestTypeName, 'ALLOCATION')
-                                                   and not (session.ROLE == '02' and item.requestStatusId == '05')
-                                                   and not (session.ROLE == '03' and item.requestStatusId == '05')
-                                                   and not (session.ROLE == '05' and item.requestStatusId == '05')}"
-                                   class="btn btn-sm btn-primary"
-                                   th:href="@{/allocation/department/edit(id=${item.id})}">View</a>
-
-                                <a th:if="${#strings.containsIgnoreCase(item.requestTypeName, 'ALLOCATION') and session.ROLE == '02' and item.requestStatusId == '05'}"
-                                   class="btn btn-sm btn-primary"
-                                   th:href="@{/allocation/process(id=${item.id})}">View</a>
                   <!-- MANAGER -->
                   <a th:if="${session.ROLE == '02'}"
                      class="btn btn-sm btn-info text-white"
@@ -145,7 +121,7 @@
                   <!-- PURCHASING -->
                   <a th:if="${session.ROLE == '04'}"
                      class="btn btn-sm btn-info text-white"
-                     th:href="@{/liquidate/warehouse/view(assetRequestId=${item.id})}">
+                     th:href="@{/liquidate/purchasing/view(assetRequestId=${item.id})}">
                     View
                   </a>
 
@@ -183,30 +159,43 @@
                 </th:block>
 
                 <!-- INTERNAL / EXTERNAL --> <!-- check lại do đá liquidation-->
-                <th:block th:if="${#strings.equalsIgnoreCase(item.requestTypeName,'INTERNAL')
-              or #strings.equalsIgnoreCase(item.requestTypeName,'EXTERNAL')}">
-
-                                <a th:if="${#strings.containsIgnoreCase(item.requestTypeName, 'ALLOCATION') and session.ROLE == '03' and item.requestStatusId == '05'}"
+                            <th:block th:if="${#strings.equalsIgnoreCase(item.requestTypeName,'INTERNAL')}">
+                                <!-- ALLOCATION -->
+                                <a th:if="${#strings.containsIgnoreCase(item.requestTypeName, 'ALLOCATION')
+               and session.ROLE == '03'
+               and item.requestStatusId == '05'}"
                                    class="btn btn-sm btn-primary"
-                                   th:href="@{/allocation/warehouse/view(requestId=${item.id})}">View</a>
-
-                                <a th:if="${#strings.containsIgnoreCase(item.requestTypeName, 'ALLOCATION') and session.ROLE == '05' and item.requestStatusId == '05'}"
+                                   th:href="@{/allocation/warehouse/view(requestId=${item.id})}">
+                                    View
+                                </a>
+                                <a th:if="${#strings.containsIgnoreCase(item.requestTypeName, 'ALLOCATION')
+               and session.ROLE == '05'
+               and item.requestStatusId == '05'}"
                                    class="btn btn-sm btn-primary"
-                                   th:href="@{/allocation/department/receipt(requestId=${item.id})}">View</a>
-
-                                <a th:if="${#strings.containsIgnoreCase(item.requestTypeName, 'ALLOCATION') and item.requestStatusId == '03' and session.ROLE == '02'}"
+                                   th:href="@{/allocation/department/receipt(requestId=${item.id})}">
+                                    View
+                                </a>
+                                <a th:if="${#strings.containsIgnoreCase(item.requestTypeName, 'ALLOCATION')
+               and item.requestStatusId == '03'
+               and session.ROLE == '02'}"
                                    class="btn btn-sm btn-success text-white ms-1"
-                                   th:href="@{/allocation/process(id=${item.id})}">Allocation</a>
-
+                                   th:href="@{/allocation/process(id=${item.id})}">
+                                    Allocation
+                                </a>
+                                <!-- NORMAL INTERNAL -->
                                 <a th:unless="${#strings.containsIgnoreCase(item.requestTypeName, 'ALLOCATION')}"
                                    class="btn btn-sm btn-primary"
-                                   th:href="@{/viewInternalRequest/detail(id=${item.id})}">View</a>
+                                   th:href="@{/viewInternalRequest/detail(id=${item.id})}">
+                                    View
+                                </a>
                             </th:block>
-
-                            <a th:if="${!item.isInternal}" class="btn btn-sm btn-warning text-dark"
-                               th:href="@{/viewExternalRequest/detail(id=${item.id})}">View</a>
-                        </th:block>
-                    </td>
+                            <th:block th:if="${#strings.equalsIgnoreCase(item.requestTypeName,'EXTERNAL')}">
+                                <a class="btn btn-sm btn-warning text-dark"
+                                   th:href="@{/viewExternalRequest/detail(id=${item.id})}">
+                                    View
+                                </a>
+                            </th:block>
+                </td>
                 </tr>
                 </tbody>
             </table>

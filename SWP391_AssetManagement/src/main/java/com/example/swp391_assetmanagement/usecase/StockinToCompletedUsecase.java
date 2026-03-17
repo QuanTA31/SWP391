@@ -27,10 +27,8 @@ public class StockinToCompletedUsecase {
     public void execute(
             Long requestDetailId
     ){
-        //Lấy detail
-        AssetExternalRequestDetail detail = assetExternalRequestDetailService.findToUpdate(requestDetailId);
-
-        Long requestId = detail.getAssetRequestId();
+        // Lấy requestId
+        Long requestId = assetExternalRequestDetailService.findAssetRequest(requestDetailId);
 
         //Lấy asset_request
         AssetRequest assetRequest =

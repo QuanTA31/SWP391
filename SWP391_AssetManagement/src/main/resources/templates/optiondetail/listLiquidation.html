@@ -26,6 +26,12 @@
             <a th:href="@{/viewRequest}" class="menu-item">
                 View Request
             </a>
+            <a th:href="${session.ROLE == '02'}
+            ? @{/liquidate/manager/view(assetRequestId=${param.assetRequestId})}
+            : @{/liquidate/purchasing/view(assetRequestId=${param.assetRequestId})}"
+               class="menu-item">
+                View Liquidation Request
+            </a>
             <div class="menu-item active">View Option Detail</div>
         </div>
 
@@ -120,7 +126,8 @@
                                                        name="asset_external_request_detail_id"
                                                        th:value="${asset_external_request_detail_id}">
                                                 <input type="hidden" name="selected" value="true">
-
+                                                <input type="hidden" name="assetRequestId"
+                                                       th:value="${assetRequestId}"/>
                                                 <button class="dropdown-item" type="submit">
                                                     Select
                                                 </button>
@@ -217,7 +224,7 @@
                     <input type="hidden"
                            name="assetRequestDetailId"
                            th:value="${asset_external_request_detail_id}" />
-
+                    <input type="hidden" name="assetRequestId" th:value="${assetRequestId}">
                     <button type="submit"
                             class="btn btn-danger">
                         Reject All
@@ -243,6 +250,7 @@
                         <span th:text="${errorMessage}"></span>
                     </div>
                     <input type="hidden" name="asset_external_request_detail_id" th:value="${asset_external_request_detail_id}"/>
+                    <input type="hidden" name="assetRequestId" th:value="${assetRequestId}"/>
                     <div class="mb-2">
                         <label class="form-label">Merchant</label>
                         <input class="form-control form-control-sm"
@@ -300,6 +308,8 @@
                     </div>
                     <input type="hidden" name="asset_external_request_detail_id" th:value="${asset_external_request_detail_id}"/>
                     <input type="hidden" th:field="*{id}"/>
+                    <input type="hidden" name="assetRequestId"
+                           th:value="${assetRequestId}"/>
                     <div class="mb-2">
                         <label class="form-label">Merchant</label>
                         <input class="form-control form-control-sm"

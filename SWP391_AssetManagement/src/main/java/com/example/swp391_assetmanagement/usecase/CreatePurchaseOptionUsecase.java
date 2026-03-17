@@ -31,8 +31,8 @@ public class CreatePurchaseOptionUsecase {
             OptionDetailFormDTORequest form,
             HttpSession session
     ) {
-        AssetExternalRequestDetail detail = assetExternalRequestDetailService.findToUpdate(requestDetailId);
-        Long requestId = detail.getAssetRequestId();
+        // Get requestId
+        Long requestId = assetExternalRequestDetailService.findAssetRequest(requestDetailId);
 
         // Check type request
         String assetRequestType = assetRequestService.findRequestTypeById(requestId);

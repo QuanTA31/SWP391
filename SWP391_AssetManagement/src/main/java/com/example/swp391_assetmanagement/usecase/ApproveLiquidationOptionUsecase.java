@@ -38,8 +38,8 @@ public class ApproveLiquidationOptionUsecase {
             boolean selected,
             HttpSession session
     ) {
-        AssetExternalRequestDetail detail = assetExternalRequestDetailService.findToUpdate(requestDetailId);
-        Long requestId = detail.getAssetRequestId();
+        // Get requestId
+        Long requestId = assetExternalRequestDetailService.findAssetRequest(requestDetailId);
 
         // Check type request
         String assetRequestType = assetRequestService.findRequestTypeById(requestId);
@@ -87,7 +87,7 @@ public class ApproveLiquidationOptionUsecase {
             AssetRequest assetRequest =
                     assetRequestService.findByUpdate(requestId);
 
-            Integer countBySelected = optionDetailService.countByIdAndIsSelected(requestDetailId, assetRequest.getId());
+            Integer countBySelected = optionDetailService.countByIdAndIsSelected(requestDetailId, assetRequest.id);
 
             //Check status nếu status kphai là research thì báo lỗi
             if (!Objects.equals(RequestStatus.RESEARCH.getValue(), assetRequest.requestStatusId)) {
@@ -101,7 +101,7 @@ public class ApproveLiquidationOptionUsecase {
             );
 
             if (countBySelected == 0) {
-                Boolean isValidRequest = optionDetailService.checkValidRequest(requestDetailId, assetRequest.getId());
+                Boolean isValidRequest = optionDetailService.checkValidRequest(requestDetailId, assetRequest.id);
                 assetRequest.setRequestStatusId(isValidRequest
                         ? RequestStatus.RESEARCH_DONE.getValue() : RequestStatus.APPROVED.getValue());
                 assetRequestService.updatePurchaseRequestStatus(assetRequest);

@@ -39,8 +39,8 @@ public class GetLiquidationOptionListUsecase {
             Integer page,
             HttpSession session
     ) {
-        AssetExternalRequestDetail detail = assetExternalRequestDetailService.findToUpdate(requestDetailId);
-        Long requestId = detail.getAssetRequestId();
+        // Get requestId
+        Long requestId = assetExternalRequestDetailService.findAssetRequest(requestDetailId);
 
         // Check type request
         String assetRequestType = assetRequestService.findRequestTypeById(requestId);
@@ -91,12 +91,12 @@ public class GetLiquidationOptionListUsecase {
                 optionDetailService.countByRequestDetailId(requestDetailId, true) > 0;
 
         AssetRequest assetRequest =
-                assetRequestService.findByUpdate(detail.getAssetRequestId());
+                assetRequestService.findByUpdate(requestId);
 
         boolean isApproved =
                 Objects.equals(
                         RequestStatus.APPROVED.getValue(),
-                        assetRequest.getRequestStatusId()
+                        assetRequest.requestStatusId
                 );
 
         boolean isManager = Roles.MANAGER.getValue().equals(role);

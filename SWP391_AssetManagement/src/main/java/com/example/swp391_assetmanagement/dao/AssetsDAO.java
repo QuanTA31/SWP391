@@ -41,5 +41,5 @@ public interface AssetsDAO {
     List<LiquiAssetViewAllServiceResponse> selectLiquiAssetAll(LiquiAssetViewAllServiceRequest request);
 
     @Select
-    List<AssetLiquiServiceResponse> findById(List<Long> assetId);
+    List<AssetLiquiServiceResponse> findByIdOfLiquidation(List<Long> assetId);
 }

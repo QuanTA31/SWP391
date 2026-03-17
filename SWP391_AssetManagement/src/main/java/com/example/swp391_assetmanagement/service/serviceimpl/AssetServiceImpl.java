@@ -66,7 +66,7 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     public List<AssetLiquiServiceResponse> findByIdOfLiquidation(List<Long> assetId) {
-        return assetsDAO.findById(assetId);
+        return assetsDAO.findByIdOfLiquidation(assetId);
     }
     @Override
     public Assets findById(Long id) {

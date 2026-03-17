@@ -144,7 +144,8 @@
                                     onclick="removeRow(this)">✕</button>
                         </td>
                         <td th:if="${(role == '04' or role == '02') and (detail.externalStatusId == '02' or detail.externalStatusId == '03')}">
-                            <a th:href="@{/liquidate/option-detail/list(asset_external_request_detail_id=${detail.assetExternalRequestDetailId})}"
+                            <a th:href="@{/liquidate/option-detail/list(asset_external_request_detail_id=${detail.assetExternalRequestDetailId},
+                               assetRequestId=${liquidationRequest.assetRequestId})}"
                                class="btn btn-outline btn-sm">
                                 🔍 Options
                             </a>
