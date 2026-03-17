@@ -21,5 +21,5 @@ public interface AssetService {
 
     List<LiquiAssetViewAllServiceResponse> liquiViewAllAsset(LiquiAssetViewAllServiceRequest assetRequest);
 
-    List<AssetLiquiServiceResponse> findById(List<Long> assetId);
+    List<AssetLiquiServiceResponse> findByIdOfLiquidation(List<Long> assetId);
 }

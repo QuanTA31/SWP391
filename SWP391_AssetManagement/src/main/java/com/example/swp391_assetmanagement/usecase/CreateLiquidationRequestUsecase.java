@@ -49,7 +49,7 @@ public class CreateLiquidationRequestUsecase {
                 assetRequestService.createPurchaseRequestForm(assetRequest);
 
         // Get asset info
-        List<AssetLiquiServiceResponse> assetLiquiServiceResponses = assetService.findById(assetIds);
+        List<AssetLiquiServiceResponse> assetLiquiServiceResponses = assetService.findByIdOfLiquidation(assetIds);
 
         Map<String, List<AssetLiquiServiceResponse>> assetMap = new HashMap<>();
         for (AssetLiquiServiceResponse asset : assetLiquiServiceResponses) {
