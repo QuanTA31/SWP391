@@ -29,7 +29,7 @@
 <!--      <div class="menu-item">Create Request</div>-->
 <!--      <div class="menu-item active">View Request</div>-->
 <!--      <div class="menu-item">Approval Request</div>-->
-      <a th:href="@{/viewAsset}" class="menu-item">
+      <a th:if="${session.ROLE != '05'}" th:href="@{/viewAsset}" class="menu-item">
         View Asset
       </a>
 
@@ -40,6 +40,11 @@
       <a th:if="${session.ROLE == '03'}"
          th:href="@{/purchase-requests/warehouse/view(assetRequestId='')}" class="menu-item">
         Create Purchase Request
+      </a>
+
+      <a th:if="${session.ROLE == '05'}"
+         th:href="@{/allocation/department/create(assetRequestId='')}" class="menu-item">
+        Create Allocation Request
       </a>
 
 <!--      <a th:if="${session.ROLE == '03'}"-->
@@ -122,7 +127,7 @@
 
             <!-- NO DATA -->
             <tr th:if="${data == null or data.allProcessResponses == null or data.allProcessResponses.isEmpty()}">
-              <td colspan="9" class="text-center text-muted">
+              <td colspan="10" class="text-center text-muted">
                 No data found
               </td>
             </tr>
@@ -201,13 +206,70 @@
                 <!-- INTERNAL / EXTERNAL -->
                 <th:block th:unless="${#strings.equalsIgnoreCase(item.requestTypeName,'PROCUREMENT')}">
 
-                  <a th:if="${item.internal}"
-                     class="btn btn-sm btn-primary"
-                     th:href="@{/viewInternalRequest/detail(id=${item.id})}">
-                    View
-                  </a>
+                  <!-- Check if it is internal (Allocation/Retrieval) -->
+                  <th:block th:if="${item.isInternal}">
+                    
+                    <!-- Separate Allocation from others -->
 
-                  <a th:if="${!item.internal}"
+                    <!-- Normal "View" for all roles EXCEPT:
+                         - ROLE 02 on IN_PROGRESS (Manager can still select more assets)
+                         - ROLE 03 on IN_PROGRESS (Warehouse dispatch page)
+                         - ROLE 05 on IN_PROGRESS (Department receipt page) -->
+                    <a th:if="${#strings.containsIgnoreCase(item.requestTypeName, 'ALLOCATION')
+                               and not (session.ROLE == '02' and item.requestStatusId == '05')
+                               and not (session.ROLE == '03' and item.requestStatusId == '05')
+                               and not (session.ROLE == '05' and item.requestStatusId == '05')}"
+                       class="btn btn-sm btn-primary"
+                       th:href="@{/allocation/department/edit(id=${item.id})}">
+                      View
+                    </a>
+
+                    <!-- Manager (ROLE 02) on IN_PROGRESS: continue selecting more assets -->
+                    <a th:if="${#strings.containsIgnoreCase(item.requestTypeName, 'ALLOCATION')
+                               and session.ROLE == '02'
+                               and item.requestStatusId == '05'}"
+                       class="btn btn-sm btn-primary"
+                       th:href="@{/allocation/process(id=${item.id})}">
+                      View
+                    </a>
+
+                    <!-- Warehouse (ROLE 03): dispatches from a dedicated view when IN_PROGRESS -->
+                    <a th:if="${#strings.containsIgnoreCase(item.requestTypeName, 'ALLOCATION')
+                               and session.ROLE == '03'
+                               and item.requestStatusId == '05'}"
+                       class="btn btn-sm btn-primary"
+                       th:href="@{/allocation/warehouse/view(requestId=${item.id})}">
+                      View
+                    </a>
+
+                    <!-- Department (ROLE 05): confirmation receipt page when IN_PROGRESS -->
+                    <a th:if="${#strings.containsIgnoreCase(item.requestTypeName, 'ALLOCATION')
+                               and session.ROLE == '05'
+                               and item.requestStatusId == '05'}"
+                       class="btn btn-sm btn-primary"
+                       th:href="@{/allocation/department/receipt(requestId=${item.id})}">
+                      View
+                    </a>
+
+                    <!-- Manager ONLY (ROLE 02): select & assign assets on APPROVED requests -->
+                    <a th:if="${#strings.containsIgnoreCase(item.requestTypeName, 'ALLOCATION')
+                               and item.requestStatusId == '03'
+                               and session.ROLE == '02'}"
+                       class="btn btn-sm btn-success text-white ms-1"
+                       th:href="@{/allocation/process(id=${item.id})}">
+                       Allocation
+                    </a>
+
+                    <a th:unless="${#strings.containsIgnoreCase(item.requestTypeName, 'ALLOCATION')}"
+                       class="btn btn-sm btn-primary"
+                       th:href="@{/viewInternalRequest/detail(id=${item.id})}">
+                      View
+                    </a>
+
+                  </th:block>
+
+                  <!-- External -->
+                  <a th:if="${!item.isInternal}"
                      class="btn btn-sm btn-warning text-dark"
                      th:href="@{/viewExternalRequest/detail(id=${item.id})}">
                     View
@@ -221,6 +283,8 @@
           </table>
         </div>
       </div>
+
+      <!-- CREATE BUTTON REMOVED per user request -->
 
       <!-- PAGINATION -->
       <div class="content-pagination" th:if="${data != null and data.filters != null}">

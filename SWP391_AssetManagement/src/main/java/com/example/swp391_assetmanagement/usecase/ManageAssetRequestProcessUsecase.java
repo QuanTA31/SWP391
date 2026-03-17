@@ -2,6 +2,8 @@ package com.example.swp391_assetmanagement.usecase;
 
 import com.example.swp391_assetmanagement.dto.request.ViewAllProcessDTORequest;
 import com.example.swp391_assetmanagement.dto.response.*;
+import com.example.swp391_assetmanagement.enums.AssetStatus;
+import com.example.swp391_assetmanagement.enums.AssetType;
 import com.example.swp391_assetmanagement.enums.RequestStatus;
 import com.example.swp391_assetmanagement.enums.RequestType;
 import com.example.swp391_assetmanagement.enums.Roles;
@@ -37,6 +39,7 @@ public class ManageAssetRequestProcessUsecase {
         int pageIndex = (request.getPageIndex() != null && request.getPageIndex() != 0)  ? request.getPageIndex() : 1;
 
         ArrayList<String> requestTypeIdList = new ArrayList<>();
+        ArrayList<String> excludeStatusIdList = new ArrayList<>();
 
         String role = (String) session.getAttribute("ROLE");
 
@@ -44,42 +47,27 @@ public class ManageAssetRequestProcessUsecase {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
 
-// MANAGER: xem tất cả request
-        if (Objects.equals(role, Roles.MANAGER.getValue())) {
-
-            requestTypeIdList.addAll(List.of(
-                    RequestType.ALLOCATION.getValue(),
-                    RequestType.RETRIEVAL.getValue(),
-                    RequestType.PROCUREMENT.getValue(),
-                    RequestType.MAINTENANCE.getValue(),
-                    RequestType.LIQUIDATION.getValue()
-            ));
-
+// MANAGER (02): xem tất cả request (trừ Draft)
+        if (Objects.equals(role, "02")) {
+            requestTypeIdList.addAll(List.of("01", "02", "03", "04", "05"));
+            excludeStatusIdList.add("01"); // DRAFT
         }
-// WAREHOUSE
-        else if (Objects.equals(role, Roles.WAREHOUSE.getValue())) {
-
-            requestTypeIdList.addAll(List.of(
-                    RequestType.PROCUREMENT.getValue(),
-                    RequestType.RETRIEVAL.getValue(),
-                    RequestType.ALLOCATION.getValue()
-            ));
-
+// WAREHOUSE (03): xem yêu cầu internal (Cấp phát, Mua sắm, Bảo trì) - Trừ Draft
+        else if (Objects.equals(role, "03")) {
+            requestTypeIdList.addAll(List.of("01", "03", "04"));
+            excludeStatusIdList.add("01"); // DRAFT
         }
 // PURCHASING
-        else if (Objects.equals(role, Roles.PURCHASING.getValue())) {
+        else if (Objects.equals(role, "04")) {
 
-            requestTypeIdList.addAll(List.of(
-                    RequestType.MAINTENANCE.getValue(),
-                    RequestType.LIQUIDATION.getValue(),
-                    RequestType.PROCUREMENT.getValue()
-            ));
+            requestTypeIdList.addAll(List.of("04", "05", "03"));
+            excludeStatusIdList.add("01"); // Thường Purchasing cũng không xem Draft
 
         }
 // DEPARTMENT_MANAGER
-        else if (Objects.equals(role, Roles.DEPARTMENT_MANAGER.getValue())) {
+        else if (Objects.equals(role, "05")) {
 
-            requestTypeIdList.add(RequestType.ALLOCATION.getValue());
+            requestTypeIdList.add("01");
 
         }
 // ROLE KHÁC → CẤM
@@ -95,6 +83,7 @@ public class ManageAssetRequestProcessUsecase {
                         .requestTypeId(request.getRequestTypeId())
                  //       .approvalStatusId(request.getApprovalStatusId())
                         .requestTypeIdList(requestTypeIdList)
+                        .excludeStatusIdList(excludeStatusIdList)
                         .offset((pageIndex-1)*PAGE_SIZE)
                         .pageSize(PAGE_SIZE)
                         .build());
@@ -124,9 +113,23 @@ public class ManageAssetRequestProcessUsecase {
 
         return ViewAllProcessDTOResponse.builder()
                 .allProcessResponses(
-                        allProcessResponses.stream().map(
+                        allProcessResponses.stream()
+                                .filter(entity -> {
+                                    // Warehouse (03) chỉ được xem Allocation (01) ở trạng thái IN_PROGRESS (05) trở đi
+                                    if (Objects.equals(role, "03")) {
+                                        if (Objects.equals(entity.requestTypeId, "01")) {
+                                            // Chuyển String sang int để so sánh >= 5 (In Progress)
+                                            try {
+                                                return Integer.parseInt(entity.requestStatusId) >= 5;
+                                            } catch (NumberFormatException e) {
+                                                return false;
+                                            }
+                                        }
+                                    }
+                                    return true;
+                                })
+                                .map(
                                         entity -> {
-
                                             // --- Logic tính toán chèn vào ---
                                             // (Kiểm tra xem requestType có phải là Internal không)
                                             boolean isInternal = Objects.equals(entity.requestTypeId, RequestType.ALLOCATION.getValue())
@@ -137,11 +140,12 @@ public class ManageAssetRequestProcessUsecase {
                                                     .id(entity.requestId)    //lấy mã định danh từng phiếu để detail từng request
 
                                                     .isInternal(isInternal) //  đánh dấu xem internal hay external(boolean)
-
-                                                    .requestTypeName(RequestType.of(entity.requestTypeId).getName())
+                                                    .assetTypeName(entity.assetTypeId != null && !entity.assetTypeId.isEmpty() ? AssetType.of(entity.assetTypeId).getName() : "N/A")
+                                                    .requestTypeName(entity.requestTypeId != null ? RequestType.of(entity.requestTypeId).getName() : "N/A")
                                                     .requestedBy(entity.requestedBy)
                                                     .requestedDate(entity.requestedDate)
-                                                    .requestStatusName(RequestStatus.of(entity.requestStatusId).getName())
+                                                    .requestStatusName(entity.requestStatusId != null ? RequestStatus.of(entity.requestStatusId).getName() : "N/A")
+                                                    .requestStatusId(entity.requestStatusId)
                                                     .approvalBy(entity.approvalBy != null ? entity.approvalBy : null)
                                                     .approvalDate(entity.approvalDate)
                                                     .handoverDate(entity.handoverDate)

@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asset Tracker - Cấp Phát Tài Sản</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar similar to other pages but refined */
+        .sidebar {
+            width: 260px;
+            background: #ffffff;
+            border-right: 1px solid var(--border);
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+
+        .menu-item {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .menu-item:hover {
+            background: #f1f5f9;
+            color: var(--primary);
+        }
+
+        .menu-item.active {
+            background: #e0e7ff;
+            color: var(--primary);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 2.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .header-title {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Request Summary Card */
+        .summary-card {
+            background: var(--bg-card);
+            border-radius: 1rem;
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .summary-item label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            margin-bottom: 0.25rem;
+        }
+
+        .summary-item span {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        /* Tabs/Filters */
+        .filter-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            background: #f1f5f9;
+            padding: 0.4rem;
+            border-radius: 0.75rem;
+            width: fit-content;
+        }
+
+        .tab-btn {
+            padding: 0.6rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        /* Asset Grid */
+        .asset-list-container {
+            background: white;
+            border-radius: 1rem;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .asset-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .asset-table th {
+            background: #f8fafc;
+            padding: 1rem;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .asset-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        .asset-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-badge.stock {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-badge.recovered {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        /* Custom Checkbox */
+        .form-check-input {
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: 0.375rem;
+            border-color: var(--border);
+        }
+
+        .form-check-input:checked {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        /* Footer / Actions */
+        .action-bar {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 1.25rem 1.5rem;
+            border-radius: 1rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        .selection-count {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .btn-confirm {
+            background: var(--primary);
+            color: white;
+            padding: 0.625rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-confirm:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-confirm:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-back {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-back:hover {
+            color: var(--text-main);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="fw-bold fs-5 mb-4 text-primary">Asset Tracker</div>
+        
+        <a th:href="@{/viewAsset}" class="menu-item">
+            <i class="fas fa-box"></i> Kho Tài Sản
+        </a>
+        <a th:href="@{/viewRequest}" class="menu-item active">
+            <i class="fas fa-list-check"></i> Danh Sách Yêu Cầu
+        </a>
+        <a th:href="@{/viewInternalRequest}" class="menu-item">
+            <i class="fas fa-building"></i> Yêu Cầu Nội Bộ
+        </a>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <div class="header-section animate-fade">
+            <a th:href="@{/viewRequest}" class="btn-back mb-3">
+                <i class="fas fa-arrow-left"></i> Quay lại danh sách
+            </a>
+            <h1 class="header-title">Thực Hiện Cấp Phát</h1>
+            <p class="text-secondary">Chọn các tài sản phù hợp để gán cho yêu cầu của phòng ban.</p>
+        </div>
+
+        <!-- REQUEST SUMMARY -->
+        <div class="summary-card animate-fade" style="animation-delay: 0.1s;">
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <label>Loại tài sản</label>
+                    <span th:text="${detail.assetTypeId != null ? T(com.example.swp391_assetmanagement.enums.AssetType).of(detail.assetTypeId).getName() : 'N/A'}">Laptop</span>
+                </div>
+                <div class="summary-item">
+                    <label>Số lượng yêu cầu</label>
+                    <span id="targetQuantity" th:text="${detail.quantity}">10</span>
+                </div>
+                <div class="summary-item">
+                    <label>Phòng ban nhận</label>
+                    <span th:text="${detail.toLocationId != null ? T(com.example.swp391_assetmanagement.enums.Location).of(detail.toLocationId).getName() : 'N/A'}">Phòng IT</span>
+                </div>
+                <div class="summary-item">
+                    <label>Lý do</label>
+                    <span th:text="${requestNote != null && !requestNote.isEmpty() ? requestNote : 'Không có ghi chú'}">Dùng cho nhân viên mới</span>
+                </div>
+                <div class="summary-item" th:if="${alreadyConfirmedCount > 0}">
+                    <label>Đã cấp phát</label>
+                    <span>
+                        <span th:text="${alreadyConfirmedCount}">2</span>
+                        /
+                        <span th:text="${detail.quantity}">10</span>
+                    </span>
+                </div>
+            </div>
+
+        <!-- ASSET SELECTION -->
+        <div class="animate-fade" style="animation-delay: 0.2s;">
+            <div class="filter-tabs">
+                <button class="tab-btn active" onclick="switchTab('stock')">Tài sản trong kho</button>
+                <button class="tab-btn" onclick="switchTab('recovered')">Tài sản thu hồi</button>
+            </div>
+
+            <form id="allocationForm" th:action="@{/allocation/process}" method="POST">
+                <input type="hidden" name="requestId" th:value="${request.id}">
+                
+                <div class="asset-list-container">
+                    <!-- STOCK ASSETS TABLE -->
+                    <table class="asset-table" id="stockTable">
+                        <thead>
+                            <tr>
+                                <th width="50"></th>
+                                <th>Mã Tài Sản</th>
+                                <th>Tên Tài Sản</th>
+                                <th>Vị trí</th>
+                                <th>Tình trạng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="asset : ${stockAssets}"
+                                th:style="${asset.assetStatusId == '02' or asset.assetStatusId == '03' or #lists.contains(alreadyAssignedIds, asset.id)} ? 'background-color:#f1f5f9;' : ''">
+                                <td>
+                                    <!-- Only show enabled checkbox if it is NOT yet assigned anywhere -->
+                                    <input th:if="${asset.assetStatusId != '02' and asset.assetStatusId != '03' and !#lists.contains(alreadyAssignedIds, asset.id)}"
+                                           type="checkbox" class="form-check-input asset-check" 
+                                           name="selectedAssetIds" th:value="${asset.id}"
+                                           onchange="updateCount()">
+                                    <!-- Show unchecked disabled checkbox if assigned to ANOTHER request -->
+                                    <input th:if="${(asset.assetStatusId == '02' or asset.assetStatusId == '03') and !#lists.contains(alreadyAssignedIds, asset.id)}"
+                                           type="checkbox" class="form-check-input" disabled>
+                                    <!-- Show checked disabled checkbox if already assigned to THIS request -->
+                                    <input th:if="${#lists.contains(alreadyAssignedIds, asset.id)}"
+                                           type="checkbox" class="form-check-input" checked disabled>
+                                </td>
+                                <td th:text="${asset.assetCode}" th:style="${asset.assetStatusId == '02' or asset.assetStatusId == '03' or #lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">AS-001</td>
+                                <td th:text="${asset.description}" th:style="${asset.assetStatusId == '02' or asset.assetStatusId == '03' or #lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">MacBook Pro 2023</td>
+                                <td th:text="${asset.locationId != null ? T(com.example.swp391_assetmanagement.enums.Location).of(asset.locationId).getName() : 'N/A'}"
+                                    th:style="${asset.assetStatusId == '02' or asset.assetStatusId == '03' or #lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">Kho Chính</td>
+                                <td>
+                                    <span th:if="${asset.assetStatusId == '00' and !#lists.contains(alreadyAssignedIds, asset.id)}" class="status-badge stock">Trong kho</span>
+                                    <span th:if="${asset.assetStatusId == '08' and !#lists.contains(alreadyAssignedIds, asset.id)}" class="status-badge stock">Thu hồi</span>
+                                    <span th:if="${asset.assetStatusId == '02' or (#lists.contains(alreadyAssignedIds, asset.id) and asset.assetStatusId == '02')}"
+                                          style="background:#dcfce7;color:#166534;border-radius:9999px;padding:0.2rem 0.65rem;font-size:0.75rem;font-weight:600;display:inline-block;">✓ Đã nhận</span>
+                                    <span th:if="${asset.assetStatusId == '03' or (#lists.contains(alreadyAssignedIds, asset.id) and asset.assetStatusId != '02')}"
+                                          style="background:#fef9c3;color:#713f12;border-radius:9999px;padding:0.2rem 0.65rem;font-size:0.75rem;font-weight:600;display:inline-block;">🚚 Đang trong quá trình cấp phát</span>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(stockAssets)}">
+                                <td colspan="5" class="text-center py-4 text-muted">Không có tài sản mới trong kho.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- RECOVERED ASSETS TABLE (HIDDEN BY DEFAULT) -->
+                    <table class="asset-table d-none" id="recoveredTable">
+                        <thead>
+                            <tr>
+                                <th width="50"></th>
+                                <th>Mã Tài Sản</th>
+                                <th>Tên Tài Sản</th>
+                                <th>Vị trí</th>
+                                <th>Tình trạng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="asset : ${recoveredAssets}"
+                                th:style="${asset.assetStatusId == '02' or asset.assetStatusId == '03' or #lists.contains(alreadyAssignedIds, asset.id)} ? 'background-color:#f1f5f9;' : ''">
+                                <td>
+                                    <!-- Only show enabled checkbox if it is NOT yet assigned anywhere -->
+                                    <input th:if="${asset.assetStatusId != '02' and asset.assetStatusId != '03' and !#lists.contains(alreadyAssignedIds, asset.id)}"
+                                           type="checkbox" class="form-check-input asset-check" 
+                                           name="selectedAssetIds" th:value="${asset.id}"
+                                           onchange="updateCount()">
+                                    <!-- Show unchecked disabled checkbox if assigned to ANOTHER request -->
+                                    <input th:if="${(asset.assetStatusId == '02' or asset.assetStatusId == '03') and !#lists.contains(alreadyAssignedIds, asset.id)}"
+                                           type="checkbox" class="form-check-input" disabled>
+                                    <!-- Show checked disabled checkbox if already assigned to THIS request -->
+                                    <input th:if="${#lists.contains(alreadyAssignedIds, asset.id)}"
+                                           type="checkbox" class="form-check-input" checked disabled>
+                                </td>
+                                <td th:text="${asset.assetCode}" th:style="${asset.assetStatusId == '02' or asset.assetStatusId == '03' or #lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">AS-054</td>
+                                <td th:text="${asset.description}" th:style="${asset.assetStatusId == '02' or asset.assetStatusId == '03' or #lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">Dữ liệu mẫu</td>
+                                <td th:text="${asset.locationId != null ? T(com.example.swp391_assetmanagement.enums.Location).of(asset.locationId).getName() : 'N/A'}"
+                                    th:style="${asset.assetStatusId == '02' or asset.assetStatusId == '03' or #lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">Phòng IT</td>
+                                <td>
+                                    <span th:if="${asset.assetStatusId == '08' and !#lists.contains(alreadyAssignedIds, asset.id)}" class="status-badge recovered">Đã Thu Hồi</span>
+                                    <span th:if="${asset.assetStatusId == '02' or (#lists.contains(alreadyAssignedIds, asset.id) and asset.assetStatusId == '02')}"
+                                          style="background:#dcfce7;color:#166534;border-radius:9999px;padding:0.2rem 0.65rem;font-size:0.75rem;font-weight:600;display:inline-block;">✓ Đã nhận</span>
+                                    <span th:if="${asset.assetStatusId == '03' or (#lists.contains(alreadyAssignedIds, asset.id) and asset.assetStatusId != '02')}"
+                                          style="background:#fef9c3;color:#713f12;border-radius:9999px;padding:0.2rem 0.65rem;font-size:0.75rem;font-weight:600;display:inline-block;">🚚 Đang trong quá trình cấp phát</span>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(recoveredAssets)}">
+                                <td colspan="5" class="text-center py-4 text-muted">Không có tài sản thu hồi khả dụng.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="action-bar animate-fade" style="animation-delay: 0.3s;">
+                    <div class="selection-status">
+                        <span class="selection-count">
+                            Đã chọn: <span id="currentCount">0</span>
+                            / <span id="remainingQty" th:text="${detail.quantity - alreadyConfirmedCount}">10</span>
+                            <span th:if="${alreadyConfirmedCount > 0}" class="text-muted ms-2" style="font-size:0.8rem;">
+                                (đã giao <span th:text="${alreadyConfirmedCount}">2</span>/<span th:text="${detail.quantity}">10</span>)
+                            </span>
+                        </span>
+                    </div>
+                    <div class="d-flex gap-3">
+                        <button type="button" class="btn btn-outline-secondary px-4" onclick="history.back()">Hủy</button>
+                        <button type="submit" id="submitBtn" class="btn-confirm" disabled>Xác nhận cấp phát</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // remaining = total requested - already delivered in past rounds
+        const targetQty = parseInt(document.getElementById('remainingQty').innerText);
+
+        function switchTab(type) {
+            const stockTable = document.getElementById('stockTable');
+            const recoveredTable = document.getElementById('recoveredTable');
+            const btns = document.querySelectorAll('.tab-btn');
+
+            if (type === 'stock') {
+                stockTable.classList.remove('d-none');
+                recoveredTable.classList.add('d-none');
+                btns[0].classList.add('active');
+                btns[1].classList.remove('active');
+            } else {
+                stockTable.classList.add('d-none');
+                recoveredTable.classList.remove('d-none');
+                btns[0].classList.remove('active');
+                btns[1].classList.add('active');
+            }
+        }
+
+        function updateCount() {
+            const checks = document.querySelectorAll('.asset-check:checked');
+            const count = checks.length;
+            document.getElementById('currentCount').innerText = count;
+            
+            const submitBtn = document.getElementById('submitBtn');
+            
+            // Allow submit only if selection doesn't exceed target
+            if (count > 0 && count <= targetQty) {
+                submitBtn.disabled = false;
+            } else {
+                submitBtn.disabled = true;
+            }
+
+            // Visual warning if exceeded
+            const countLabel = document.getElementById('currentCount');
+            if (count > targetQty) {
+                countLabel.classList.add('text-danger');
+            } else {
+                countLabel.classList.remove('text-danger');
+            }
+        }
+    </script>
+</body>
+</html>

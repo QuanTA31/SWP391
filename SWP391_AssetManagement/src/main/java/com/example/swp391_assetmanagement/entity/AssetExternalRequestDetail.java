@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Setter
 @Entity
-@Table(name = "asset_internal_request_detail")
+@Table(name = "asset_external_request_detail")
 public class AssetExternalRequestDetail {
 
     @Id

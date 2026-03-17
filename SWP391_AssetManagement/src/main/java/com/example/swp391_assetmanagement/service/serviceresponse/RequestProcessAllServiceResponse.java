@@ -40,6 +40,9 @@ public class RequestProcessAllServiceResponse {
     @Column(name = "created_at")
     public LocalDate createdAt;
 
+    @Column(name = "asset_type_id")
+    public String assetTypeId;
+
     @Column(name = "total_items")
     public Integer totalItems;
 
