@@ -136,7 +136,7 @@ public class ViewAssetUsecase {
 
         // Check role
         if (Objects.equals(session.getAttribute("ROLE"), Roles.ADMIN.getValue())
-                || Objects.equals(session.getAttribute("ROLE"), Roles.DEPARTMENT_MANAGER.getValue())
+                //|| Objects.equals(session.getAttribute("ROLE"), Roles.DEPARTMENT_MANAGER.getValue())
                 || Objects.equals(session.getAttribute("ROLE"), Roles.CLIENT.getValue())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền truy cập vào trang này !");
         }

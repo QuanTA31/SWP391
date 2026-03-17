@@ -140,6 +140,15 @@
                             <a th:if="${!item.isInternal}" class="btn btn-sm btn-warning text-dark"
                                th:href="@{/viewExternalRequest/detail(id=${item.id})}">View</a>
                         </th:block>
+                      <!-- MAINTENANCE -->
+                <th:block th:if="${#strings.equalsIgnoreCase(item.requestTypeName,'MAINTENANCE')}">
+                  
+                  <a class="btn btn-sm btn-info text-white"
+                     th:href="@{/maintenance-requests/view(assetRequestId=${item.id})}">
+                    View
+                  </a>
+
+                </th:block>
                     </td>
                 </tr>
                 </tbody>
