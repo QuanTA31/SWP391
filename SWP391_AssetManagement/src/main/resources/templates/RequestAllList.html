@@ -197,7 +197,6 @@
                   </a>
 
                 </th:block>
-
                 <!-- LIQUIDATION -->
                 <th:block th:if="${#strings.equalsIgnoreCase(item.requestTypeName,'LIQUIDATION')}">
 
@@ -222,6 +221,37 @@
                     View
                   </a>
 
+                  <form th:if="${item.requestStatusName == 'RESEARCH_DONE'
+              and item.requestTypeName == 'LIQUIDATION'
+              and session.ROLE == '04'}"
+                        th:action="@{/liquidate/purchasing/progress}"
+                        method="post"
+                        style="display:inline">
+
+                    <input type="hidden" name="requestId" th:value="${item.id}"/>
+
+                    <button type="submit"
+                            class="btn btn-sm btn-success"
+                            onclick="return confirm('Move this request to IN_PROGRESS?')">
+                      Move To In Progress
+                    </button>
+                  </form>
+
+                  <form th:if="${item.requestStatusName == 'IN_PROGRESS'
+              and item.requestTypeName == 'LIQUIDATION'
+              and session.ROLE == '04'}"
+                        th:action="@{/liquidate/purchasing/complete}"
+                        method="post"
+                        style="display:inline">
+
+                    <input type="hidden" name="requestId" th:value="${item.id}"/>
+
+                    <button type="submit"
+                            class="btn btn-sm btn-success"
+                            onclick="return confirm('Move this request to COMPLETED?')">
+                      Move To Completed
+                    </button>
+                  </form>
                 </th:block>
 
                 <!-- INTERNAL / EXTERNAL --> <!-- check lại do đá liquidation-->
