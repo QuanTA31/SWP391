@@ -6,7 +6,6 @@ import com.example.swp391_assetmanagement.entity.AssetInternalRequestDetail;
 import com.example.swp391_assetmanagement.entity.AssetRequest;
 import com.example.swp391_assetmanagement.entity.Assets;
 import com.example.swp391_assetmanagement.enums.AssetStatus;
-import com.example.swp391_assetmanagement.enums.Location;
 import com.example.swp391_assetmanagement.enums.RequestStatus;
 import com.example.swp391_assetmanagement.service.AssetInternalRequestDetailService;
 import lombok.RequiredArgsConstructor;
@@ -17,25 +16,24 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
-public class ConfirmMaintenanceRepairUsecase {
+public class ConfirmMaintenanceReceiptUsecase {
 
     private final AssetRequestDAO assetRequestDAO;
-    private final AssetsDAO assetsDAO;
     private final AssetInternalRequestDetailService assetInternalRequestDetailService;
+    private final AssetsDAO assetsDAO;
 
     @Transactional
-    public void execute(Long assetRequestId) {
-        
-        AssetRequest assetRequest = assetRequestDAO.findAssetRequestByIdForUpdate(assetRequestId)
+    public void execute(Long requestId) {
+        AssetRequest assetRequest = assetRequestDAO.findAssetRequestByIdForUpdate(requestId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy yêu cầu"));
 
-        if (!RequestStatus.APPROVED.getValue().equals(assetRequest.requestStatusId)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Trạng thái yêu cầu không hợp lệ để xác nhận sửa chữa.");
+        if (!RequestStatus.MAINTAIN_DONE.getValue().equals(assetRequest.requestStatusId)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Yêu cầu phải ở trạng thái Sửa xong mới có thể xác nhận nhận lại");
         }
 
-        AssetInternalRequestDetail detail = assetInternalRequestDetailService.findByAssetRequestId(assetRequestId);
-        if (detail == null || detail.assetId == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Dữ liệu chi tiết bị lỗi");
+        AssetInternalRequestDetail detail = assetInternalRequestDetailService.findByAssetRequestId(requestId);
+        if (detail == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy chi tiết yêu cầu");
         }
 
         Assets asset = assetsDAO.findById(detail.assetId);
@@ -43,11 +41,11 @@ public class ConfirmMaintenanceRepairUsecase {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy tài sản");
         }
 
-        asset.locationId = Location.WAREHOUSE.getValue();
-        asset.assetStatusId = AssetStatus.MAINTENANCE.getValue();
+        asset.assetStatusId = AssetStatus.ASSIGNED.getValue();
+        asset.locationId = detail.fromLocationId;
         assetsDAO.update(asset);
 
-        assetRequest.requestStatusId = RequestStatus.IN_PROGRESS.getValue();
+        assetRequest.requestStatusId = RequestStatus.COMPLETED.getValue();
         assetRequestDAO.updateStatus(assetRequest);
     }
 }

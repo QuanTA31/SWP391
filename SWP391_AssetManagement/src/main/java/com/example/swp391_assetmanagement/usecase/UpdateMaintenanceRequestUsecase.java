@@ -66,7 +66,6 @@ public class UpdateMaintenanceRequestUsecase {
 
         detail.setAssetId(request.getAssetId());
 
-        // Combine issue description and priority into note
         String combinedNote = String.format("[%s] %s | Note: %s",
             request.getPriority(),
             request.getIssueDescription().trim(),

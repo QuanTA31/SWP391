@@ -43,8 +43,6 @@ public class GetMaintenanceRequestDetailUsecase {
             isOwner = assetRequest.requestedBy.equals(userId);
         }
 
-        // Parse note field back to DTO
-        // Note format: "[PRIORITY] Issue Description | Note: Optional Notes"
         CreateMaintenanceRequestDTORequest dto = new CreateMaintenanceRequestDTORequest();
         dto.setAssetId(detail.assetId);
         
@@ -60,7 +58,6 @@ public class GetMaintenanceRequestDetailUsecase {
                     dto.setNote(customNote);
                 }
             } else {
-                // Fallback nếu không đúng chuẩn
                 dto.setIssueDescription(rawNote);
                 dto.setPriority("MEDIUM"); 
             }
@@ -72,7 +69,6 @@ public class GetMaintenanceRequestDetailUsecase {
         return new MaintenanceRequestDetailResult(assetRequest.requestStatusId, dto, isOwner, assetRequest, asset, requesterName);
     }
 
-    // Helper class to return both status and dto
     public static class MaintenanceRequestDetailResult {
         private String requestStatusId;
         private CreateMaintenanceRequestDTORequest dto;

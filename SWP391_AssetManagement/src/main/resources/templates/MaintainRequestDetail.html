@@ -166,6 +166,23 @@
                         <i class="bi bi-arrow-left me-1"></i>Quay Lại
                     </a>
 
+                    <!-- DEPARTMENT MANAGER: Xác nhận nhận lại tài sản (nếu Sửa OK) -->
+                    <form th:if="${role == '05' and requestStatusId == '10'}" 
+                          th:action="@{/maintenance-requests/department_manager/confirm-receive}" 
+                          method="POST" class="m-0">
+                        <input type="hidden" name="requestId" th:value="${requestId}" />
+                        <button type="submit" class="btn btn-success" style="border-radius:8px; font-weight:600;">
+                            <i class="bi bi-box-arrow-in-down me-1"></i>Xác Nhận Nhận Lại Tài Sản
+                        </button>
+                    </form>
+
+                    <!-- DEPARTMENT MANAGER: Tạo yêu cầu mới (nếu hỏng hẳn) -->
+                    <a th:if="${role == '05' and requestStatusId == '06' and (assetInfo != null and assetInfo.assetStatusId == '05')}"
+                       th:href="@{/allocation/department/create}"
+                       class="btn btn-warning text-dark m-0 d-flex align-items-center" style="border-radius:8px; font-weight:600;">
+                        <i class="bi bi-plus-circle me-1"></i> Tạo Yêu Cầu Cấp Phát Thay Thế
+                    </a>
+
                     <!-- WAREHOUSE: Xác nhận sửa (khi đang APPROVED) -->
                     <form th:if="${role == '03' and requestStatusId == '03'}" 
                           th:action="@{/maintenance-requests/warehouse/confirm-repair}" 

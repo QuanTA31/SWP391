@@ -38,6 +38,10 @@
                        th:href="@{/allocation/department/create(assetRequestId='')}" class="menu-item">
                         Create Allocation Request
                     </a>
+                    <a th:if="${session.ROLE == '05'}"
+                       th:href="@{/maintenance-requests/create(assetRequestId='')}" class="menu-item">
+                        Create Maintain Request
+                    </a>
                 </div>
 
                 <div th:replace="${content}"></div>

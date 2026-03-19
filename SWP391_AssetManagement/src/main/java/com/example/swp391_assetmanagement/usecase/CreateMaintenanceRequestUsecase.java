@@ -43,12 +43,10 @@ public class CreateMaintenanceRequestUsecase {
 
         Long userId = userService.getIdByUserCode(session.getAttribute("USER_CODE").toString());
 
-        // Xác định status: Gửi → APPROVED, Lưu → DRAFT
         String statusId = Boolean.TRUE.equals(request.getIsSubmitted())
                 ? RequestStatus.APPROVED.getValue()
                 : RequestStatus.DRAFT.getValue();
 
-        // Tạo AssetRequest (header)
         AssetRequest assetRequest = new AssetRequest();
         assetRequest.setRequestTypeId(RequestType.MAINTENANCE.getValue());
         assetRequest.setRequestedBy(userId);
@@ -57,14 +55,12 @@ public class CreateMaintenanceRequestUsecase {
 
         Long assetRequestId = assetRequestService.createPurchaseRequestForm(assetRequest);
 
-        // Gộp mô tả + priority vào note
         String noteContent = buildNote(request);
 
-        // Tạo AssetInternalRequestDetail (detail)
         AssetInternalRequestDetail detail = new AssetInternalRequestDetail();
         detail.setAssetId(request.getAssetId());
         detail.setAssetRequestId(assetRequestId);
-        detail.setAssetTypeId(""); // không bắt buộc trong luồng maintenance
+        detail.setAssetTypeId("");
         detail.setQuantity(1);
         detail.setNote(noteContent);
         detail.setIsDone(false);
@@ -73,10 +69,7 @@ public class CreateMaintenanceRequestUsecase {
         assetInternalRequestDetailService.insert(detail);
     }
 
-    /**
-     * Gộp issueDescription, priority và note (tuỳ chọn) thành 1 chuỗi note duy nhất.
-     * Ví dụ: "[HIGH] Màn hình bị vỡ | Note: cần gấp"
-     */
+
     private String buildNote(CreateMaintenanceRequestDTORequest request) {
         StringBuilder sb = new StringBuilder();
         sb.append("[").append(request.getPriority()).append("] ");

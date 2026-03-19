@@ -9,6 +9,7 @@ import com.example.swp391_assetmanagement.usecase.GetMaintenanceRequestDetailUse
 import com.example.swp391_assetmanagement.usecase.UpdateMaintenanceRequestUsecase;
 import com.example.swp391_assetmanagement.usecase.ConfirmMaintenanceRepairUsecase;
 import com.example.swp391_assetmanagement.usecase.FinishMaintenanceRepairUsecase;
+import com.example.swp391_assetmanagement.usecase.ConfirmMaintenanceReceiptUsecase;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,11 +32,9 @@ public class MaintenanceRequestController {
     private final UpdateMaintenanceRequestUsecase updateMaintenanceRequestUsecase;
     private final ConfirmMaintenanceRepairUsecase confirmMaintenanceRepairUsecase;
     private final FinishMaintenanceRepairUsecase finishMaintenanceRepairUsecase;
+    private final ConfirmMaintenanceReceiptUsecase confirmMaintenanceReceiptUsecase;
 
-    /**
-     * GET /maintenance-requests/create
-     * Hiển thị form tạo yêu cầu sửa chữa cho Department Manager.
-     */
+    //get to display maintain request form
     @GetMapping("/create")
     public String showCreateForm(Model model, HttpSession session) {
 
@@ -50,10 +49,7 @@ public class MaintenanceRequestController {
         return "CreateMaintenanceRequest";
     }
 
-    /**
-     * POST /maintenance-requests/create
-     * Xử lý submit form: lưu nháp hoặc gửi ngay (APPROVED).
-     */
+    // post draft or submit
     @PostMapping("/create")
     public String handleCreate(
             @ModelAttribute("request") CreateMaintenanceRequestDTORequest request,
@@ -77,10 +73,7 @@ public class MaintenanceRequestController {
         return "redirect:/viewRequest";
     }
 
-    /**
-     * GET /maintenance-requests/{rolePath}/view?assetRequestId=...
-     * Hiển thị chi tiết (view-only) hoặc màn hình sửa (nếu đang là DRAFT).
-     */
+    //view only
     @GetMapping("/{rolePath}/view")
     public String showViewOrEditForm(
             @PathVariable("rolePath") String rolePath,
@@ -113,10 +106,7 @@ public class MaintenanceRequestController {
         return "MaintainRequestDetail"; 
     }
 
-    /**
-     * POST /maintenance-requests/update
-     * Cập nhật request (chỉ cho DRAFT).
-     */
+   // for draft update
     @PostMapping("/update")
     public String handleUpdate(
             @ModelAttribute("request") CreateMaintenanceRequestDTORequest request,
@@ -183,5 +173,16 @@ public class MaintenanceRequestController {
         boolean isSuccess = "OK".equals(action);
         finishMaintenanceRepairUsecase.execute(assetRequestId, isSuccess);
         return "redirect:/maintenance-requests/warehouse/view?assetRequestId=" + assetRequestId;
+    }
+
+    @PostMapping("/department_manager/confirm-receive")
+    public String confirmReceive(@RequestParam("requestId") Long assetRequestId, org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+        try {
+            confirmMaintenanceReceiptUsecase.execute(assetRequestId);
+            redirectAttributes.addFlashAttribute("successMessage", "Xác nhận nhận lại tài sản thành công. Yêu cầu hoàn tất.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi lập biên bản nhận lại: " + e.getMessage());
+        }
+        return "redirect:/viewRequest";
     }
 }
