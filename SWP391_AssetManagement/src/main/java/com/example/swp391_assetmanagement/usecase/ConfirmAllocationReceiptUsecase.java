@@ -8,6 +8,7 @@ import com.example.swp391_assetmanagement.entity.AssetRequest;
 import com.example.swp391_assetmanagement.entity.Assets;
 import com.example.swp391_assetmanagement.enums.AssetStatus;
 import com.example.swp391_assetmanagement.enums.RequestStatus;
+import com.example.swp391_assetmanagement.service.AllocationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,8 @@ public class ConfirmAllocationReceiptUsecase {
     private final AssetInternalRequestDetailDAO assetInternalRequestDetailDAO;
     private final AssetRequestDAO assetRequestDAO;
     private final AssetsDAO assetsDAO;
+
+    private final AllocationService allocationService;
 
     @Transactional
     public void execute(Long requestId) {
@@ -60,7 +63,7 @@ public class ConfirmAllocationReceiptUsecase {
             }
         }
         if (!toUpdate.isEmpty()) {
-            assetsDAO.batchUpdateAllocation(toUpdate);
+            allocationService.batchUpdateAllocation(toUpdate);
         }
 
         // 4. Determine completion: compare assigned count vs requested quantity

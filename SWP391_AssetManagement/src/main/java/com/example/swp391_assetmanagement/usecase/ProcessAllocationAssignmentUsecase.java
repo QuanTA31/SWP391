@@ -1,32 +1,32 @@
 package com.example.swp391_assetmanagement.usecase;
 
-import com.example.swp391_assetmanagement.dao.AssetRequestDAO;
-import com.example.swp391_assetmanagement.dao.AssetsDAO;
 import com.example.swp391_assetmanagement.entity.AssetInternalRequestDetail;
 import com.example.swp391_assetmanagement.entity.AssetRequest;
 import com.example.swp391_assetmanagement.entity.Assets;
 import com.example.swp391_assetmanagement.enums.AssetStatus;
 import com.example.swp391_assetmanagement.enums.RequestStatus;
 import com.example.swp391_assetmanagement.service.AllocationService;
+import com.example.swp391_assetmanagement.service.AssetRequestService;
+import com.example.swp391_assetmanagement.service.AssetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class ProcessAllocationAssignmentUsecase {
 
-    private final AssetsDAO assetsDAO;
-    private final AssetRequestDAO assetRequestDAO;
+    private final AssetService assetService;
+    private final AssetRequestService assetRequestService;
     private final AllocationService allocationService;
 
     @Transactional
     public void execute(Long requestId, List<Long> selectedAssetIds) {
         // 1. Fetch Request & Detail
-        AssetRequest request = assetRequestDAO.findAssetRequestByIdForUpdate(requestId).orElse(null);
+        AssetRequest request = allocationService.getAssetRequestById(requestId).orElse(null);
+
         if (request == null) {
             throw new RuntimeException("Request not found: " + requestId);
         }
@@ -70,7 +70,7 @@ public class ProcessAllocationAssignmentUsecase {
             // Mark ALL newly assigned assets (and any legacy ones that failed to update before) as TRANSFERRING
             java.util.List<Assets> toLock = new java.util.ArrayList<>();
             for (Long aid : allAssetIds) {
-                Assets asset = assetsDAO.findById(aid);
+                Assets asset = assetService.findById(aid);
                 // If it's already 02 (ASSIGNED), leave it alone.
                 // If it's 00 (STOCKED) or 08 (RECOVERED), force it to 03 (TRANSFERRING).
                 if (asset != null && (AssetStatus.STOCK_IN.getValue().equals(asset.assetStatusId) || AssetStatus.STOCKED.getValue().equals(asset.assetStatusId))) {
@@ -79,7 +79,7 @@ public class ProcessAllocationAssignmentUsecase {
                 }
             }
             if (!toLock.isEmpty()) {
-                assetsDAO.batchUpdateAllocation(toLock);
+                allocationService.batchUpdateAllocation(toLock);
             }
 
             // Reset is_done to null so Warehouse can dispatch the new batch of assets
@@ -92,6 +92,6 @@ public class ProcessAllocationAssignmentUsecase {
 
         // 3. Set Status to IN_PROGRESS (05)
         request.setRequestStatusId(RequestStatus.IN_PROGRESS.getValue()); 
-        assetRequestDAO.updateStatus(request);
+        assetRequestService.updatePurchaseRequestStatus(request);
     }
 }
