@@ -60,7 +60,7 @@ public class ConfirmAllocationReceiptUsecase {
             }
         }
         if (!toUpdate.isEmpty()) {
-            assetsDAO.batchUpdate(toUpdate);
+            assetsDAO.batchUpdateAllocation(toUpdate);
         }
 
         // 4. Determine completion: compare assigned count vs requested quantity

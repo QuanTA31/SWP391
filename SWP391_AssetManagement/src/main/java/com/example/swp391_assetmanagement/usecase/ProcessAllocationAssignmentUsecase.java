@@ -79,7 +79,7 @@ public class ProcessAllocationAssignmentUsecase {
                 }
             }
             if (!toLock.isEmpty()) {
-                assetsDAO.batchUpdate(toLock);
+                assetsDAO.batchUpdateAllocation(toLock);
             }
 
             // Reset is_done to null so Warehouse can dispatch the new batch of assets
