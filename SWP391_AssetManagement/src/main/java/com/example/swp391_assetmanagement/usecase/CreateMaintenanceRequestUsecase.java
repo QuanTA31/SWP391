@@ -1,0 +1,89 @@
+package com.example.swp391_assetmanagement.usecase;
+
+import com.example.swp391_assetmanagement.dto.request.CreateMaintenanceRequestDTORequest;
+import com.example.swp391_assetmanagement.entity.AssetInternalRequestDetail;
+import com.example.swp391_assetmanagement.entity.AssetRequest;
+import com.example.swp391_assetmanagement.enums.RequestStatus;
+import com.example.swp391_assetmanagement.enums.RequestType;
+import com.example.swp391_assetmanagement.service.AssetInternalRequestDetailService;
+import com.example.swp391_assetmanagement.service.AssetRequestService;
+import com.example.swp391_assetmanagement.service.UserService;
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+@Service
+@RequiredArgsConstructor
+public class CreateMaintenanceRequestUsecase {
+
+    private final AssetRequestService assetRequestService;
+    private final AssetInternalRequestDetailService assetInternalRequestDetailService;
+    private final UserService userService;
+
+    @Transactional
+    public void execute(CreateMaintenanceRequestDTORequest request, HttpSession session) {
+
+        // Validate
+        if (request.getAssetId() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Vui lòng chọn tài sản cần sửa chữa!");
+        }
+        if (ObjectUtils.isEmpty(request.getIssueDescription())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Vui lòng nhập mô tả lỗi!");
+        }
+        if (ObjectUtils.isEmpty(request.getPriority())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Vui lòng chọn mức độ ưu tiên!");
+        }
+
+        Long userId = userService.getIdByUserCode(session.getAttribute("USER_CODE").toString());
+
+        // Xác định status: Gửi → APPROVED, Lưu → DRAFT
+        String statusId = Boolean.TRUE.equals(request.getIsSubmitted())
+                ? RequestStatus.APPROVED.getValue()
+                : RequestStatus.DRAFT.getValue();
+
+        // Tạo AssetRequest (header)
+        AssetRequest assetRequest = new AssetRequest();
+        assetRequest.setRequestTypeId(RequestType.MAINTENANCE.getValue());
+        assetRequest.setRequestedBy(userId);
+        assetRequest.setRequestedDate(LocalDate.now());
+        assetRequest.setRequestStatusId(statusId);
+
+        Long assetRequestId = assetRequestService.createPurchaseRequestForm(assetRequest);
+
+        // Gộp mô tả + priority vào note
+        String noteContent = buildNote(request);
+
+        // Tạo AssetInternalRequestDetail (detail)
+        AssetInternalRequestDetail detail = new AssetInternalRequestDetail();
+        detail.setAssetId(request.getAssetId());
+        detail.setAssetRequestId(assetRequestId);
+        detail.setAssetTypeId(""); // không bắt buộc trong luồng maintenance
+        detail.setQuantity(1);
+        detail.setNote(noteContent);
+        detail.setIsDone(false);
+        detail.setCreatedAt(LocalDateTime.now());
+
+        assetInternalRequestDetailService.insert(detail);
+    }
+
+    /**
+     * Gộp issueDescription, priority và note (tuỳ chọn) thành 1 chuỗi note duy nhất.
+     * Ví dụ: "[HIGH] Màn hình bị vỡ | Note: cần gấp"
+     */
+    private String buildNote(CreateMaintenanceRequestDTORequest request) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[").append(request.getPriority()).append("] ");
+        sb.append(request.getIssueDescription().trim());
+        if (!ObjectUtils.isEmpty(request.getNote())) {
+            sb.append(" | Note: ").append(request.getNote().trim());
+        }
+        return sb.toString();
+    }
+}
