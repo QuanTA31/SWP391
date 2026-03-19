@@ -8,6 +8,7 @@ SET
     approved_date = CURRENT_DATE,
 /*%end */
 /*%if assetRequest.note != null */
-    note = /* assetRequest.note */'Updated'
+    note = /* assetRequest.note */'Updated',
 /*%end */
+    id = id
 WHERE id = /* assetRequest.id */1

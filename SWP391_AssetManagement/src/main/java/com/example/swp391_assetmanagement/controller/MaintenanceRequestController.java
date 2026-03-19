@@ -7,6 +7,8 @@ import com.example.swp391_assetmanagement.usecase.CreateMaintenanceRequestUsecas
 import com.example.swp391_assetmanagement.usecase.GetAssetsForRepairUsecase;
 import com.example.swp391_assetmanagement.usecase.GetMaintenanceRequestDetailUsecase;
 import com.example.swp391_assetmanagement.usecase.UpdateMaintenanceRequestUsecase;
+import com.example.swp391_assetmanagement.usecase.ConfirmMaintenanceRepairUsecase;
+import com.example.swp391_assetmanagement.usecase.FinishMaintenanceRepairUsecase;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,6 +29,8 @@ public class MaintenanceRequestController {
     private final CreateMaintenanceRequestUsecase createMaintenanceRequestUsecase;
     private final GetMaintenanceRequestDetailUsecase getMaintenanceRequestDetailUsecase;
     private final UpdateMaintenanceRequestUsecase updateMaintenanceRequestUsecase;
+    private final ConfirmMaintenanceRepairUsecase confirmMaintenanceRepairUsecase;
+    private final FinishMaintenanceRepairUsecase finishMaintenanceRepairUsecase;
 
     /**
      * GET /maintenance-requests/create
@@ -74,11 +78,15 @@ public class MaintenanceRequestController {
     }
 
     /**
-     * GET /maintenance-requests/view?assetRequestId=...
+     * GET /maintenance-requests/{rolePath}/view?assetRequestId=...
      * Hiển thị chi tiết (view-only) hoặc màn hình sửa (nếu đang là DRAFT).
      */
-    @GetMapping("/view")
-    public String showViewOrEditForm(@RequestParam("assetRequestId") Long assetRequestId, Model model, HttpSession session) {
+    @GetMapping("/{rolePath}/view")
+    public String showViewOrEditForm(
+            @PathVariable("rolePath") String rolePath,
+            @RequestParam("assetRequestId") Long assetRequestId, 
+            Model model, 
+            HttpSession session) {
         
         List<AssetForRepairServiceResponse> assets = getAssetsForRepairUsecase.execute(session);
 
@@ -93,8 +101,16 @@ public class MaintenanceRequestController {
         model.addAttribute("requestStatusId", result.getRequestStatusId());
         model.addAttribute("isOwner", result.isOwner());
         model.addAttribute("role", session.getAttribute("ROLE"));
+        model.addAttribute("rolePath", rolePath);
+        model.addAttribute("assetInfo", result.getAsset());
+        model.addAttribute("assetRequestInfo", result.getAssetRequest());
+        model.addAttribute("requesterName", result.getRequesterName());
 
-        return "CreateMaintenanceRequest"; // Tận dụng chung 1 template
+        if ("department_manager".equals(rolePath) && "01".equals(result.getRequestStatusId())) {
+            return "CreateMaintenanceRequest"; 
+        }
+
+        return "MaintainRequestDetail"; 
     }
 
     /**
@@ -139,7 +155,33 @@ public class MaintenanceRequestController {
         Object role = session.getAttribute("ROLE");
         if (!Objects.equals(role, Roles.DEPARTMENT_MANAGER.getValue())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                    "Chỉ Department Manager mới có quyền tạo yêu cầu sửa chữa!");
+                    "Chỉ Department Manager mới có quyền!");
         }
+    }
+
+    private void requireWarehouse(HttpSession session) {
+        Object role = session.getAttribute("ROLE");
+        if (!Objects.equals(role, Roles.WAREHOUSE.getValue())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Chỉ Warehouse mới có quyền thực hiện thao tác này!");
+        }
+    }
+
+    @PostMapping("/warehouse/confirm-repair")
+    public String confirmRepair(@RequestParam("requestId") Long assetRequestId, HttpSession session) {
+        requireWarehouse(session);
+        confirmMaintenanceRepairUsecase.execute(assetRequestId);
+        return "redirect:/maintenance-requests/warehouse/view?assetRequestId=" + assetRequestId;
+    }
+
+    @PostMapping("/warehouse/finish-repair")
+    public String finishRepair(
+            @RequestParam("requestId") Long assetRequestId, 
+            @RequestParam("action") String action,
+            HttpSession session) {
+        requireWarehouse(session);
+        boolean isSuccess = "OK".equals(action);
+        finishMaintenanceRepairUsecase.execute(assetRequestId, isSuccess);
+        return "redirect:/maintenance-requests/warehouse/view?assetRequestId=" + assetRequestId;
     }
 }

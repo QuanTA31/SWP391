@@ -143,8 +143,18 @@
                       <!-- MAINTENANCE -->
                 <th:block th:if="${#strings.equalsIgnoreCase(item.requestTypeName,'MAINTENANCE')}">
                   
-                  <a class="btn btn-sm btn-info text-white"
-                     th:href="@{/maintenance-requests/view(assetRequestId=${item.id})}">
+                  <a th:if="${session.ROLE == '05'}" class="btn btn-sm btn-info text-white"
+                     th:href="@{/maintenance-requests/department_manager/view(assetRequestId=${item.id})}">
+                    View
+                  </a>
+                  
+                  <a th:if="${session.ROLE == '03'}" class="btn btn-sm btn-info text-white"
+                     th:href="@{/maintenance-requests/warehouse/view(assetRequestId=${item.id})}">
+                    View
+                  </a>
+
+                  <a th:if="${session.ROLE != '05' and session.ROLE != '03'}" class="btn btn-sm btn-info text-white"
+                     th:href="@{/maintenance-requests/other/view(assetRequestId=${item.id})}">
                     View
                   </a>
 

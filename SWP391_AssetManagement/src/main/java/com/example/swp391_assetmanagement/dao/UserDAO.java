@@ -25,4 +25,7 @@ public interface UserDAO {
 
     @Select
     String findRoleCodesByUserCode(String userCode);
+
+    @Select
+    String findUserNameById(Long id);
 }
