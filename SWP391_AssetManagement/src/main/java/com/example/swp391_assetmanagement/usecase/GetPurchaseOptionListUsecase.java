@@ -1,6 +1,5 @@
 package com.example.swp391_assetmanagement.usecase;
 
-import com.example.swp391_assetmanagement.entity.AssetExternalRequestDetail;
 import com.example.swp391_assetmanagement.entity.AssetRequest;
 import com.example.swp391_assetmanagement.enums.RequestStatus;
 import com.example.swp391_assetmanagement.enums.RequestType;
@@ -37,8 +36,8 @@ public class GetPurchaseOptionListUsecase {
             Long requestDetailId,
             String status,
             Integer page,
-            HttpSession session
-    ) {
+            HttpSession session) {
+
         // Get requestId
         Long requestId = assetExternalRequestDetailService.findAssetRequest(requestDetailId);
 

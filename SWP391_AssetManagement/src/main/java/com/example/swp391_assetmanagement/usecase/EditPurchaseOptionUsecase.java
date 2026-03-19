@@ -1,11 +1,9 @@
 package com.example.swp391_assetmanagement.usecase;
 
 import com.example.swp391_assetmanagement.dto.request.OptionDetailFormDTORequest;
-import com.example.swp391_assetmanagement.entity.AssetExternalRequestDetail;
 import com.example.swp391_assetmanagement.entity.OptionDetail;
 import com.example.swp391_assetmanagement.enums.RequestType;
 import com.example.swp391_assetmanagement.enums.Roles;
-import com.example.swp391_assetmanagement.dto.request.CreatePurchaseRequestDetailDTORequest;
 import com.example.swp391_assetmanagement.service.AssetExternalRequestDetailService;
 import com.example.swp391_assetmanagement.service.AssetRequestService;
 import com.example.swp391_assetmanagement.service.OptionDetailService;
@@ -30,8 +28,8 @@ public class EditPurchaseOptionUsecase {
     public void execute(
             Long requestDetailId,
             OptionDetailFormDTORequest form,
-            HttpSession session
-    ) {
+            HttpSession session) {
+
         // Get requestId
         Long requestId = assetExternalRequestDetailService.findAssetRequest(requestDetailId);
 

@@ -11,5 +11,5 @@ public class LiquiDateCreateDTOResponse {
 
     private final List<LiquidateAssetDTOResponse> assetResponses;
 
-    private final FiltersDTOResponse filters;
+    private final LiquidateFiltersDTOResponse filters;
 }

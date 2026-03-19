@@ -45,8 +45,7 @@ public class CreateLiquidationRequestUsecase {
         assetRequest.setApprovedDate(LocalDate.now());
 
         // Insert to AssetRequest
-        Long assetRequestId =
-                assetRequestService.createPurchaseRequestForm(assetRequest);
+        Long assetRequestId = assetRequestService.createPurchaseRequestForm(assetRequest);
 
         // Get asset info
         List<AssetLiquiServiceResponse> assetLiquiServiceResponses = assetService.findByIdOfLiquidation(assetIds);

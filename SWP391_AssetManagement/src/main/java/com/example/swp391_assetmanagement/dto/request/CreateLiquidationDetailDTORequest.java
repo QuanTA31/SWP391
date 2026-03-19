@@ -2,8 +2,10 @@ package com.example.swp391_assetmanagement.dto.request;
 
 import lombok.*;
 
-@Setter
 @Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class CreateLiquidationDetailDTORequest {
 

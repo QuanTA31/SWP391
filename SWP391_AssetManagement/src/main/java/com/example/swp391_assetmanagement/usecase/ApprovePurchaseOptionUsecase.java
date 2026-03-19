@@ -1,6 +1,5 @@
 package com.example.swp391_assetmanagement.usecase;
 
-import com.example.swp391_assetmanagement.entity.AssetExternalRequestDetail;
 import com.example.swp391_assetmanagement.entity.AssetRequest;
 import com.example.swp391_assetmanagement.entity.OptionDetail;
 import com.example.swp391_assetmanagement.enums.ExternalStatus;
@@ -36,8 +35,8 @@ public class ApprovePurchaseOptionUsecase {
             Long optionId,
             Long requestDetailId,
             boolean selected,
-            HttpSession session
-    ) {
+            HttpSession session) {
+
         // Get requestId
         Long requestId = assetExternalRequestDetailService.findAssetRequest(requestDetailId);
 
@@ -78,10 +77,7 @@ public class ApprovePurchaseOptionUsecase {
         String userCode = (String) session.getAttribute("USER_CODE");
         Long userId = userService.getIdByUserCode(userCode);
 
-        if (selected && Objects.nonNull(plan)) {
-
-            //AssetExternalRequestDetail detail = assetExternalRequestDetailService.findToUpdate(requestDetailId);
-            //Long requestId = detail.getAssetRequestId();
+        if (selected) {
 
             //Lấy asset_request
             AssetRequest assetRequest =

@@ -2,7 +2,6 @@ package com.example.swp391_assetmanagement.usecase;
 
 import com.example.swp391_assetmanagement.dto.request.CreateLiquidationDTORequest;
 import com.example.swp391_assetmanagement.dto.request.CreateLiquidationDetailDTORequest;
-import com.example.swp391_assetmanagement.dto.request.CreatePurchaseRequestDTORequest;
 import com.example.swp391_assetmanagement.entity.AssetExternalRequestDetail;
 import com.example.swp391_assetmanagement.enums.AssetType;
 import com.example.swp391_assetmanagement.service.AssetExternalRequestDetailService;

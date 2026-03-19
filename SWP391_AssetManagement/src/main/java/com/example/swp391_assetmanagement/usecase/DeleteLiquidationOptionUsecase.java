@@ -1,6 +1,5 @@
 package com.example.swp391_assetmanagement.usecase;
 
-import com.example.swp391_assetmanagement.entity.AssetExternalRequestDetail;
 import com.example.swp391_assetmanagement.enums.RequestType;
 import com.example.swp391_assetmanagement.enums.Roles;
 import com.example.swp391_assetmanagement.service.AssetExternalRequestDetailService;
@@ -24,7 +23,7 @@ public class DeleteLiquidationOptionUsecase {
     private final AssetExternalRequestDetailService assetExternalRequestDetailService;
     private final AssetRequestService assetRequestService;
 
-    public void execute(Long requestDetailId,Long optionDetailId, HttpSession session) {
+    public void execute(Long requestDetailId, Long optionDetailId, HttpSession session) {
 
         // Get requestId
         Long requestId = assetExternalRequestDetailService.findAssetRequest(requestDetailId);

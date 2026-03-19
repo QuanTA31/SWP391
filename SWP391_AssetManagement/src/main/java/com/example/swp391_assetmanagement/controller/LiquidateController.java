@@ -3,7 +3,6 @@ package com.example.swp391_assetmanagement.controller;
 import com.example.swp391_assetmanagement.common.RoleChecker;
 import com.example.swp391_assetmanagement.dto.request.*;
 import com.example.swp391_assetmanagement.dto.response.LiquiDateCreateDTOResponse;
-import com.example.swp391_assetmanagement.dto.response.ViewPurchaseAssetAllDTOResponse;
 import com.example.swp391_assetmanagement.enums.AssetType;
 import com.example.swp391_assetmanagement.enums.Roles;
 import com.example.swp391_assetmanagement.usecase.*;
@@ -36,7 +35,7 @@ public class LiquidateController {
 
     // Manager access to screen view asset can liquidate
     @GetMapping("/manager/viewAsset")
-    public String viewAssets(@ModelAttribute LiquiDateCreateDTORequest liquiDateCreateDTORequest,HttpSession session, Model model) {
+    public String viewAssets(@ModelAttribute LiquiDateCreateDTORequest liquiDateCreateDTORequest, HttpSession session, Model model) {
 
 //        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.MANAGER);
 
@@ -85,7 +84,8 @@ public class LiquidateController {
 
     @PostMapping("/manager/approval")
     public String approveLiquidation(
-            @ModelAttribute ApprovalLiquidationDTORequest request, HttpSession session, Model model) {
+
+            @ModelAttribute ApprovalLiquidationDTORequest request, HttpSession session) {
 
         roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.MANAGER);
         managerCreateLiquidationUsecase.execute(request, session);
@@ -93,7 +93,7 @@ public class LiquidateController {
     }
 
     @PostMapping("/manager/optionDetailRejectAll")
-    public String managerOptionDetail(@RequestParam Long assetRequestDetailId, HttpSession session, Model model) {
+    public String managerOptionDetail(@RequestParam Long assetRequestDetailId, HttpSession session) {
 
         roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.MANAGER);
         managerRejectAllOptionDetailUsecase.execute(assetRequestDetailId, session);
@@ -149,7 +149,7 @@ public class LiquidateController {
                        HttpSession session,
                        Model model) {
         try {
-            editUseCase.execute(requestDetailId,form, session);
+            editUseCase.execute(requestDetailId, form, session);
             model.addAttribute("editForm", new OptionDetailFormDTORequest());
         } catch (IllegalArgumentException ex) {
             model.addAttribute("editErrorMessage", ex.getMessage());
@@ -168,15 +168,15 @@ public class LiquidateController {
     public String delete(@PathVariable Long id, @RequestParam("asset_external_request_detail_id") Long requestDetailId,
                          @RequestParam("assetRequestId") Long assetRequestId,
                          HttpSession session) {
-        deleteUseCase.execute(requestDetailId,id, session);
+        deleteUseCase.execute(requestDetailId, id, session);
         return "redirect:/liquidate/option-detail/list"
                 + "?asset_external_request_detail_id=" + requestDetailId
                 + "&assetRequestId=" + assetRequestId;
     }
 
     @PostMapping("/purchasing/research")
-    public String movetoResearch(@RequestParam  Long assetRequestId,
-                         HttpSession session) {
+    public String movetoResearch(@RequestParam Long assetRequestId,
+                                 HttpSession session) {
         updateAssetRequestUsecase.execute(assetRequestId, session);
         return "redirect:/viewRequest";
     }
@@ -189,7 +189,7 @@ public class LiquidateController {
             @RequestParam("assetRequestId") Long assetRequestId,
             HttpSession session
     ) {
-        approveUseCase.execute(optionId, requestDetailId,true, session);
+        approveUseCase.execute(optionId, requestDetailId, true, session);
 
         return "redirect:/liquidate/option-detail/list"
                 + "?asset_external_request_detail_id=" + requestDetailId
@@ -220,7 +220,7 @@ public class LiquidateController {
 
     // ==================== IN_PROGRESS ===============
     @PostMapping("/purchasing/progress")
-    public String progress(@RequestParam  Long requestId,
+    public String progress(@RequestParam Long requestId,
                            HttpSession session) {
         roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.PURCHASING);
 
@@ -230,7 +230,7 @@ public class LiquidateController {
 
     // ==================== COMPLETED ===============
     @PostMapping("/purchasing/complete")
-    public String complete(@RequestParam  Long requestId,
+    public String complete(@RequestParam Long requestId,
                            HttpSession session) {
         roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.PURCHASING);
 

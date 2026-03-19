@@ -1,6 +1,5 @@
 package com.example.swp391_assetmanagement.usecase;
 
-import com.example.swp391_assetmanagement.entity.AssetExternalRequestDetail;
 import com.example.swp391_assetmanagement.entity.AssetRequest;
 import com.example.swp391_assetmanagement.entity.OptionDetail;
 import com.example.swp391_assetmanagement.enums.ExternalStatus;
@@ -36,16 +35,16 @@ public class ApproveLiquidationOptionUsecase {
             Long optionId,
             Long requestDetailId,
             boolean selected,
-            HttpSession session
-    ) {
+            HttpSession session) {
+
         // Get requestId
         Long requestId = assetExternalRequestDetailService.findAssetRequest(requestDetailId);
 
         // Check type request
         String assetRequestType = assetRequestService.findRequestTypeById(requestId);
 
-        if ((ObjectUtils.isEmpty(assetRequestType)
-                || !Objects.equals(RequestType.of(assetRequestType).getValue(), RequestType.LIQUIDATION.getValue()))) {
+        if (ObjectUtils.isEmpty(assetRequestType)
+                || !Objects.equals(RequestType.of(assetRequestType).getValue(), RequestType.LIQUIDATION.getValue())) {
             throw new ValidationException("Invalid request type");
         }
 
@@ -66,7 +65,7 @@ public class ApproveLiquidationOptionUsecase {
                         new ResponseStatusException(
                                 HttpStatus.NOT_FOUND,
                                 "Option detail not found"));
-        if (Objects.nonNull(plan.isSelected)){
+        if (Objects.nonNull(plan.isSelected)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
         Integer count = optionDetailService.countByIdAndStatus(requestDetailId, Boolean.TRUE);
@@ -78,10 +77,7 @@ public class ApproveLiquidationOptionUsecase {
         String userCode = (String) session.getAttribute("USER_CODE");
         Long userId = userService.getIdByUserCode(userCode);
 
-        if (selected && Objects.nonNull(plan)) {
-
-            //AssetExternalRequestDetail detail = assetExternalRequestDetailService.findToUpdate(requestDetailId);
-            //Long requestId = detail.getAssetRequestId();
+        if (selected) {
 
             //Lấy asset_request
             AssetRequest assetRequest =
@@ -106,7 +102,6 @@ public class ApproveLiquidationOptionUsecase {
                         ? RequestStatus.RESEARCH_DONE.getValue() : RequestStatus.APPROVED.getValue());
                 assetRequestService.updatePurchaseRequestStatus(assetRequest);
             }
-
 
 
             optionDetailService.resetAllByRequestDetailId(requestDetailId, userId);
