@@ -23,5 +23,5 @@ public interface UserDAO {
     Long findIdByUserCode(String userCode);
 
     @Select
-    String findRoleIdByUserCode(String userCode);
+    String findRoleCodeByUserCode(String userCode);
 }
