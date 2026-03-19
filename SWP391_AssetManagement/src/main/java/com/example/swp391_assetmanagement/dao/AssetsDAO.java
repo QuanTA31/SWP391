@@ -34,8 +34,11 @@ public interface AssetsDAO {
     @Select
     Assets findById(Long id);
 
-    @BatchUpdate
+    @BatchUpdate(sqlFile = true)
     int[] batchUpdate(List<Assets> assetsList);
+
+    @BatchUpdate(sqlFile = true)
+    int[] batchUpdateAllocation(List<Assets> assetsList);
 
     @Select
     List<LiquiAssetViewAllServiceResponse> selectLiquiAssetAll(LiquiAssetViewAllServiceRequest request);

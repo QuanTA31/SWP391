@@ -2,12 +2,15 @@ package com.example.swp391_assetmanagement.service.serviceimpl;
 
 import com.example.swp391_assetmanagement.dao.AssetInternalRequestDetailDAO;
 import com.example.swp391_assetmanagement.dao.AssetRequestDAO;
+import com.example.swp391_assetmanagement.dao.AssetsDAO;
 import com.example.swp391_assetmanagement.entity.AssetInternalRequestDetail;
 import com.example.swp391_assetmanagement.entity.AssetRequest;
+import com.example.swp391_assetmanagement.entity.Assets;
 import com.example.swp391_assetmanagement.service.AllocationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -15,6 +18,7 @@ import java.util.Optional;
 public class AllocationServiceImpl implements AllocationService {
 
     private final AssetRequestDAO assetRequestDAO;
+    private final AssetsDAO assetsDAO;
     private final AssetInternalRequestDetailDAO assetInternalRequestDetailDAO;
 
     @Override
@@ -49,7 +53,12 @@ public class AllocationServiceImpl implements AllocationService {
     }
 
     @Override
-    public java.util.Optional<AssetRequest> getAssetRequestById(Long requestId) {
+    public Optional<AssetRequest> getAssetRequestById(Long requestId) {
         return assetRequestDAO.findAssetRequestByIdForUpdate(requestId);
+    }
+
+    @Override
+    public int[] batchUpdateAllocation(List<Assets> assetsList) {
+        return assetsDAO.batchUpdateAllocation(assetsList);
     }
 }
