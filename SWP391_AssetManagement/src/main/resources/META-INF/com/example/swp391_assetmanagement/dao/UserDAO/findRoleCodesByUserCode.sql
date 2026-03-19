@@ -1,4 +1,4 @@
-SELECT r.role_code
+SELECT r.id
 FROM users u
-JOIN role r ON u.role_id = r.id
+JOIN roles r ON u.role_id = r.id
 WHERE u.user_code = /* userCode */''

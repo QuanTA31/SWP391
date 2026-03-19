@@ -21,11 +21,15 @@
                 <div class="sidebar">
                     <div class="fw-semibold mb-2">Menu</div>
 
-                    <a th:href="@{/admin/viewUser}" class="menu-item active">
+                    <a th:href="@{/admin/viewUser}"
+                       class="menu-item"
+                       th:classappend="${activePage == 'viewUser'} ? 'active' : ''">
                         View All Users
                     </a>
 
-                    <a th:href="@{/admin/createUser}" class="menu-item">
+                    <a th:href="@{/admin/createUser}"
+                       class="menu-item"
+                       th:classappend="${activePage == 'createUser'} ? 'active' : ''">
                         Create User
                     </a>
                 </div>

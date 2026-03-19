@@ -1,28 +1,29 @@
 package com.example.swp391_assetmanagement.usecase;
 
-import com.example.swp391_assetmanagement.entity.AssetExternalRequestDetail;
 import com.example.swp391_assetmanagement.entity.AssetRequest;
 import com.example.swp391_assetmanagement.entity.OptionDetail;
 import com.example.swp391_assetmanagement.enums.ExternalStatus;
 import com.example.swp391_assetmanagement.enums.RequestStatus;
+import com.example.swp391_assetmanagement.enums.RequestType;
 import com.example.swp391_assetmanagement.enums.Roles;
 import com.example.swp391_assetmanagement.service.AssetExternalRequestDetailService;
 import com.example.swp391_assetmanagement.service.AssetRequestService;
 import com.example.swp391_assetmanagement.service.OptionDetailService;
 import com.example.swp391_assetmanagement.service.UserService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDate;
 import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
-public class ApproveOptionDetailUsecase {
+public class ApproveLiquidationOptionUsecase {
 
     private final OptionDetailService optionDetailService;
     private final UserService userService;
@@ -34,8 +35,19 @@ public class ApproveOptionDetailUsecase {
             Long optionId,
             Long requestDetailId,
             boolean selected,
-            HttpSession session
-    ) {
+            HttpSession session) {
+
+        // Get requestId
+        Long requestId = assetExternalRequestDetailService.findAssetRequest(requestDetailId);
+
+        // Check type request
+        String assetRequestType = assetRequestService.findRequestTypeById(requestId);
+
+        if (ObjectUtils.isEmpty(assetRequestType)
+                || !Objects.equals(RequestType.of(assetRequestType).getValue(), RequestType.LIQUIDATION.getValue())) {
+            throw new ValidationException("Invalid request type");
+        }
+
         //Check role
         String role = (String) session.getAttribute("ROLE");
 
@@ -53,7 +65,7 @@ public class ApproveOptionDetailUsecase {
                         new ResponseStatusException(
                                 HttpStatus.NOT_FOUND,
                                 "Option detail not found"));
-        if (Objects.nonNull(plan.isSelected)){
+        if (Objects.nonNull(plan.isSelected)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
         Integer count = optionDetailService.countByIdAndStatus(requestDetailId, Boolean.TRUE);
@@ -65,10 +77,7 @@ public class ApproveOptionDetailUsecase {
         String userCode = (String) session.getAttribute("USER_CODE");
         Long userId = userService.getIdByUserCode(userCode);
 
-        if (selected && Objects.nonNull(plan)) {
-
-            AssetExternalRequestDetail detail = assetExternalRequestDetailService.findToUpdate(requestDetailId);
-            Long requestId = detail.assetRequestId;
+        if (selected) {
 
             //Lấy asset_request
             AssetRequest assetRequest =
@@ -93,7 +102,6 @@ public class ApproveOptionDetailUsecase {
                         ? RequestStatus.RESEARCH_DONE.getValue() : RequestStatus.APPROVED.getValue());
                 assetRequestService.updatePurchaseRequestStatus(assetRequest);
             }
-
 
 
             optionDetailService.resetAllByRequestDetailId(requestDetailId, userId);

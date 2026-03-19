@@ -34,8 +34,8 @@ public class ManagerCreatePurchaseRequestUsecase {
         // Check type request
         String assetRequestType = assetRequestService.findRequestTypeById(request.getAssetRequestId());
 
-        if (!(ObjectUtils.isEmpty(assetRequestType)
-                || !Objects.equals(RequestType.of(assetRequestType).getValue(), RequestType.PROCUREMENT.getValue()))) {
+        if (ObjectUtils.isEmpty(assetRequestType)
+                || !Objects.equals(RequestType.of(assetRequestType).getValue(), RequestType.PROCUREMENT.getValue())) {
             throw new ValidationException();
         }
 

@@ -14,6 +14,8 @@ public interface AssetRequestService {
 
     void updatePurchaseRequest(AssetRequest assetRequest);
 
+    void updateLiquidationRequest(AssetRequest assetRequest);
+
     void updatePurchaseRequestStatus(AssetRequest assetRequest);
 
     Integer countById(Long assetRequestId, String status);
@@ -25,4 +27,6 @@ public interface AssetRequestService {
     Long findIdByAssetRequestDetailId(Long assetRequestDetailId);
 
     int moveInProgress(Long requestId);
+
+    int moveCompleted(Long requestId);
 }

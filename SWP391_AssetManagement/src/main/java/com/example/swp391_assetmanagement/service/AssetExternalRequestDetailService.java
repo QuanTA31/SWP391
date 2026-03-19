@@ -27,4 +27,6 @@ public interface AssetExternalRequestDetailService {
 
 
     List<AssetExternalRequestDetailServiceResponse> findByAssetRequestId(Long assetRequestId);
+
+    Long insert(AssetExternalRequestDetail details);
 }

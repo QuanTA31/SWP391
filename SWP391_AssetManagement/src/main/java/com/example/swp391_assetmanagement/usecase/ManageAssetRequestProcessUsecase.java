@@ -52,6 +52,16 @@ public class ManageAssetRequestProcessUsecase {
             requestTypeIdList.addAll(List.of("01", "02", "03", "04", "05"));
             excludeStatusIdList.add("01"); // DRAFT
         }
+// WAREHOUSE
+        else if (Objects.equals(role, Roles.WAREHOUSE.getValue())) {
+
+            requestTypeIdList.addAll(List.of(
+                    RequestType.PROCUREMENT.getValue(),
+                    RequestType.RETRIEVAL.getValue(),
+                    RequestType.ALLOCATION.getValue(),
+                    RequestType.MAINTENANCE.getValue()
+            ));
+        }
 // WAREHOUSE (03): xem yêu cầu internal (Cấp phát, Mua sắm, Bảo trì) - Trừ Draft
         else if (Objects.equals(role, "03")) {
             requestTypeIdList.addAll(List.of("01", "03", "04"));
@@ -67,6 +77,11 @@ public class ManageAssetRequestProcessUsecase {
 // DEPARTMENT_MANAGER
         else if (Objects.equals(role, "05")) {
 
+           // requestTypeIdList.add(RequestType.ALLOCATION.getValue());
+            requestTypeIdList.addAll(List.of(
+                    RequestType.MAINTENANCE.getValue(),
+                    RequestType.ALLOCATION.getValue()
+            ));
             requestTypeIdList.add("01");
 
         }
