@@ -29,7 +29,7 @@ public class LiquiAssetManagerUsecase {
     @Transactional(readOnly = true)
     public LiquiDateCreateDTOResponse execute(LiquiDateCreateDTORequest request, HttpSession session) {
 
-        validateAssetRequest(request, session);
+        validateAssetRequest(request);
 
         int pageIndex = (request.getPageIndex() != null && request.getPageIndex() != 0) ? request.getPageIndex() : 1;
 
@@ -48,7 +48,7 @@ public class LiquiAssetManagerUsecase {
         if (serviceResponses.isEmpty()) {
             return LiquiDateCreateDTOResponse.builder()
                     .assetResponses(Collections.emptyList())
-                    .filters(FiltersDTOResponse.builder()
+                    .filters(LiquidateFiltersDTOResponse.builder()
                             .locationId(request.getLocationId())
                             .assetTypeId(request.getAssetTypeId())
                             .assetStatusId(request.getAssetStatusId())
@@ -87,7 +87,7 @@ public class LiquiAssetManagerUsecase {
                                                 .build())
                                 .toList()
                 )
-                .filters(FiltersDTOResponse.builder()
+                .filters(LiquidateFiltersDTOResponse.builder()
                         .locationId(request.getLocationId())
                         .assetTypeId(request.getAssetTypeId())
                         .assetStatusId(request.getAssetStatusId())
@@ -102,7 +102,7 @@ public class LiquiAssetManagerUsecase {
                 .build();
     }
 
-    private void validateAssetRequest(LiquiDateCreateDTORequest request, HttpSession session) {
+    private void validateAssetRequest(LiquiDateCreateDTORequest request) {
 
         //Check enums
         if (!ObjectUtils.isEmpty(request.getLocationId()) && !Location.hasValue(request.getLocationId())) {
