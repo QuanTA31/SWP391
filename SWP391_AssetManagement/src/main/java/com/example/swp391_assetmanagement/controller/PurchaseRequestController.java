@@ -2,7 +2,6 @@ package com.example.swp391_assetmanagement.controller;
 
 import com.example.swp391_assetmanagement.common.RoleChecker;
 import com.example.swp391_assetmanagement.dto.request.*;
-import com.example.swp391_assetmanagement.dto.request.*;
 import com.example.swp391_assetmanagement.dto.response.ViewPurchaseAssetAllDTOResponse;
 import com.example.swp391_assetmanagement.enums.AssetType;
 import com.example.swp391_assetmanagement.enums.Roles;
@@ -13,10 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/purchase-requests")
@@ -98,11 +94,11 @@ public class PurchaseRequestController {
         return "redirect:/viewRequest";
     }
 
-    private final CreateOptionDetailUsecase createUseCase;
-    private final EditOptionDetailUsecase editUseCase;
-    private final ApproveOptionDetailUsecase approveUseCase;
-    private final DeleteOptionDetailUsecase deleteUseCase;
-    private final GetOptionDetailListUsecase getOptionDetailListUseCase;
+    private final CreatePurchaseOptionUsecase createUseCase;
+    private final EditPurchaseOptionUsecase editUseCase;
+    private final ApprovePurchaseOptionUsecase approveUseCase;
+    private final DeletePurchaseOptionUsecase deleteUseCase;
+    private final GetPurchaseOptionListUsecase getPurchaseOptionListUseCase;
 
     // ================= CREATE =================
     @PostMapping("/option-detail/create")
@@ -117,9 +113,9 @@ public class PurchaseRequestController {
             model.addAttribute("errorMessage", ex.getMessage());
             model.addAttribute("createForm", form);
         }
-        getOptionDetailListUseCase.loadToModel(requestDetailId, null, null, session, model);
+        getPurchaseOptionListUseCase.loadToModel(requestDetailId, null, null, session, model);
         model.addAttribute("editForm", new OptionDetailFormDTORequest());
-        return "optiondetail/list";
+        return "optiondetail/listPurchase";
     }
 
     // ================= LIST =================
@@ -128,10 +124,10 @@ public class PurchaseRequestController {
                        @RequestParam(value = "status", required = false) String status,
                        @RequestParam(value = "page", required = false) Integer page,
                        HttpSession session, Model model) {
-        model.addAllAttributes(getOptionDetailListUseCase.execute(requestDetailId, status, page, session).toModel());
+        model.addAllAttributes(getPurchaseOptionListUseCase.execute(requestDetailId, status, page, session).toModel());
         model.addAttribute("createForm", model.containsAttribute("createForm") ? model.getAttribute("createForm") : new OptionDetailFormDTORequest());
         model.addAttribute("editForm", model.containsAttribute("editForm") ? model.getAttribute("editForm") : new OptionDetailFormDTORequest());
-        return "optiondetail/list";
+        return "optiondetail/listPurchase";
     }
 
     // ================= EDIT =================
@@ -141,23 +137,23 @@ public class PurchaseRequestController {
                        HttpSession session,
                        Model model) {
         try {
-            editUseCase.execute(form, session);
+            editUseCase.execute(requestDetailId,form, session);
             model.addAttribute("editForm", new OptionDetailFormDTORequest());
         } catch (IllegalArgumentException ex) {
             model.addAttribute("editErrorMessage", ex.getMessage());
             model.addAttribute("editForm", form);
             model.addAttribute("openEditModal", true);
         }
-        getOptionDetailListUseCase.loadToModel(requestDetailId, null, null, session, model);
+        getPurchaseOptionListUseCase.loadToModel(requestDetailId, null, null, session, model);
         model.addAttribute("createForm", new OptionDetailFormDTORequest());
-        return "optiondetail/list";
+        return "optiondetail/listPurchase";
     }
 
     // ================= DELETE =================
     @PostMapping("/option-detail/delete/{id}")
     public String delete(@PathVariable Long id, @RequestParam("asset_external_request_detail_id") Long requestDetailId,
                          HttpSession session) {
-        deleteUseCase.execute(id, session);
+        deleteUseCase.execute(requestDetailId,id, session);
         return "redirect:/purchase-requests/option-detail/list?asset_external_request_detail_id=" + requestDetailId;
     }
 
