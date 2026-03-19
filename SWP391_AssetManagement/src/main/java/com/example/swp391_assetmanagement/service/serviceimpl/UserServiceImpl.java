@@ -39,6 +39,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String getRoleIdByUserCode(String userCode) {
-        return userDAO.findRoleCodeByUserCode(userCode);
+        return userDAO.findRoleCodesByUserCode(userCode);
     }
 }
