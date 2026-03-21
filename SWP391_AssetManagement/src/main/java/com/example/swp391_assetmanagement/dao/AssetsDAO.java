@@ -38,9 +38,10 @@ public interface AssetsDAO {
     @BatchUpdate(sqlFile = true)
     int[] batchUpdate(List<Assets> assetsList);
 
+    //find asset by id
     @Select
     Assets selectById(Long id);
-
+    // update asset in progress retrival
     @Update
     int update(Assets asset);
 

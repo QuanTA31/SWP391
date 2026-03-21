@@ -37,13 +37,13 @@ public interface AssetInternalRequestDetailDAO {
 
     @Select
     AssetInternalRequestDetail findByAssetRequestId(Long assetRequestId);
-
+    //select request detail to update request detail
     @Select
     AssetInternalRequestDetail selectById(Long id);
-
+    //find all request detail by request id
     @Select
     List<AssetInternalRequestDetail> selectByRequestId(Long requestId);
-
+    //count request detail by request id
     @Select
     int countRemainingItems(Long requestId);
 }
