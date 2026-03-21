@@ -7,6 +7,8 @@ import org.seasar.doma.Select;
 import org.seasar.doma.Update;
 import org.seasar.doma.boot.ConfigAutowireable;
 
+import java.util.List;
+
 @Dao
 @ConfigAutowireable
 public interface AssetInternalRequestDetailDAO {
@@ -22,4 +24,13 @@ public interface AssetInternalRequestDetailDAO {
 
     @Select
     AssetInternalRequestDetail findByAssetRequestId(Long assetRequestId);
+
+    @Select
+    AssetInternalRequestDetail selectById(Long id);
+
+    @Select
+    List<AssetInternalRequestDetail> selectByRequestId(Long requestId);
+
+    @Select
+    int countRemainingItems(Long requestId);
 }

@@ -1,7 +1,10 @@
 package com.example.swp391_assetmanagement.service;
 
+import com.example.swp391_assetmanagement.entity.AssetInternalRequestDetail;
 import com.example.swp391_assetmanagement.entity.AssetRequest;
+import com.example.swp391_assetmanagement.service.servicerequest.RecoverServiceRequest;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface AssetRequestService {
@@ -25,4 +28,17 @@ public interface AssetRequestService {
     Long findIdByAssetRequestDetailId(Long assetRequestDetailId);
 
     int moveInProgress(Long requestId);
+
+    // Thêm các method này vào Interface cũ của bạn
+    AssetRequest findById(Long id);
+
+    List<AssetInternalRequestDetail> findDetailsByRequestId(Long requestId);
+
+    void confirmDetailAndRestoreAsset(RecoverServiceRequest serviceRequest);
+
+    String getRequestStatusById(Long requestId);
+
+    void updateRequestStatus(Long requestId, String statusId);
+
+    boolean isAllDetailsDone(Long requestId);
 }

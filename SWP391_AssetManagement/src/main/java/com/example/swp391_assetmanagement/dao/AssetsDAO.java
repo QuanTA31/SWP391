@@ -4,10 +4,7 @@ import com.example.swp391_assetmanagement.entity.Assets;
 import com.example.swp391_assetmanagement.entity.AssetsAssetRequestExternal;
 import com.example.swp391_assetmanagement.service.servicerequest.AssetViewAllServiceRequest;
 import com.example.swp391_assetmanagement.service.serviceresponse.AssetViewAllServiceResponse;
-import org.seasar.doma.BatchInsert;
-import org.seasar.doma.BatchUpdate;
-import org.seasar.doma.Dao;
-import org.seasar.doma.Select;
+import org.seasar.doma.*;
 import org.seasar.doma.boot.ConfigAutowireable;
 
 import java.util.List;
@@ -34,4 +31,10 @@ public interface AssetsDAO {
 
     @BatchUpdate
     int[] batchUpdate(List<Assets> assetsList);
+
+    @Select
+    Assets selectById(Long id);
+
+    @Update
+    int update(Assets asset);
 }

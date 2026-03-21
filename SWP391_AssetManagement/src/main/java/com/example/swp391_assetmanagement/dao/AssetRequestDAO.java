@@ -42,4 +42,12 @@ public interface AssetRequestDAO {
 
     @Update(sqlFile = true)
     int moveInProgress(Long id, String researchDone, String inProgress);
+
+    @Select
+    AssetRequest selectById(Long id);
+    @Select
+    String getStatusById(Long id);
+
+    @Update(sqlFile = true)
+    int updateStatusById(Long id, String statusId);
 }

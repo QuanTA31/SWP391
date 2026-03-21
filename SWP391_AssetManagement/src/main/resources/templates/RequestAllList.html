@@ -264,9 +264,11 @@
                        Allocation
                     </a>
 
-                    <a th:unless="${#strings.containsIgnoreCase(item.requestTypeName, 'ALLOCATION')}"
+                    <a th:if="${#strings.containsIgnoreCase(item.requestTypeName, 'RETRIEVAL')}"
                        class="btn btn-sm btn-primary"
-                       th:href="@{/viewInternalRequest/detail(id=${item.id})}">
+                       th:href="${session.ROLE == '03' && (item.requestStatusId == '03' || item.requestStatusId == '05') ?
+                            '/recover-asset/warehouse/process?requestId=' + item.id :
+                            '/viewInternalRequest/detail?id=' + item.id}">
                       View
                     </a>
 
