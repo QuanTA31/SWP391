@@ -50,4 +50,7 @@ public interface AssetRequestDAO {
 
     @Update(sqlFile = true)
     int updateStatusById(Long id, String statusId);
+
+    @Update(sqlFile = true)
+    int moveCompleted(Long id, String inProgress, String completed);
 }

@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Manager Liquidation - Asset Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/MainView.css}">
+    <link rel="stylesheet" th:href="@{/css/OptionDetail.css}">
+    <style>
+        .action-bar {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            border: 1px solid #dee2e6;
+        }
+
+        .view-only-badge {
+            background-color: #e9ecef;
+            color: #495057;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            border: 1px solid #ced4da;
+        }
+
+        .row-selected {
+            background-color: #fff4f4 !important;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .table th {
+            white-space: nowrap;
+        }
+    </style>
+</head>
+
+<body>
+<div class="app-wrapper">
+    <div class="app-header">
+        <span>Asset Tracker</span>
+        <span th:text="${assets.assetResponses != null and assets.assetResponses.?[isSelected == true].size() > 0 ? 'Chế độ: Chỉ xem' : 'Chế độ: Tạo yêu cầu'}"></span>
+    </div>
+
+    <div class="app-content">
+        <div class="sidebar">
+            <div class="fw-semibold mb-2">Menu</div>
+            <a th:href="@{/viewAsset}" class="menu-item">View Asset</a>
+            <a th:href="@{/viewRequest}" class="menu-item">View Request</a>
+            <a th:href="@{/liquidate/manager/viewAsset}" class="menu-item active">Manager Liquidation</a>
+        </div>
+
+        <div class="content-right">
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <span class="fw-semibold">Tạo yêu cầu thanh lý</span>
+                </div>
+
+                <form method="get" th:action="@{/liquidate/manager/viewAsset}">
+                    <div class="toolbar-right">
+                        <input type="hidden" name="assetRequestId"
+                               th:value="${liquiDateCreateDTORequest.assetRequestId}">
+
+                        <select name="locationId" class="form-select form-select-sm">
+                            <option value="">Location</option>
+                            <option th:each="loc : ${T(com.example.swp391_assetmanagement.enums.Location).values()}"
+                                    th:value="${loc.value}" th:text="${loc.name}"
+                                    th:selected="${assets.filters.locationId == loc.value}"></option>
+                        </select>
+
+                        <select name="assetTypeId" class="form-select form-select-sm">
+                            <option value="">Asset Type</option>
+                            <option th:each="type : ${T(com.example.swp391_assetmanagement.enums.AssetType).values()}"
+                                    th:value="${type.value}" th:text="${type.name}"
+                                    th:selected="${assets.filters.assetTypeId == type.value}"></option>
+                        </select>
+
+                        <select name="assetStatusId" class="form-select form-select-sm">
+                            <option value="">Asset Status</option>
+                            <option th:each="status : ${T(com.example.swp391_assetmanagement.enums.AssetStatus).values()}"
+                                    th:value="${status.value}" th:text="${status.name}"
+                                    th:selected="${assets.filters.assetStatusId == status.value}"></option>
+                        </select>
+
+                        <input type="text" name="searchWord" class="form-control form-control-sm"
+                               placeholder="Search Asset Code" th:value="${assets.filters.searchWord}">
+
+                        <button class="btn btn-sm btn-save-draft" type="submit">Apply Filter</button>
+                    </div>
+                </form>
+            </div>
+
+            <th:block
+                    th:with="hasSelected=${assets.assetResponses != null and assets.assetResponses.?[isSelected == true].size() > 0}">
+
+                <form id="liquidationForm" method="post" th:action="@{/liquidate/manager/create}">
+
+                    <div class="action-bar shadow-sm">
+                        <div class="d-flex align-items-center flex-grow-1">
+                            <span class="badge bg-info me-2" id="selectedCount"
+                                  th:text="${assets.assetResponses.?[isSelected == true].size()}">0</span>
+                            <span class="fw-medium">Tài sản đã chọn</span>
+
+                            <div th:if="${hasSelected}" class="ms-3 view-only-badge">
+                                <i class="bi bi-eye"></i> Lưu ý: Đã tồn tại tài sản trong yêu cầu. Chế độ xem được kích
+                                hoạt.
+                            </div>
+                        </div>
+
+                        <button type="submit" id="btnSubmit" th:if="${!hasSelected}"
+                                class="btn btn-sm btn-danger px-4"
+                                onclick="return confirm('Xác nhận tạo yêu cầu thanh lý?')">
+                            Gửi yêu cầu thanh lý
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover table-fixed">
+                                <thead>
+                                <tr>
+                                    <th class="text-center" style="width: 40px;">
+                                        <input type="checkbox" id="selectAll" onclick="toggleAll(this)"
+                                               th:disabled="${hasSelected}">
+                                    </th>
+                                    <th>Asset Code</th>
+                                    <th>Asset Type</th>
+                                    <th>Description</th>
+                                    <th>Price</th>
+                                    <th>Warranty</th>
+                                    <th>Received</th>
+                                    <th>Location</th>
+                                    <th>Status</th>
+                                    <th>Current User</th>
+                                </tr>
+                                </thead>
+
+                                <tbody>
+                                <tr th:if="${assets.assetResponses == null || assets.assetResponses.isEmpty()}">
+                                    <td colspan="10" class="text-center text-muted py-4">Không tìm thấy dữ liệu</td>
+                                </tr>
+
+                                <tr th:each="asset : ${assets.assetResponses}"
+                                    th:classappend="${asset.isSelected} ? 'row-selected' : ''">
+                                    <td class="text-center">
+                                        <input type="checkbox" name="selectedAssetIds"
+                                               th:value="${asset.assetId}"
+                                               th:checked="${asset.isSelected}"
+                                               th:disabled="${hasSelected}"
+                                               class="asset-checkbox"
+                                               onclick="updateCount()">
+                                    </td>
+                                    <td class="fw-bold" th:text="${asset.assetCode}"></td>
+                                    <td th:text="${asset.assetTypeName}"></td>
+                                    <td class="text-multiline" th:title="${asset.describe}"
+                                        th:text="${asset.describe}"></td>
+                                    <td th:text="${#numbers.formatDecimal(asset.originalPrice, 0, 'COMMA', 0, 'POINT')}"></td>
+                                    <td th:text="${asset.warrantyPeriod != null ? asset.warrantyPeriod + ' tháng' : '-'}"></td>
+                                    <td th:text="${#temporals.format(asset.receivedDate, 'yyyy-MM-dd')}"></td>
+                                    <td th:text="${asset.locationName}"></td>
+                                    <td>
+                                        <span class="badge bg-secondary" th:text="${asset.assetStatusName}"></span>
+                                    </td>
+                                    <td th:text="${asset.currentUserId}"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="content-pagination" th:if="${assets.filters.totalItems > 0}">
+                    <div class="pagination-info">
+                        Hiển thị
+                        <strong th:text="${(assets.filters.page - 1) * assets.filters.pageSize + 1}"></strong> –
+                        <strong th:text="${(assets.filters.page - 1) * assets.filters.pageSize + assets.assetResponses.size()}"></strong>
+                        trên <strong th:text="${assets.filters.totalItems}"></strong>
+                    </div>
+
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item" th:classappend="${!assets.filters.hasPreviousPage} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/liquidate/manager/viewAsset(pageIndex=${assets.filters.page - 1}, locationId=${assets.filters.locationId}, assetTypeId=${assets.filters.assetTypeId}, assetStatusId=${assets.filters.assetStatusId}, searchWord=${assets.filters.searchWord})}">«</a>
+                        </li>
+
+                        <li class="page-item"
+                            th:each="i : ${#numbers.sequence(0, (assets.filters.totalPages > 0 ? assets.filters.totalPages - 1 : 0))}"
+                            th:classappend="${i + 1 == assets.filters.page} ? 'active'">
+                            <a class="page-link" th:text="${i + 1}"
+                               th:href="@{/liquidate/manager/viewAsset(pageIndex=${i + 1}, locationId=${assets.filters.locationId}, assetTypeId=${assets.filters.assetTypeId}, assetStatusId=${assets.filters.assetStatusId}, searchWord=${assets.filters.searchWord})}"></a>
+                        </li>
+
+                        <li class="page-item" th:classappend="${!assets.filters.hasNextPage} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/liquidate/manager/viewAsset(pageIndex=${assets.filters.page + 1}, locationId=${assets.filters.locationId}, assetTypeId=${assets.filters.assetTypeId}, assetStatusId=${assets.filters.assetStatusId}, searchWord=${assets.filters.searchWord})}">»</a>
+                        </li>
+                    </ul>
+                </div>
+            </th:block>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleAll(source) {
+        // Chỉ chọn những checkbox không bị disabled
+        const checkboxes = document.querySelectorAll('.asset-checkbox:not(:disabled)');
+        checkboxes.forEach(cb => cb.checked = source.checked);
+        updateCount();
+    }
+
+    function updateCount() {
+        // Đếm tất cả các checkbox đang được check
+        const checkedCount = document.querySelectorAll('.asset-checkbox:checked').length;
+        const countElement = document.getElementById('selectedCount');
+        if (countElement) countElement.innerText = checkedCount;
+    }
+</script>
+</body>
+</html>

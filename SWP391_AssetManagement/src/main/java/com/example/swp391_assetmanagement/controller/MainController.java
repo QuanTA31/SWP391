@@ -89,7 +89,7 @@ public class MainController {
         model.addAttribute("detailData", detailData);
         model.addAttribute("requestId", id);
 
-        return "RequestInternalDetail";
+        return "Example_RequestInternalDetail";
     }
 
     // 2. Xem chi tiết External
@@ -101,7 +101,7 @@ public class MainController {
         model.addAttribute("detailData", detailData);
         model.addAttribute("requestId", id);
 
-        return "RequestExternalDetail";
+        return "Example_RequestExternalDetail";
     }
 
     @GetMapping("/viewAsset")

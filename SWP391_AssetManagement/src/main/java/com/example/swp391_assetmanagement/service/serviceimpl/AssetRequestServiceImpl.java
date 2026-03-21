@@ -46,6 +46,11 @@ public class AssetRequestServiceImpl implements AssetRequestService {
     }
 
     @Override
+    public void updateLiquidationRequest(AssetRequest assetRequest) {
+        assetRequestDAO.update(assetRequest);
+    }
+
+    @Override
     public void updatePurchaseRequestStatus(AssetRequest assetRequest) {
         assetRequestDAO.updateStatus(assetRequest);
     }
@@ -74,6 +79,12 @@ public class AssetRequestServiceImpl implements AssetRequestService {
     public int moveInProgress(Long requestId) {
         return assetRequestDAO.moveInProgress(requestId, RequestStatus.RESEARCH_DONE.getValue(),
                 RequestStatus.IN_PROGRESS.getValue());
+    }
+
+    @Override
+    public int moveCompleted(Long requestId) {
+        return assetRequestDAO.moveCompleted(requestId, RequestStatus.IN_PROGRESS.getValue(),
+                RequestStatus.COMPLETED.getValue());
     }
 
     @Override

@@ -17,6 +17,8 @@ public interface AssetRequestService {
 
     void updatePurchaseRequest(AssetRequest assetRequest);
 
+    void updateLiquidationRequest(AssetRequest assetRequest);
+
     void updatePurchaseRequestStatus(AssetRequest assetRequest);
 
     Integer countById(Long assetRequestId, String status);
@@ -41,4 +43,6 @@ public interface AssetRequestService {
     void updateRequestStatus(Long requestId, String statusId);
 
     boolean isAllDetailsDone(Long requestId);
+
+    int moveCompleted(Long requestId);
 }

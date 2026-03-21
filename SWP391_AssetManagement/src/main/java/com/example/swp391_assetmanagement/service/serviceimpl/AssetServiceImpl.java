@@ -3,8 +3,11 @@ package com.example.swp391_assetmanagement.service.serviceimpl;
 import com.example.swp391_assetmanagement.entity.Assets;
 import com.example.swp391_assetmanagement.service.AssetService;
 import com.example.swp391_assetmanagement.service.servicerequest.AssetViewAllServiceRequest;
+import com.example.swp391_assetmanagement.service.servicerequest.LiquiAssetViewAllServiceRequest;
+import com.example.swp391_assetmanagement.service.serviceresponse.AssetLiquiServiceResponse;
 import com.example.swp391_assetmanagement.service.serviceresponse.AssetViewAllServiceResponse;
 import com.example.swp391_assetmanagement.dao.AssetsDAO;
+import com.example.swp391_assetmanagement.service.serviceresponse.LiquiAssetViewAllServiceResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -49,6 +52,22 @@ public class AssetServiceImpl implements AssetService {
         return assetsDAO.batchUpdate(assetsList);
     }
 
+    @Override
+    public List<LiquiAssetViewAllServiceResponse> liquiViewAllAsset(LiquiAssetViewAllServiceRequest assetRequest) {
+
+        List<LiquiAssetViewAllServiceResponse> daoResponses = assetsDAO.selectLiquiAssetAll(assetRequest);
+
+        if (daoResponses.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return daoResponses;
+    }
+
+    @Override
+    public List<AssetLiquiServiceResponse> findByIdOfLiquidation(List<Long> assetId) {
+        return assetsDAO.findByIdOfLiquidation(assetId);
+    }
     @Override
     public Assets findById(Long id) {
         return assetsDAO.findById(id);
