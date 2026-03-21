@@ -27,7 +27,6 @@ public class RecoverAssetController {
     private final ViewAssetByUserDisabledUsecase viewAssetByUserDisabledUsecase;
     private final ExecuteRecoverUsecase executeRecoverUsecase;
     private final WarehouseRecoverUsecase warehouseRecoverUsecase;
-    private final AssetRequestService assetRequestService;
 
     @GetMapping("/manager/recoverAsset")
     public String viewUser(@ModelAttribute ViewAssetByUserDisabledDTORequest request, HttpSession session, Model model) {
@@ -61,17 +60,17 @@ public class RecoverAssetController {
 
     @GetMapping("/warehouse/process")
     public String viewProcess(@RequestParam Long requestId, Model model) {
-        // 1. Chuyển trạng thái sang IN_PROGRESS (05) nếu Request đang ở mức APPROVED (03)
+        // 1. Logic điều phối trạng thái
         warehouseRecoverUsecase.prepareProcessing(requestId);
 
-        // 2. Lấy dữ liệu thực thể để hiển thị lên Form (Dùng Service)
-        AssetRequest request = assetRequestService.findById(requestId);
-        List<AssetInternalRequestDetail> details = assetRequestService.findDetailsByRequestId(requestId);
+        // 2. Lấy dữ liệu THÔNG QUA UseCase
+        AssetRequest request = warehouseRecoverUsecase.getRequestInfo(requestId);
+        List<AssetInternalRequestDetail> details = warehouseRecoverUsecase.getRequestDetails(requestId);
 
         model.addAttribute("request", request);
         model.addAttribute("details", details);
 
-        return "warehouse_recover_detail"; // Trả về file HTML giao diện xử lý của Warehouse
+        return "warehouse_recover_detail";
     }
 
     @PostMapping("/warehouse/confirm-item")
@@ -79,8 +78,7 @@ public class RecoverAssetController {
                               @RequestParam Long requestId,
                               RedirectAttributes ra) {
         try {
-            // Gọi UseCase thực hiện quy trình:
-            // Update detail (isDone) -> Update Asset (Clear User, Status 08) -> Check hoàn tất Request tổng
+            // Chỉ gọi UseCase xử lý nghiệp vụ thu hồi và đóng request
             warehouseRecoverUsecase.executeRecovery(detailId, requestId);
 
             ra.addFlashAttribute("message", "Xác nhận thu hồi tài sản thành công!");
@@ -88,7 +86,6 @@ public class RecoverAssetController {
             ra.addFlashAttribute("error", "Lỗi xử lý thu hồi: " + e.getMessage());
         }
 
-        // Quay lại trang danh sách chi tiết để tiếp tục xử lý các món khác
         return "redirect:/recover-asset/warehouse/process?requestId=" + requestId;
     }
 }

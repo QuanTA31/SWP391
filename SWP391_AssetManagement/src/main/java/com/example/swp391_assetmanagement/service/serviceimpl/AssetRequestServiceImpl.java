@@ -87,6 +87,8 @@ public class AssetRequestServiceImpl implements AssetRequestService {
                 RequestStatus.COMPLETED.getValue());
     }
 
+    //Retrival
+
     @Override
     public AssetRequest findById(Long id) {
         return assetRequestDAO.selectById(id);
@@ -106,7 +108,7 @@ public class AssetRequestServiceImpl implements AssetRequestService {
         // 2. Truy cập trực tiếp field (không dùng get)
         if (detail != null && Boolean.FALSE.equals(detail.isDone)) {
             detail.isDone = true;
-            detailDAO.update(detail);
+            detailDAO.updateIsDone(detail);
 
             Assets asset = assetsDAO.selectById(detail.assetId);
             if (asset != null) {

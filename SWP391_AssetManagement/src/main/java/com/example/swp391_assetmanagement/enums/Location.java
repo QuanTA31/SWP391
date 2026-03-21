@@ -13,6 +13,7 @@ public enum Location implements EnumBase<Location> {
     BRANCH_OFFICE("02", "BRANCH_OFFICE"),
     MEETING_ROOM("03", "MEETING_ROOM"),
     IT_ROOM("04", "IT_ROOM"),
+
     WAREHOUSE("05", "WAREHOUSE"),
     OUTSIDE_COMPANY("06", "OUTSIDE_COMPANY");
 

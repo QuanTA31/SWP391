@@ -31,7 +31,7 @@ public interface AssetRequestService {
 
     int moveInProgress(Long requestId);
 
-    // Thêm các method này vào Interface cũ của bạn
+    // Retrival
     AssetRequest findById(Long id);
 
     List<AssetInternalRequestDetail> findDetailsByRequestId(Long requestId);
