@@ -166,6 +166,9 @@ public class ManageAssetRequestProcessUsecase {
                                                     .handoverDate(entity.handoverDate)
                                                     .note(entity.note)
                                                     .createdAt(entity.createdAt)
+                                                    .isDone(entity.isDone)
+                                                    .quantity(entity.quantity != null ? entity.quantity : 0)
+                                                    .assignedQuantity(calculateAssignedQuantity(entity.aidNote))
                                                     .build();
 
                                         }).toList()
@@ -204,6 +207,17 @@ public class ManageAssetRequestProcessUsecase {
 //        if (!ObjectUtils.isEmpty(request.getApprovalStatusId()) && !ApprovalStatus.hasValue(request.getApprovalStatusId())) {
 //            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Approval Status is invalid !");
 //        }
+    }
+
+    private int calculateAssignedQuantity(String aidNote) {
+        if (aidNote == null || !aidNote.startsWith("ASSIGNED_ASSETS:")) {
+            return 0;
+        }
+        String csv = aidNote.substring("ASSIGNED_ASSETS:".length());
+        if (csv.trim().isEmpty()) {
+            return 0;
+        }
+        return csv.split(",").length;
     }
 
 }

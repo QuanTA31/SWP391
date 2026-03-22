@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout/manager :: manager-layout(~{::div.content-right})}">
+      th:replace="~{layout/manager :: manager-layout(~{::div.content-right})}"
+      th:with="activePage='viewAsset'">
 <head>
     <meta charset="utf-8">
     <title>Asset Tracker - View Asset</title>
@@ -11,48 +12,6 @@
 
 <body>
 
-<div class="app-wrapper">
-
-    <!-- HEADER -->
-    <div class="app-header">
-        <span>Asset Tracker</span>
-        <span>Copy base</span>
-    </div>
-
-    <div class="app-content">
-
-        <!-- SIDEBAR -->
-        <div class="sidebar">
-            <div class="fw-semibold mb-2">Menu</div>
-<!--            <div class="menu-item active">Main View Asset</div>-->
-<!--            <div class="menu-item">Create Request</div>-->
-<!--            <div class="menu-item">View Request</div>-->
-<!--            <div class="menu-item">Approval Request</div>-->
-            <a th:href="@{/viewAsset}" class="menu-item">
-                View Asset
-            </a>
-
-            <a th:href="@{/viewRequest}" class="menu-item">
-                View Request
-            </a>
-
-            <a th:href="@{/recover-asset/manager/recoverAsset}" class="menu-item">
-                Recover Asset
-            </a>
-
-            <a th:if="${session.ROLE == '03'}"
-               th:href="@{/purchase-requests/warehouse/view(assetRequestId='')}" class="menu-item">
-                Create Purchase Request
-            </a>
-
-<!--            <a th:if="${session.ROLE == '03'}"-->
-<!--               th:href="@{/purchase-requests/viewPurchaseAsset}" class="menu-item">-->
-<!--                View Purchase Asset-->
-<!--            </a>-->
-        </div>
-
-        <!-- RIGHT CONTENT -->
-        <div class="content-right">
 <div class="content-right">
 
     <div class="toolbar">
