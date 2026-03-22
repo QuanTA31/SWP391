@@ -9,7 +9,6 @@
     <link rel="stylesheet" th:href="@{/css/OptionDetail.css}">
 </head>
 <body>
-
 <div class="content-right">
 
     <div class="toolbar">
@@ -160,7 +159,8 @@
                         </th:block>
 
                         <!-- INTERNAL / EXTERNAL / ALLOCATION --> <!-- check lại do đá liquidation-->
-                        <th:block th:if="${#strings.equalsIgnoreCase(item.requestTypeName,'INTERNAL') or #strings.equalsIgnoreCase(item.requestTypeName,'ALLOCATION')}">
+                        <th:block
+                                th:if="${#strings.equalsIgnoreCase(item.requestTypeName,'INTERNAL') or #strings.equalsIgnoreCase(item.requestTypeName,'ALLOCATION')}">
                             <!-- ALLOCATION -->
                             <a th:if="${#strings.containsIgnoreCase(item.requestTypeName, 'ALLOCATION')
                and session.ROLE == '03'
@@ -203,8 +203,23 @@
                             </a>
                         </th:block>
 
+
                         <a th:if="${!item.isInternal}" class="btn btn-sm btn-warning text-dark"
                            th:href="@{/viewExternalRequest/detail(id=${item.id})}">View</a>
+                        </th:block>
+
+                        <th:block th:if="${#strings.equalsIgnoreCase(item.requestTypeName, 'RETRIEVAL')}">
+                            <a th:if="${session.ROLE == '03' and (item.requestStatusId == '03' or item.requestStatusId == '05')}"
+                               class="btn btn-sm btn-primary text-white"
+                               th:href="@{/recover-asset/warehouse/process(requestId=${item.id})}">
+                                Process Recovery
+                            </a>
+
+                            <a th:unless="${session.ROLE == '03' and (item.requestStatusId == '03' or item.requestStatusId == '05')}"
+                               class="btn btn-sm btn-info text-white"
+                               th:href="@{/viewInternalRequest/detail(id=${item.id})}">
+                                View
+                            </a>
                         </th:block>
                         <!-- MAINTENANCE -->
                         <th:block th:if="${#strings.equalsIgnoreCase(item.requestTypeName,'MAINTENANCE')}">
@@ -255,5 +270,6 @@
     </div>
 
 </div>
+
 </body>
 </html>

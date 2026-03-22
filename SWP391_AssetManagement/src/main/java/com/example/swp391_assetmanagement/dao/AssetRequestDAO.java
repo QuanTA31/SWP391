@@ -42,6 +42,15 @@ public interface AssetRequestDAO {
 
     @Update(sqlFile = true)
     int moveInProgress(Long id, String researchDone, String inProgress);
+    //select request by request id
+    @Select
+    AssetRequest selectById(Long id);
+    // get status id by request id
+    @Select
+    String getStatusById(Long id);
+    //update status by request id
+    @Update(sqlFile = true)
+    int updateStatusById(Long id, String statusId);
 
     @Update(sqlFile = true)
     int moveCompleted(Long id, String inProgress, String completed);

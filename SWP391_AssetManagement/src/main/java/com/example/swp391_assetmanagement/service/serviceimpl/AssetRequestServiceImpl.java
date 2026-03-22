@@ -1,12 +1,19 @@
 package com.example.swp391_assetmanagement.service.serviceimpl;
 
+import com.example.swp391_assetmanagement.dao.AssetInternalRequestDetailDAO;
 import com.example.swp391_assetmanagement.dao.AssetRequestDAO;
+import com.example.swp391_assetmanagement.dao.AssetsDAO;
+import com.example.swp391_assetmanagement.entity.AssetInternalRequestDetail;
 import com.example.swp391_assetmanagement.entity.AssetRequest;
+import com.example.swp391_assetmanagement.entity.Assets;
 import com.example.swp391_assetmanagement.enums.RequestStatus;
 import com.example.swp391_assetmanagement.service.AssetRequestService;
+import com.example.swp391_assetmanagement.service.servicerequest.RecoverServiceRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -14,6 +21,8 @@ import java.util.Optional;
 public class AssetRequestServiceImpl implements AssetRequestService {
 
     private final AssetRequestDAO assetRequestDAO;
+    private final AssetInternalRequestDetailDAO detailDAO;
+    private final AssetsDAO assetsDAO;
 
     @Override
     public String findRequestTypeById(Long assetRequestId) {
@@ -76,5 +85,53 @@ public class AssetRequestServiceImpl implements AssetRequestService {
     public int moveCompleted(Long requestId) {
         return assetRequestDAO.moveCompleted(requestId, RequestStatus.IN_PROGRESS.getValue(),
                 RequestStatus.COMPLETED.getValue());
+    }
+
+    //Retrival
+
+    @Override
+    public AssetRequest findById(Long id) {
+        return assetRequestDAO.selectById(id);
+    }
+
+    @Override
+    public List<AssetInternalRequestDetail> findDetailsByRequestId(Long requestId) {
+        return detailDAO.selectByRequestId(requestId);
+    }
+
+    @Override
+    @Transactional
+    public void confirmDetailAndRestoreAsset(RecoverServiceRequest serviceRequest) {
+        // 1. Truy vấn Entity
+        AssetInternalRequestDetail detail = detailDAO.selectById(serviceRequest.getDetailId());
+
+        // 2. Truy cập trực tiếp field (không dùng get)
+        if (detail != null && Boolean.FALSE.equals(detail.isDone)) {
+            detail.isDone = true;
+            detailDAO.updateIsDone(detail);
+
+            Assets asset = assetsDAO.selectById(detail.assetId);
+            if (asset != null) {
+                asset.assetStatusId = serviceRequest.getTargetStatus();
+                asset.locationId = serviceRequest.getTargetLocation();
+                asset.currentUserId = null; // Clear người dùng cũ
+                assetsDAO.update(asset);
+            }
+        }
+    }
+
+    @Override
+    public String getRequestStatusById(Long requestId) {
+        return assetRequestDAO.getStatusById(requestId);
+    }
+
+    @Override
+    public void updateRequestStatus(Long requestId, String statusId) {
+        assetRequestDAO.updateStatusById(requestId, statusId);
+    }
+
+    @Override
+    public boolean isAllDetailsDone(Long requestId) {
+        return detailDAO.countRemainingItems(requestId) == 0;
     }
 }
