@@ -9,55 +9,6 @@
     <link rel="stylesheet" th:href="@{/css/OptionDetail.css}">
 </head>
 <body>
-
-<div class="app-wrapper">
-
-  <!-- HEADER -->
-  <div class="app-header">
-    <span>Asset Tracker</span>
-    <span>Request List</span>
-  </div>
-
-  <div class="app-content">
-
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-      <div class="fw-semibold mb-2">Menu</div>
-<!--      <div class="fw-semibold mb-2">Menu</div>-->
-<!--      <div class="menu-item">Main View Asset</div>-->
-<!--      <div class="menu-item">Create Request</div>-->
-<!--      <div class="menu-item active">View Request</div>-->
-<!--      <div class="menu-item">Approval Request</div>-->
-      <a th:if="${session.ROLE != '05'}" th:href="@{/viewAsset}" class="menu-item">
-        View Asset
-      </a>
-
-      <a th:href="@{/viewRequest}" class="menu-item">
-        View Request
-      </a>
-
-      <a th:href="@{/recover-asset/manager/recoverAsset}" class="menu-item">
-        Recover Asset
-      </a>
-
-      <a th:if="${session.ROLE == '03'}"
-         th:href="@{/purchase-requests/warehouse/view(assetRequestId='')}" class="menu-item">
-        Create Purchase Request
-      </a>
-
-      <a th:if="${session.ROLE == '05'}"
-         th:href="@{/allocation/department/create(assetRequestId='')}" class="menu-item">
-        Create Allocation Request
-      </a>
-
-<!--      <a th:if="${session.ROLE == '03'}"-->
-<!--         th:href="@{/purchase-requests/viewPurchaseAsset}" class="menu-item">-->
-<!--        View Purchase Asset-->
-<!--      </a>-->
-    </div>
-
-    <!-- CONTENT -->
-    <div class="content-right">
 <div class="content-right">
 
     <div class="toolbar">
@@ -208,7 +159,8 @@
                         </th:block>
 
                         <!-- INTERNAL / EXTERNAL / ALLOCATION --> <!-- check lại do đá liquidation-->
-                        <th:block th:if="${#strings.equalsIgnoreCase(item.requestTypeName,'INTERNAL') or #strings.equalsIgnoreCase(item.requestTypeName,'ALLOCATION')}">
+                        <th:block
+                                th:if="${#strings.equalsIgnoreCase(item.requestTypeName,'INTERNAL') or #strings.equalsIgnoreCase(item.requestTypeName,'ALLOCATION')}">
                             <!-- ALLOCATION -->
                             <a th:if="${#strings.containsIgnoreCase(item.requestTypeName, 'ALLOCATION')
                and session.ROLE == '03'
@@ -315,10 +267,8 @@
                    th:href="@{/viewRequest(pageIndex=${data.filters.page + 1}, requestStatusId=${data.filters.requestStatusId}, requestTypeId=${data.filters.requestTypeId})}">»</a>
             </li>
         </ul>
-      </div>
-
     </div>
-  </div>
+
 </div>
 
 </body>
