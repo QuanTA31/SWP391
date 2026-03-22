@@ -46,6 +46,8 @@ public interface AssetsDAO {
     @Select
     Assets selectById(Long id);
     // update asset in progress retrival
+    @Update(sqlFile = true)
+    int updateRecovery(Assets asset);
 
     @BatchUpdate(sqlFile = true)
     int[] batchUpdateAllocation(List<Assets> assetsList);

@@ -4,6 +4,7 @@ import com.example.swp391_assetmanagement.entity.AssetRequest;
 import org.seasar.doma.*;
 import org.seasar.doma.boot.ConfigAutowireable;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Dao
@@ -51,6 +52,9 @@ public interface AssetRequestDAO {
     //update status by request id
     @Update(sqlFile = true)
     int updateStatusById(Long id, String statusId);
+
+    @Update(sqlFile = true)
+    int updateHandoverDate(Long id, LocalDate handoverDate);
 
     @Update(sqlFile = true)
     int moveCompleted(Long id, String inProgress, String completed);
