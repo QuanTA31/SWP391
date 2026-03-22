@@ -132,11 +132,11 @@ public class AllocationController {
     @PostMapping("/department/create")
     public String createAllocationRequest(
             @RequestParam(required = false) Long assetRequestId,
-            @RequestParam String assetTypeId,
+            @RequestParam(required = false) String assetTypeId,
             @RequestParam(required = false) Long assetId,
-            @RequestParam String locationId,
-            @RequestParam Integer quantity,
-            @RequestParam String reason,
+            @RequestParam(required = false) String locationId,
+            @RequestParam(required = false) Integer quantity,
+            @RequestParam(required = false) String reason,
             @RequestParam String action,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
@@ -347,14 +347,14 @@ public class AllocationController {
         if (detail == null) return "redirect:/viewRequest";
 
         // Parse assets assigned by Manager
-        List<Assets> assignedAssets = new java.util.ArrayList<>();
+        List<Assets> warehouseAssets = new java.util.ArrayList<>();
         if (detail.note != null && detail.note.startsWith("ASSIGNED_ASSETS:")) {
             String csv = detail.note.substring("ASSIGNED_ASSETS:".length());
             for (String part : csv.split(",")) {
                 try {
                     Long aid = Long.parseLong(part.trim());
                     Assets asset = assetService.findById(aid);
-                    if (asset != null) assignedAssets.add(asset);
+                    if (asset != null) warehouseAssets.add(asset);
                 } catch (NumberFormatException ignored) {}
             }
         }
@@ -364,7 +364,7 @@ public class AllocationController {
 
         model.addAttribute("request", req);
         model.addAttribute("detail", detail);
-        model.addAttribute("assignedAssets", assignedAssets);
+        model.addAttribute("warehouseAssets", warehouseAssets);
         model.addAttribute("canDispatch", canDispatch);
         return "WarehouseAllocationView";
     }
