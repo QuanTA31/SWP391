@@ -2,6 +2,10 @@ package com.example.swp391_assetmanagement.service;
 
 import com.example.swp391_assetmanagement.entity.AssetInternalRequestDetail;
 import com.example.swp391_assetmanagement.entity.AssetRequest;
+import com.example.swp391_assetmanagement.entity.Assets;
+
+import java.util.List;
+import java.util.Optional;
 
 public interface AllocationService {
 
@@ -10,6 +14,7 @@ public interface AllocationService {
     void createInternalDetail(AssetInternalRequestDetail detail);
     void updateInternalDetail(AssetInternalRequestDetail detail);
     void updateIsDone(AssetInternalRequestDetail detail);
-    com.example.swp391_assetmanagement.entity.AssetInternalRequestDetail getInternalDetailByRequestId(Long requestId);
-    java.util.Optional<AssetRequest> getAssetRequestById(Long requestId);
+    AssetInternalRequestDetail getInternalDetailByRequestId(Long requestId);
+    Optional<AssetRequest> getAssetRequestById(Long requestId);
+    int[] batchUpdateAllocation(List<Assets> assetsList);
 }

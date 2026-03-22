@@ -46,4 +46,13 @@ public class RequestProcessAllServiceResponse {
     @Column(name = "total_items")
     public Integer totalItems;
 
+    @Column(name = "is_done")
+    public Boolean isDone;
+
+    @Column(name = "quantity")
+    public Integer quantity;
+
+    @Column(name = "aid_note")
+    public String aidNote;
+
 }

@@ -44,4 +44,11 @@ public interface AssetExternalRequestDetailDAO {
 
     @Select
     List<AssetExternalRequestDetailServiceResponse> findByAssetRequestId(Long assetRequestId);
+
+
+    @Insert(sqlFile = true)
+    int insert(AssetExternalRequestDetail details);
+
+    @Select
+    Long getLastId();
 }

@@ -10,6 +10,9 @@ SELECT
     ar.note,
     ar.created_at,
     aid.asset_type_id,
+    aid.is_done,
+    aid.quantity,
+    aid.note          AS aid_note,
     COUNT(1) OVER()   AS total_items
 FROM asset_request ar
          LEFT JOIN users ru

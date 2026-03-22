@@ -1,10 +1,17 @@
 package com.example.swp391_assetmanagement.dao;
 
 import com.example.swp391_assetmanagement.entity.Assets;
-import com.example.swp391_assetmanagement.entity.AssetsAssetRequestExternal;
 import com.example.swp391_assetmanagement.service.servicerequest.AssetViewAllServiceRequest;
+import com.example.swp391_assetmanagement.service.servicerequest.LiquiAssetViewAllServiceRequest;
+import com.example.swp391_assetmanagement.service.serviceresponse.AssetLiquiServiceResponse;
 import com.example.swp391_assetmanagement.service.serviceresponse.AssetViewAllServiceResponse;
 import org.seasar.doma.*;
+import org.seasar.doma.*;
+import com.example.swp391_assetmanagement.service.serviceresponse.LiquiAssetViewAllServiceResponse;
+import org.seasar.doma.BatchInsert;
+import org.seasar.doma.BatchUpdate;
+import org.seasar.doma.Dao;
+import org.seasar.doma.Select;
 import org.seasar.doma.boot.ConfigAutowireable;
 
 import java.util.List;
@@ -32,6 +39,20 @@ public interface AssetsDAO {
     @Update(sqlFile = true)
     int update(Assets asset);
 
-    @BatchUpdate
+    @BatchUpdate(sqlFile = true)
     int[] batchUpdate(List<Assets> assetsList);
+
+    //find asset by id
+    @Select
+    Assets selectById(Long id);
+    // update asset in progress retrival
+
+    @BatchUpdate(sqlFile = true)
+    int[] batchUpdateAllocation(List<Assets> assetsList);
+
+    @Select
+    List<LiquiAssetViewAllServiceResponse> selectLiquiAssetAll(LiquiAssetViewAllServiceRequest request);
+
+    @Select
+    List<AssetLiquiServiceResponse> findByIdOfLiquidation(List<Long> assetId);
 }

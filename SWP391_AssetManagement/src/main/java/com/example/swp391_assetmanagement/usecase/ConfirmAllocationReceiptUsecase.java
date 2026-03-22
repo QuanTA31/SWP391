@@ -1,13 +1,13 @@
 package com.example.swp391_assetmanagement.usecase;
 
-import com.example.swp391_assetmanagement.dao.AssetInternalRequestDetailDAO;
-import com.example.swp391_assetmanagement.dao.AssetRequestDAO;
-import com.example.swp391_assetmanagement.dao.AssetsDAO;
 import com.example.swp391_assetmanagement.entity.AssetInternalRequestDetail;
 import com.example.swp391_assetmanagement.entity.AssetRequest;
 import com.example.swp391_assetmanagement.entity.Assets;
 import com.example.swp391_assetmanagement.enums.AssetStatus;
 import com.example.swp391_assetmanagement.enums.RequestStatus;
+import com.example.swp391_assetmanagement.service.AllocationService;
+import com.example.swp391_assetmanagement.service.AssetRequestService;
+import com.example.swp391_assetmanagement.service.AssetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,14 +19,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ConfirmAllocationReceiptUsecase {
 
-    private final AssetInternalRequestDetailDAO assetInternalRequestDetailDAO;
-    private final AssetRequestDAO assetRequestDAO;
-    private final AssetsDAO assetsDAO;
+    //private final AssetInternalRequestDetailDAO assetInternalRequestDetailDAO;
+    //private final AssetRequestDAO assetRequestDAO;
+    //private final AssetsDAO assetsDAO;
+    private final AssetService assetService;
+    private final AssetRequestService assetRequestService;
+    private final AllocationService allocationService;
 
     @Transactional
     public void execute(Long requestId) {
         // 1. Load detail
-        AssetInternalRequestDetail detail = assetInternalRequestDetailDAO.findByAssetRequestId(requestId);
+        //AssetInternalRequestDetail detail = assetInternalRequestDetailDAO.findByAssetRequestId(requestId);
+        AssetInternalRequestDetail detail = allocationService.getInternalDetailByRequestId(requestId);
         if (detail == null) {
             throw new RuntimeException("Không tìm thấy chi tiết cấp phát cho Request ID: " + requestId);
         }
@@ -49,7 +53,7 @@ public class ConfirmAllocationReceiptUsecase {
         // 3. Mark each assigned asset as ASSIGNED (status="02")
         List<Assets> toUpdate = new ArrayList<>();
         for (Long assetId : assignedAssetIds) {
-            Assets asset = assetsDAO.findById(assetId);
+            Assets asset = assetService.findById(assetId);
             if (asset != null) {
                 asset.assetStatusId = AssetStatus.ASSIGNED.getValue();
                 // Update locationId to the destination location
@@ -60,7 +64,7 @@ public class ConfirmAllocationReceiptUsecase {
             }
         }
         if (!toUpdate.isEmpty()) {
-            assetsDAO.batchUpdate(toUpdate);
+            allocationService.batchUpdateAllocation(toUpdate);
         }
 
         // 4. Determine completion: compare assigned count vs requested quantity
@@ -69,15 +73,18 @@ public class ConfirmAllocationReceiptUsecase {
 
         if (assignedCount >= requestedQty) {
             // Case 2: fully fulfilled → COMPLETED
-            AssetRequest request = assetRequestDAO.findAssetRequestByIdForUpdate(requestId).orElse(null);
+//            AssetRequest request = assetRequestDAO.findAssetRequestByIdForUpdate(requestId).orElse(null);
+            AssetRequest request = allocationService.getAssetRequestById(requestId).orElse(null);
             if (request != null) {
                 request.requestStatusId = RequestStatus.COMPLETED.getValue();
-                assetRequestDAO.updateStatus(request);
+//                assetRequestDAO.updateStatus(request);
+                assetRequestService.updatePurchaseRequestStatus(request);
             }
         } else {
             // Case 1: partially fulfilled → mark is_done = true, keep IN_PROGRESS
             detail.isDone = true;
-            assetInternalRequestDetailDAO.updateIsDone(detail);
+//            assetInternalRequestDetailDAO.updateIsDone(detail);
+            allocationService.updateIsDone(detail);
         }
     }
 }
