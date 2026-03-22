@@ -21,6 +21,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +39,7 @@ public class AllocationController {
     private final ConfirmAllocationReceiptUsecase confirmAllocationReceiptUsecase;
 
     //1
+    //select 1 list từ bảng assetInternalDetail theo assetRequestID
     @GetMapping("/department/create")
     public String showCreateForm(Model model, HttpSession session) {
         String locationId = (String) session.getAttribute("LOCATION_ID");
@@ -237,14 +239,14 @@ public class AllocationController {
         }
 
         // Fetch Assets (available ones)
-        List<Assets> stockAssets = new java.util.ArrayList<>(assetService.findByTypeAndStatus(detail.assetTypeId, "00")); // STOCK_IN
-        List<Assets> recoveredAssets = new java.util.ArrayList<>(assetService.findByTypeAndStatus(detail.assetTypeId, "08")); // STOCKED
+        List<Assets> stockAssets = new ArrayList<>(assetService.findByTypeAndStatus(detail.assetTypeId, "00")); // STOCK_IN
+        List<Assets> recoveredAssets = new ArrayList<>(assetService.findByTypeAndStatus(detail.assetTypeId, "08")); // STOCKED
         List<Assets> transferringAssets = assetService.findByTypeAndStatus(detail.assetTypeId, "03"); // TRANSFERRING
 
         // Load all assets already assigned in this request (TRANSFERRING or ASSIGNED in previous rounds)
         // And place them into either the stock or recovered list so they appear in UI but are disabled
-        List<Assets> alreadyAssignedAssets = new java.util.ArrayList<>();
-        java.util.List<Long> alreadyAssignedIds = new java.util.ArrayList<>();
+        List<Assets> alreadyAssignedAssets = new ArrayList<>();
+        List<Long> alreadyAssignedIds = new ArrayList<>();
         if (detail.note != null && detail.note.startsWith("ASSIGNED_ASSETS:")) {
             String csv = detail.note.substring("ASSIGNED_ASSETS:".length());
             for (String part : csv.split(",")) {

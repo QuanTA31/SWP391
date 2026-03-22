@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 @Service
@@ -41,7 +43,7 @@ public class ProcessAllocationAssignmentUsecase {
         // This allows the "View" screen to find and display them later.
         if (!selectedAssetIds.isEmpty()) {
             // Collect existing assigned asset IDs (if any) from the note field
-            java.util.LinkedHashSet<Long> allAssetIds = new java.util.LinkedHashSet<>();
+            LinkedHashSet<Long> allAssetIds = new LinkedHashSet<>();
 
             String existingNote = detail.note;
             if (existingNote != null && existingNote.startsWith("ASSIGNED_ASSETS:")) {
@@ -68,7 +70,7 @@ public class ProcessAllocationAssignmentUsecase {
             allocationService.updateInternalDetail(detail);
 
             // Mark ALL newly assigned assets (and any legacy ones that failed to update before) as TRANSFERRING
-            java.util.List<Assets> toLock = new java.util.ArrayList<>();
+            List<Assets> toLock = new ArrayList<>();
             for (Long aid : allAssetIds) {
                 Assets asset = assetService.findById(aid);
                 // If it's already 02 (ASSIGNED), leave it alone.
