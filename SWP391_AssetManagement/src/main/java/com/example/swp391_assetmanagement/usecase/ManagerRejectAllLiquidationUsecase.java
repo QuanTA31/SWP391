@@ -10,10 +10,12 @@ import com.example.swp391_assetmanagement.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -40,6 +42,12 @@ public class ManagerRejectAllLiquidationUsecase {
         }
 
         Long userId = userService.getIdByUserCode(session.getAttribute("USER_CODE").toString());
+
+        Integer count = optionDetailService.countByIdAndStatus(assetRequestDetailId, Boolean.TRUE);
+
+        if (count > 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
 
         List<OptionDetail> optionDetail = optionDetailService.getListByRequestDetailId(assetRequestDetailId);
 
