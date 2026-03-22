@@ -14,6 +14,9 @@ public interface AssetInternalRequestDetailService {
     AssetInternalRequestDetail findByAssetRequestId(Long assetRequestId);
 
     int update(AssetInternalRequestDetail detail);
+    // Hàm này để insert từng cái hoặc dùng cho loop
+    void createDetail(AssetInternalRequestDetail detail);
 
+    // Nếu bạn muốn tối ưu (giống code mẫu dùng batchInsert)
     void batchInsert(List<AssetInternalRequestDetail> details);
 }

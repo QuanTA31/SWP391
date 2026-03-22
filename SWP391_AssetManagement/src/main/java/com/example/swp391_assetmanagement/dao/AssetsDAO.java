@@ -6,6 +6,7 @@ import com.example.swp391_assetmanagement.service.servicerequest.LiquiAssetViewA
 import com.example.swp391_assetmanagement.service.serviceresponse.AssetLiquiServiceResponse;
 import com.example.swp391_assetmanagement.service.serviceresponse.AssetViewAllServiceResponse;
 import org.seasar.doma.*;
+import org.seasar.doma.*;
 import com.example.swp391_assetmanagement.service.serviceresponse.LiquiAssetViewAllServiceResponse;
 import org.seasar.doma.BatchInsert;
 import org.seasar.doma.BatchUpdate;
@@ -35,6 +36,9 @@ public interface AssetsDAO {
     @Select
     Assets findById(Long id);
 
+    @Update(sqlFile = true)
+    int update(Assets asset);
+
     @BatchUpdate(sqlFile = true)
     int[] batchUpdate(List<Assets> assetsList);
 
@@ -42,8 +46,6 @@ public interface AssetsDAO {
     @Select
     Assets selectById(Long id);
     // update asset in progress retrival
-    @Update
-    int update(Assets asset);
 
     @BatchUpdate(sqlFile = true)
     int[] batchUpdateAllocation(List<Assets> assetsList);
