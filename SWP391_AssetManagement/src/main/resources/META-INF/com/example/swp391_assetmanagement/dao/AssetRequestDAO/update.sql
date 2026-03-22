@@ -1,6 +1,7 @@
 UPDATE asset_request
 SET
-    request_status_id = /* statusId */'APPROVED',
-    approved_by = /* approvedBy */1,
+    request_status_id = /* assetRequest.requestStatusId */'APPROVED',
+    approved_by = /* assetRequest.approvedBy */1,
+    note = /* assetRequest.note */'',
     approved_date = CURRENT_DATE
-WHERE id = /* id */1
+WHERE id = /* assetRequest.id */1
