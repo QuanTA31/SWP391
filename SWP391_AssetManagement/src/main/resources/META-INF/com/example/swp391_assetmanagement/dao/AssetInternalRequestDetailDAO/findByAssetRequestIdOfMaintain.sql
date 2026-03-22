@@ -4,6 +4,7 @@ SELECT
     asset_request_id,
     asset_type_id,
     quantity,
+    from_location_id,
     note,
     created_at,
     is_done
