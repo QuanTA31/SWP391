@@ -37,6 +37,7 @@ public class AllocationController {
     private final ProcessAllocationAssignmentUsecase processAllocationAssignmentUsecase;
     private final ConfirmAllocationReceiptUsecase confirmAllocationReceiptUsecase;
 
+    //1
     @GetMapping("/department/create")
     public String showCreateForm(Model model, HttpSession session) {
         String locationId = (String) session.getAttribute("LOCATION_ID");
@@ -59,6 +60,7 @@ public class AllocationController {
         return "NewAllocationRequest";
     }
 
+    //3 : manager approval
     @GetMapping("/department/edit")
     public String showEditForm(@RequestParam Long id, Model model, HttpSession session) {
         AssetRequest req = allocationService.getAssetRequestById(id).orElse(null);
@@ -129,6 +131,7 @@ public class AllocationController {
         return "NewAllocationRequest";
     }
 
+    //2 : draf, submit
     @PostMapping("/department/create")
     public String createAllocationRequest(
             @RequestParam(required = false) Long assetRequestId,
@@ -166,6 +169,7 @@ public class AllocationController {
         return "redirect:/viewRequest";
     }
 
+    //4: manager approval, cancael
     @PostMapping("/manager/approve")
     public String approveRequest(@RequestParam("id") Long id, HttpSession session, RedirectAttributes redirectAttributes) {
         try {
@@ -188,6 +192,7 @@ public class AllocationController {
         return "redirect:/viewRequest";
     }
 
+    // 6: view tài sản để cấp phát
     @GetMapping("/process")
     public String showProcessForm(@RequestParam("id") Long id, Model model, HttpSession session) {
         String role = (String) session.getAttribute("ROLE");
@@ -277,6 +282,7 @@ public class AllocationController {
         return "ProcessingAllocation";
     }
 
+    // 7: tạo tài sản cấp phát
     @PostMapping("/process")
     public String processAllocation(@RequestParam Long requestId,
                                     @RequestParam List<Long> selectedAssetIds,
@@ -290,6 +296,7 @@ public class AllocationController {
         return "redirect:/viewRequest";
     }
 
+    //11 : get ra thông tin asset để xác nhận
     @GetMapping("/department/receipt")
     public String showReceiptPage(@RequestParam Long requestId, Model model, HttpSession session) {
         AssetRequest req = allocationService.getAssetRequestById(requestId).orElse(null);
@@ -324,6 +331,7 @@ public class AllocationController {
         return "ConfirmAllocationReceipt";
     }
 
+    // 13: confirm đã nhận
     @PostMapping("/department/confirm-receipt")
     public String confirmReceipt(@RequestParam Long requestId,
                                  RedirectAttributes redirectAttributes) {
@@ -337,7 +345,7 @@ public class AllocationController {
     }
 
     // ===== WAREHOUSE ENDPOINTS =====
-
+    // 8: kho cấp phát theo detail id
     @GetMapping("/warehouse/view")
     public String showWarehouseView(@RequestParam Long requestId, Model model) {
         AssetRequest req = allocationService.getAssetRequestById(requestId).orElse(null);
@@ -369,6 +377,7 @@ public class AllocationController {
         return "WarehouseAllocationView";
     }
 
+    // 9: kho cấp phất tài sản
     @PostMapping("/warehouse/dispatch")
     public String warehouseDispatch(@RequestParam Long requestId,
                                     RedirectAttributes redirectAttributes) {
