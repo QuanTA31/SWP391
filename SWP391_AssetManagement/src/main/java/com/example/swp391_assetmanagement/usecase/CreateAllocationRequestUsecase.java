@@ -1,12 +1,12 @@
 package com.example.swp391_assetmanagement.usecase;
 
-import com.example.swp391_assetmanagement.dao.UserDAO;
 import com.example.swp391_assetmanagement.dto.request.AllocationDTORequest;
 import com.example.swp391_assetmanagement.entity.AssetInternalRequestDetail;
 import com.example.swp391_assetmanagement.entity.AssetRequest;
 import com.example.swp391_assetmanagement.enums.RequestStatus;
 import com.example.swp391_assetmanagement.enums.RequestType;
 import com.example.swp391_assetmanagement.service.AllocationService;
+import com.example.swp391_assetmanagement.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -20,7 +20,8 @@ import java.time.LocalDateTime;
 public class CreateAllocationRequestUsecase {
 
     private final AllocationService allocationService;
-    private final UserDAO userDAO;
+    //private final UserDAO userDAO;
+    private final UserService userService;
 
     @Transactional
     public void execute(AllocationDTORequest dto, HttpSession session) {
@@ -43,7 +44,8 @@ public class CreateAllocationRequestUsecase {
                 : RequestStatus.PENDING_APPROVAL.getValue();
 
         String requesterCode = (String) session.getAttribute("USER_CODE");
-        Long requestedBy = userDAO.findIdByUserCode(requesterCode);
+//        Long requestedBy = userDAO.findIdByUserCode(requesterCode);
+        Long requestedBy = userService.getIdByUserCode(requesterCode);
 
         if (dto.getAssetRequestId() == null) {
             // == CREATE NEW ==

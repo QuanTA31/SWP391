@@ -1,9 +1,9 @@
 package com.example.swp391_assetmanagement.usecase;
 
-import com.example.swp391_assetmanagement.dao.UserDAO;
 import com.example.swp391_assetmanagement.entity.AssetRequest;
 import com.example.swp391_assetmanagement.enums.RequestStatus;
 import com.example.swp391_assetmanagement.service.AllocationService;
+import com.example.swp391_assetmanagement.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -17,7 +17,8 @@ import java.util.Optional;
 public class ApproveAllocationRequestUsecase {
 
     private final AllocationService allocationService;
-    private final UserDAO userDAO;
+    //private final UserDAO userDAO;
+    private final UserService userService;
 
     @Transactional
     public void approve(Long requestId, HttpSession session) {
@@ -36,7 +37,8 @@ public class ApproveAllocationRequestUsecase {
         }
 
         String userCode = (String) session.getAttribute("USER_CODE");
-        Long managerId = userDAO.findIdByUserCode(userCode);
+//        Long managerId = userDAO.findIdByUserCode(userCode);
+        Long managerId = userService.getIdByUserCode(userCode);
 
         assetRequest.get().requestStatusId = newStatus.getValue();
         assetRequest.get().approvedBy = managerId;

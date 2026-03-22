@@ -34,5 +34,10 @@ public class AllProcessDTOResponse {
     private final String note;
 
     private final LocalDate createdAt;
+    
+    private final Boolean isDone;
 
+    private final Integer quantity;
+
+    private final Integer assignedQuantity;
 }

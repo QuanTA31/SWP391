@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout/manager :: manager-layout(~{::div.content-right})}">
+      th:replace="~{layout/manager :: manager-layout(~{::div.content-right})}"
+      th:with="activePage='viewAsset'">
 <head>
     <meta charset="utf-8">
     <title>Asset Tracker - View Asset</title>
