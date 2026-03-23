@@ -28,7 +28,11 @@ public class FinishMaintenanceRepairUsecase {
         AssetRequest assetRequest = assetRequestDAO.findAssetRequestByIdForUpdate(assetRequestId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy yêu cầu"));
 
-        if (!RequestStatus.IN_PROGRESS.getValue().equals(assetRequest.requestStatusId)) {
+        String currentStatus = assetRequest.requestStatusId;
+        boolean isApproved   = RequestStatus.APPROVED.getValue().equals(currentStatus);
+        boolean isInProgress = RequestStatus.IN_PROGRESS.getValue().equals(currentStatus);
+
+        if (!isApproved && !isInProgress) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Trạng thái yêu cầu không hợp lệ để hoàn tất sửa chữa.");
         }
 
@@ -40,6 +44,13 @@ public class FinishMaintenanceRepairUsecase {
         Assets asset = assetsDAO.findById(detail.assetId);
         if (asset == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy tài sản");
+        }
+
+        // Nếu còn APPROVED (bỏ qua bước confirm-repair), tự động chuyển asset về kho
+        if (isApproved) {
+            asset.locationId = com.example.swp391_assetmanagement.enums.Location.WAREHOUSE.getValue();
+            asset.assetStatusId = AssetStatus.MAINTENANCE.getValue();
+            assetsDAO.update(asset);
         }
 
         if (isSuccess) {

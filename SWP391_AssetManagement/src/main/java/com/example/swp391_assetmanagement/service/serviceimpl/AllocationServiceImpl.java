@@ -38,6 +38,18 @@ public class AllocationServiceImpl implements AllocationService {
     }
 
     @Override
+    public void batchCreateInternalDetails(List<AssetInternalRequestDetail> details) {
+        for (AssetInternalRequestDetail detail : details) {
+            assetInternalRequestDetailDAO.insert(detail);
+        }
+    }
+
+    @Override
+    public void deleteInternalDetailsByRequestId(Long requestId) {
+        assetInternalRequestDetailDAO.deleteByRequestId(requestId);
+    }
+
+    @Override
     public void updateInternalDetail(AssetInternalRequestDetail detail) {
         assetInternalRequestDetailDAO.update(detail);
     }
@@ -50,6 +62,11 @@ public class AllocationServiceImpl implements AllocationService {
     @Override
     public AssetInternalRequestDetail getInternalDetailByRequestId(Long requestId) {
         return assetInternalRequestDetailDAO.findByAssetRequestId(requestId);
+    }
+
+    @Override
+    public List<AssetInternalRequestDetail> getInternalDetailsByRequestId(Long requestId) {
+        return assetInternalRequestDetailDAO.selectByRequestId(requestId);
     }
 
     @Override

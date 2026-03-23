@@ -1,8 +1,10 @@
 package com.example.swp391_assetmanagement.usecase;
 
+import com.example.swp391_assetmanagement.dao.AssetsDAO;
 import com.example.swp391_assetmanagement.dto.request.CreateMaintenanceRequestDTORequest;
 import com.example.swp391_assetmanagement.entity.AssetInternalRequestDetail;
 import com.example.swp391_assetmanagement.entity.AssetRequest;
+import com.example.swp391_assetmanagement.entity.Assets;
 import com.example.swp391_assetmanagement.enums.RequestStatus;
 import com.example.swp391_assetmanagement.enums.RequestType;
 import com.example.swp391_assetmanagement.service.AssetInternalRequestDetailService;
@@ -26,6 +28,7 @@ public class CreateMaintenanceRequestUsecase {
     private final AssetRequestService assetRequestService;
     private final AssetInternalRequestDetailService assetInternalRequestDetailService;
     private final UserService userService;
+    private final AssetsDAO assetsDAO;
 
     @Transactional
     public void execute(CreateMaintenanceRequestDTORequest request, HttpSession session) {
@@ -55,6 +58,12 @@ public class CreateMaintenanceRequestUsecase {
 
         Long assetRequestId = assetRequestService.createPurchaseRequestForm(assetRequest);
 
+        // Lấy location hiện tại của asset để lưu vào fromLocationId
+        Assets asset = assetsDAO.findById(request.getAssetId());
+        if (asset == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy tài sản!");
+        }
+
         String noteContent = buildNote(request);
 
         AssetInternalRequestDetail detail = new AssetInternalRequestDetail();
@@ -62,6 +71,7 @@ public class CreateMaintenanceRequestUsecase {
         detail.setAssetRequestId(assetRequestId);
         detail.setAssetTypeId("");
         detail.setQuantity(1);
+        detail.setFromLocationId(asset.locationId); // Lưu location gốc để restore sau khi sửa xong
         detail.setNote(noteContent);
         detail.setIsDone(false);
         detail.setCreatedAt(LocalDateTime.now());

@@ -46,6 +46,4 @@ public class AssetInternalRequestDetail {
 
     @Column(name = "created_at")
     public LocalDateTime createdAt;
-
-
 }

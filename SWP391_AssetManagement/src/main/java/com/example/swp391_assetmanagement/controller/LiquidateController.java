@@ -26,7 +26,7 @@ public class LiquidateController {
     private final GetLiquidationPurchasingUsecase getLiquidationPurchasingUsecase;//xong
     private final ManagerCreateLiquidationUsecase managerCreateLiquidationUsecase;//xong
     private final ManagerRejectAllLiquidationUsecase managerRejectAllOptionDetailUsecase;
-    private final UpdateAssetRequestUsecase updateAssetRequestUsecase;
+    private final UpdateAssetRequestLiquidationUsecase updateAssetRequestUsecase;
     private final MoveAssetRequestToInProgressUsecase moveAssetRequestToInProgressUsecase;
     private final MoveAssetRequestToCompletedUsecase moveAssetRequestToCompletedUsecase;
 

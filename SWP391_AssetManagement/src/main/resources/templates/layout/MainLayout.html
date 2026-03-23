@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title layout:title-pattern="$LAYOUT_TITLE - $CONTENT_TITLE">Assets Management</title>
+
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" th:href="@{/css/MainView.css}">
+
+        <th:block layout:fragment="additional-css"></th:block>
+    </head>
+    <body>
+        <div class="app-wrapper">
+            <div class="app-header">
+                <span>Asset Tracker</span>
+                <span th:switch="${session.ROLE}">
+                    <span th:case="'01'">Admin Management System</span>
+                    <span th:case="'05'">Department Management System</span>
+                    <span th:case="'02'">Manager Management System</span>
+                    <span th:case="'04'">Purchasing Management System</span>
+                    <span th:case="'03'">Warehouse Management System</span>
+                    <span th:case="*">Management System</span>
+                </span>
+            </div>
+
+            <div class="app-content">
+                <div class="sidebar">
+                    <div class="fw-semibold mb-2">Menu</div>
+
+                    <th:block th:if="${session.ROLE == '01'}">
+                        <a th:href="@{/admin/viewUser}" class="menu-item"
+                           th:classappend="${activePage == 'viewUser'} ? 'active' : ''">View All Users
+                        </a>
+                        <a th:href="@{/admin/createUser}" class="menu-item"
+                           th:classappend="${activePage == 'createUser'} ? 'active' : ''">Create User
+                        </a>
+                    </th:block>
+
+                    <a th:if="${session.ROLE != '01' and session.ROLE != '05'}"
+                       th:href="@{/viewAsset}" class="menu-item"
+                       th:classappend="${activePage == 'viewAsset'} ? 'active' : ''">View Asset
+                    </a>
+
+                    <a th:if="${session.ROLE != '01'}"
+                       th:href="@{/viewRequest}" class="menu-item"
+                       th:classappend="${activePage == 'viewRequest'} ? 'active' : ''">View Request
+                    </a>
+
+                    <th:block th:if="${session.ROLE == '05'}">
+                        <a th:href="@{/allocation/department/create}" class="menu-item"
+                           th:classappend="${activePage == 'createAllocation'} ? 'active' : ''">Create Allocation
+                            Request
+                        </a>
+                        <a th:href="@{/maintenance-requests/create}" class="menu-item">Create Maintain Request</a>
+                    </th:block>
+
+                    <a th:if="${session.ROLE == '03' or session.ROLE == '02'}"
+                       th:href="@{/purchase-requests/warehouse/view}" class="menu-item"
+                       th:classappend="${activePage == 'createPurchase'} ? 'active' : ''">Create Purchase Request
+                    </a>
+                </div>
+
+              <th:block layout:fragment="content"></th:block>
+            </div>
+        </div>
+        <th:block layout:fragment="additional-scripts"></th:block>
+    </body>
+</html>

@@ -15,7 +15,7 @@ public interface AssetInternalRequestDetailService {
 
     int update(AssetInternalRequestDetail detail);
     // Hàm này để insert từng cái hoặc dùng cho loop
-    void createDetail(AssetInternalRequestDetail detail);
+//    void createDetail(AssetInternalRequestDetail detail);
 
     // Nếu bạn muốn tối ưu (giống code mẫu dùng batchInsert)
     void batchInsert(List<AssetInternalRequestDetail> details);
