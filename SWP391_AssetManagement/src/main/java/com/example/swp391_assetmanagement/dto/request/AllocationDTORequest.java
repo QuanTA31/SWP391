@@ -25,4 +25,7 @@ public class AllocationDTORequest {
     private String action;
     // List of assets assigned by manager (if status is IN_PROGRESS or later)
     private java.util.List<com.example.swp391_assetmanagement.entity.Assets> assignedAssets;
+
+    // Optional user ID to receive the asset
+    private Long toUserId;
 }

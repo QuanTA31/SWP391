@@ -7,7 +7,10 @@ import org.seasar.doma.Dao;
 import org.seasar.doma.Select;
 import org.seasar.doma.boot.ConfigAutowireable;
 
+import java.util.List;
 import java.util.Optional;
+
+import com.example.swp391_assetmanagement.service.serviceresponse.UserDropdownResponse;
 
 @Dao
 @ConfigAutowireable
@@ -27,4 +30,7 @@ public interface UserDAO {
 
     @Select
     String findUserNameById(Long id);
+
+    @Select
+    List<UserDropdownResponse> findUsersByLocationId(String locationId);
 }

@@ -92,6 +92,7 @@ public class CreateAllocationRequestUsecase {
             detail.assetRequestId = assetRequestId;
             detail.assetTypeId = dto.getAssetTypeId();
             detail.toLocationId = dto.getLocationId();
+            detail.toUserId = dto.getToUserId();
             detail.quantity = 1; // each record = 1 unit
             detail.note = dto.getReason();
             detail.createdAt = LocalDateTime.now();

@@ -32,10 +32,25 @@ public class ConfirmAllocationReceiptUsecase {
         }
 
         // 2. Collect assigned asset IDs from detail records (asset_id field)
+        // 3. Mark each assigned asset as ASSIGNED (status="02") and move to destination location & user
         List<Long> assignedAssetIds = new ArrayList<>();
+        List<Assets> toUpdate = new ArrayList<>();
+
         for (AssetInternalRequestDetail d : details) {
             if (d.assetId != null) {
                 assignedAssetIds.add(d.assetId);
+
+                Assets asset = assetService.findById(d.assetId);
+                if (asset != null) {
+                    asset.assetStatusId = AssetStatus.ASSIGNED.getValue();
+                    if (d.toLocationId != null) {
+                        asset.locationId = d.toLocationId;
+                    }
+                    if (d.toUserId != null) {
+                        asset.currentUserId = d.toUserId;
+                    }
+                    toUpdate.add(asset);
+                }
             }
         }
 
@@ -43,20 +58,6 @@ public class ConfirmAllocationReceiptUsecase {
             throw new RuntimeException("Không có tài sản nào được cấp phát trong yêu cầu này.");
         }
 
-        String toLocationId = details.get(0).toLocationId;
-
-        // 3. Mark each assigned asset as ASSIGNED (status="02") and move to destination location
-        List<Assets> toUpdate = new ArrayList<>();
-        for (Long assetId : assignedAssetIds) {
-            Assets asset = assetService.findById(assetId);
-            if (asset != null) {
-                asset.assetStatusId = AssetStatus.ASSIGNED.getValue();
-                if (toLocationId != null) {
-                    asset.locationId = toLocationId;
-                }
-                toUpdate.add(asset);
-            }
-        }
         if (!toUpdate.isEmpty()) {
             allocationService.batchUpdateAllocation(toUpdate);
         }
