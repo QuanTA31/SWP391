@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
 @Component
@@ -42,6 +43,7 @@ public class StockinToCompletedUsecase {
 
         //Update status
         assetRequest.setRequestStatusId(RequestStatus.COMPLETED.getValue());
+        assetRequest.setHandoverDate(LocalDate.now());
         assetRequestService.updatePurchaseRequestStatus(assetRequest);
 
     }

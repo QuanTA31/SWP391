@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,6 +80,7 @@ public class ConfirmAllocationReceiptUsecase {
             AssetRequest request = allocationService.getAssetRequestById(requestId).orElse(null);
             if (request != null) {
                 request.requestStatusId = RequestStatus.COMPLETED.getValue();
+                request.handoverDate = LocalDate.now();
                 assetRequestService.updatePurchaseRequestStatus(request);
             }
         }
