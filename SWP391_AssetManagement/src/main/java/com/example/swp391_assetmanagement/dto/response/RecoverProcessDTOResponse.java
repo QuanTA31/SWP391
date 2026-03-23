@@ -21,22 +21,4 @@ public class RecoverProcessDTOResponse {
     private String note;
 
     private List<RecoverItemDetailDTO> items;
-
-    @Builder
-    @Getter
-    public static class RecoverItemDetailDTO {
-        private Long detailId;
-
-        private Long assetId;
-
-        private String assetCode;
-
-        private String assetTypeName;
-
-        private String fromUserName;
-
-        private String fromLocationName;
-
-        private Boolean isDone;
-    }
 }
