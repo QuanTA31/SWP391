@@ -3,7 +3,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/MainLayout}">
 <head>
-    <title>Tạo Yêu Cầu Sửa Chữa | Asset Tracker</title>=
+    <title>Create Maintenance Request | Asset Tracker</title>=
     <th:block layout:fragment="additional-css">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -20,15 +20,15 @@
             <div class="page-header">
                 <div class="icon-box"><i class="bi bi-tools"></i></div>
                 <div>
-                    <h4>Tạo Yêu Cầu Sửa Chữa Tài Sản</h4>
-                    <small>Department Manager → Gửi trực tiếp, không cần phê duyệt</small>
+                    <h4>Create Asset Maintenance Request</h4>
+                    <small>Department Manager → Submit directly, no approval required</small>
                 </div>
             </div>
 
             <!-- ── Error message ── -->
             <div class="alert-error" th:if="${errorMessage}">
                 <i class="bi bi-exclamation-circle-fill"></i>
-                <span th:text="${errorMessage}">Có lỗi xảy ra!</span>
+                <span th:text="${errorMessage}">An error occurred!</span>
             </div>
             <!-- ── Form ── -->
             <form th:action="@{${requestId == null ? '/maintenance-requests/create' : '/maintenance-requests/update'}}"
@@ -42,15 +42,15 @@
                 <input type="hidden" th:field="*{isSubmitted}" id="isSubmittedField" value="false">
 
                 <!-- Section 1: Chọn tài sản -->
-                <div class="section-label"><i class="bi bi-box-seam me-1"></i>1 — Chọn tài sản cần sửa chữa</div>
+                <div class="section-label"><i class="bi bi-box-seam me-1"></i>1 — Select asset to repair</div>
 
                 <div class="mb-3 asset-select-wrap">
                     <label for="assetId" class="form-label">
-                        Tài sản <span class="text-danger">*</span>
+                        Asset  <span class="text-danger">*</span>
                     </label>
                     <select class="form-select" id="assetId" th:field="*{assetId}" required
                             th:disabled="${requestStatusId != null and requestStatusId != '01'}">
-                        <option value="" selected disabled>-- Chọn tài sản từ danh sách phòng ban --</option>
+                        <option value="" selected disabled>-- Select asset from department list --</option>
                         <option th:each="asset : ${assets}"
                                 th:value="${asset.id}"
                                 th:text="${asset.assetCode + ' | ' + asset.assetTypeId + (asset.description != null ? ' — ' + asset.description : '')}">
@@ -61,32 +61,32 @@
 
                     <div class="form-text text-secondary mt-1">
                         <i class="bi bi-info-circle"></i>
-                        Chỉ hiển thị tài sản thuộc phòng ban của bạn.
+                        Only assets belonging to your department are shown.
                     </div>
                 </div>
 
                 <div class="section-divider"></div>
 
                 <!-- Section 2: Mô tả lỗi & Mức độ ưu tiên -->
-                <div class="section-label"><i class="bi bi-clipboard2-pulse me-1"></i>2 — Mô tả lỗi &amp; Mức độ ưu tiên
+                <div class="section-label"><i class="bi bi-clipboard2-pulse me-1"></i>2 — Issue description &amp; Priority
                 </div>
 
                 <div class="mb-3">
                     <label for="issueDescription" class="form-label">
-                        Mô tả vấn đề / lỗi <span class="text-danger">*</span>
+                        Problem / Issue description <span class="text-danger">*</span>
                     </label>
                     <textarea class="form-control"
                               id="issueDescription"
                               th:field="*{issueDescription}"
                               rows="4"
-                              placeholder="Mô tả chi tiết triệu chứng, khi nào xảy ra, ảnh hưởng như thế nào..."
+                              placeholder="Describe the symptoms in detail, when it occurred, how it affects operations..."
                               required th:readonly="${requestStatusId != null and requestStatusId != '01'}"></textarea>
                 </div>
 
                 <div class="mb-3"
                      th:classappend="${requestStatusId != null and requestStatusId != '01'} ? 'pe-none opacity-75' : ''">
                     <label class="form-label">
-                        Mức độ ưu tiên <span class="text-danger">*</span>
+                        Priority  <span class="text-danger">*</span>
                     </label>
                     <div class="priority-group">
 
@@ -94,7 +94,7 @@
                             <input type="radio" id="priorityLow"
                                    th:field="*{priority}" value="LOW" required>
                             <label for="priorityLow">
-                                <i class="bi bi-arrow-down-circle"></i> Thấp
+                                <i class="bi bi-arrow-down-circle"></i> Low
                             </label>
                         </div>
 
@@ -102,7 +102,7 @@
                             <input type="radio" id="priorityMedium"
                                    th:field="*{priority}" value="MEDIUM">
                             <label for="priorityMedium">
-                                <i class="bi bi-dash-circle"></i> Trung bình
+                                <i class="bi bi-dash-circle"></i> Medium
                             </label>
                         </div>
 
@@ -110,7 +110,7 @@
                             <input type="radio" id="priorityHigh"
                                    th:field="*{priority}" value="HIGH">
                             <label for="priorityHigh">
-                                <i class="bi bi-arrow-up-circle"></i> Cao
+                                <i class="bi bi-arrow-up-circle"></i> High
                             </label>
                         </div>
 
@@ -118,7 +118,7 @@
                             <input type="radio" id="priorityCritical"
                                    th:field="*{priority}" value="CRITICAL">
                             <label for="priorityCritical">
-                                <i class="bi bi-exclamation-octagon"></i> Khẩn cấp
+                                <i class="bi bi-exclamation-octagon"></i> Critical
                             </label>
                         </div>
 
@@ -128,13 +128,13 @@
                 <div class="section-divider"></div>
 
                 <!-- Section 3: Ghi chú thêm -->
-                <div class="section-label"><i class="bi bi-journal-text me-1"></i>3 — Ghi chú thêm (tuỳ chọn)</div>
+                <div class="section-label"><i class="bi bi-journal-text me-1"></i>3 — Additional notes (optional)</div>
 
                 <div class="mb-1">
                         <textarea class="form-control"
                                   th:field="*{note}"
                                   rows="2"
-                                  placeholder="Yêu cầu đặc biệt, cần gấp, liên hệ kỹ thuật..."
+                                  placeholder="Special requirements, urgent needs, contact technician..."
                                   th:readonly="${requestStatusId != null and requestStatusId != '01'}"></textarea>
                 </div>
 
@@ -142,21 +142,21 @@
                 <div class="action-bar">
                     <a th:href="@{/viewAsset}" class="btn btn-sm btn-outline-secondary px-4"
                        style="border-radius:8px; font-weight:600;">
-                        <i class="bi bi-x-lg me-1"></i>Hủy bỏ
+                        <i class="bi bi-x-lg me-1"></i>Cancel
                     </a>
 
                     <button th:if="${requestStatusId == null or (requestStatusId == '01' and isOwner != null and isOwner)}"
                             type="submit"
                             class="btn-save-draft"
                             onclick="setSubmit(false)">
-                        <i class="bi bi-floppy me-1"></i>Lưu nháp
+                        <i class="bi bi-floppy me-1"></i>Save Draft
                     </button>
 
                     <button th:if="${requestStatusId == null or (requestStatusId == '01' and isOwner != null and isOwner)}"
                             type="submit"
                             class="btn-submit-req"
                             onclick="setSubmit(true)">
-                        <i class="bi bi-send-fill me-1"></i>Gửi Yêu Cầu
+                        <i class="bi bi-send-fill me-1"></i>Submit Request
                     </button>
                 </div>
             </form>
