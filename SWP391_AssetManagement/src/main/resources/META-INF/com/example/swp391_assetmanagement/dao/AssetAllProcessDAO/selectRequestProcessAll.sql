@@ -56,6 +56,11 @@ WHERE 1 = 1
   AND ar.request_status_id NOT IN /* request.excludeStatusIdList */('00')
 /*%end */
 
+-- Department
+/*%if request.departmentId != null */
+  AND ar.requested_by = /* request.departmentId */1
+/*%end */
+
 ORDER BY ar.created_at DESC
     LIMIT /* request.pageSize */15
 OFFSET /* request.offset */0
