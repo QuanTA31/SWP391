@@ -182,56 +182,55 @@
                 </form>
             </div>
         </div>
-
-        <script>
-            // remaining = total requested - already delivered in past rounds
-            const targetQty = parseInt(document.getElementById('remainingQty').innerText);
-
-            function switchTab(type) {
-                const stockTable = document.getElementById('stockTable');
-                const recoveredTable = document.getElementById('recoveredTable');
-                const btns = document.querySelectorAll('.tab-btn');
-
-                if (type === 'stock') {
-                    stockTable.classList.remove('d-none');
-                    recoveredTable.classList.add('d-none');
-                    btns[0].classList.add('active');
-                    btns[1].classList.remove('active');
-                } else {
-                    stockTable.classList.add('d-none');
-                    recoveredTable.classList.remove('d-none');
-                    btns[0].classList.remove('active');
-                    btns[1].classList.add('active');
-                }
-            }
-
-            function updateCount() {
-                const checks = document.querySelectorAll('.asset-check:checked');
-                const count = checks.length;
-                document.getElementById('currentCount').innerText = count;
-
-                const submitBtn = document.getElementById('submitBtn');
-
-                // Allow submit only if selection doesn't exceed target
-                if (count > 0 && count <= targetQty) {
-                    submitBtn.disabled = false;
-                } else {
-                    submitBtn.disabled = true;
-                }
-
-                // Visual warning if exceeded
-                const countLabel = document.getElementById('currentCount');
-                if (count > targetQty) {
-                    countLabel.classList.add('text-danger');
-                } else {
-                    countLabel.classList.remove('text-danger');
-                }
-            }
-        </script>
     </div>
 </th:block>
 <th:block layout:fragment="additional-scripts">
     <script th:src="@{/js/Template.js}"></script>
+    <script>
+        // remaining = total requested - already delivered in past rounds
+        const targetQty = parseInt(document.getElementById('remainingQty').innerText);
+
+        function switchTab(type) {
+            const stockTable = document.getElementById('stockTable');
+            const recoveredTable = document.getElementById('recoveredTable');
+            const btns = document.querySelectorAll('.tab-btn');
+
+            if (type === 'stock') {
+                stockTable.classList.remove('d-none');
+                recoveredTable.classList.add('d-none');
+                btns[0].classList.add('active');
+                btns[1].classList.remove('active');
+            } else {
+                stockTable.classList.add('d-none');
+                recoveredTable.classList.remove('d-none');
+                btns[0].classList.remove('active');
+                btns[1].classList.add('active');
+            }
+        }
+
+        function updateCount() {
+            const checks = document.querySelectorAll('.asset-check:checked');
+            const count = checks.length;
+            document.getElementById('currentCount').innerText = count;
+
+            const submitBtn = document.getElementById('submitBtn');
+
+            // Allow submit only if selection doesn't exceed target
+            if (count > 0 && count <= targetQty) {
+                submitBtn.disabled = false;
+            } else {
+                submitBtn.disabled = true;
+            }
+
+            // Visual warning if exceeded
+            const countLabel = document.getElementById('currentCount');
+            if (count > targetQty) {
+                countLabel.classList.add('text-danger');
+            } else {
+                countLabel.classList.remove('text-danger');
+            }
+        }
+    </script>
 </th:block>
 </body>
 </html>
