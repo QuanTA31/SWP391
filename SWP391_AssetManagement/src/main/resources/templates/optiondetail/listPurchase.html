@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
@@ -43,7 +43,8 @@
                     </select>
                     <button class="btn btn-sm btn-save-draft" type="submit">Filter</button>
                 </form>
-                <div class="toolbar-right ms-2">
+                <div class="toolbar-right ms-2 d-flex align-items-center">
+                    <button type="button" class="btn btn-sm btn-secondary me-2" onclick="history.back()">Cancel</button>
                     <a class="btn btn-sm btn-save-draft"
                        data-bs-toggle="modal"
                        data-bs-target="#createOptionModal"
