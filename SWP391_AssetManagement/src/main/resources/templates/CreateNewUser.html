@@ -1,82 +1,90 @@
 <!doctype html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout/admin :: admin-layout(~{:: .content-right})}">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/MainLayout}">
 <head>
     <title>Create User | Asset Tracker</title>
+    <th:block layout:fragment="additional-css">
+        <link rel="stylesheet" th:href="@{/css/OptionDetail.css}">
+    </th:block>
 </head>
 <body>
+<th:block layout:fragment="content">
+    <div class="content-right">
+        <div class="toolbar">
+            <span class="fw-semibold">User Information Form</span>
+        </div>
 
-<div class="content-right">
-    <div class="toolbar">
-        <span class="fw-semibold">User Information Form</span>
-    </div>
+        <div class="form-container p-4 bg-light rounded shadow-sm overflow-auto">
+            <form th:action="@{/admin/createUser}" th:object="${userRequest}" method="post">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <h6 class="text-primary border-bottom pb-2">Account Info</h6>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Username</label>
+                            <input type="text" th:field="*{username}" class="form-control form-control-sm" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Password</label>
+                            <input type="password" th:field="*{password}" class="form-control form-control-sm" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Role</label>
+                            <select th:field="*{roleId}" class="form-select form-select-sm">
+                                <option th:each="r : ${T(com.example.swp391_assetmanagement.enums.Roles).values()}"
+                                        th:value="${r.value}" th:text="${r.name}"></option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Status</label>
+                            <select th:field="*{statusId}" class="form-select form-select-sm">
+                                <option th:each="s : ${T(com.example.swp391_assetmanagement.enums.UserStatus).values()}"
+                                        th:value="${s.value}" th:text="${s.name}"></option>
+                            </select>
+                        </div>
+                    </div>
 
-    <div class="form-container p-4 bg-light rounded shadow-sm overflow-auto">
-        <form th:action="@{/admin/createUser}" th:object="${userRequest}" method="post">
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <h6 class="text-primary border-bottom pb-2">Account Info</h6>
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">Username</label>
-                        <input type="text" th:field="*{username}" class="form-control form-control-sm" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">Password</label>
-                        <input type="password" th:field="*{password}" class="form-control form-control-sm" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">Role</label>
-                        <select th:field="*{roleId}" class="form-select form-select-sm">
-                            <option th:each="r : ${T(com.example.swp391_assetmanagement.enums.Roles).values()}"
-                                    th:value="${r.value}" th:text="${r.name}"></option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">Status</label>
-                        <select th:field="*{statusId}" class="form-select form-select-sm">
-                            <option th:each="s : ${T(com.example.swp391_assetmanagement.enums.UserStatus).values()}"
-                                    th:value="${s.value}" th:text="${s.name}"></option>
-                        </select>
+                    <div class="col-md-6">
+                        <h6 class="text-primary border-bottom pb-2">Personal Detail</h6>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Full Name</label>
+                            <input type="text" th:field="*{name}" class="form-control form-control-sm" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Email</label>
+                            <input type="email" th:field="*{email}" class="form-control form-control-sm" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Phone</label>
+                            <input type="text" th:field="*{phone}" class="form-control form-control-sm">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Date of Birth</label>
+                            <input type="date" th:field="*{dateOfBirth}" class="form-control form-control-sm">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Location</label>
+                            <select th:field="*{locationId}" class="form-select form-select-sm">
+                                <option th:each="l : ${T(com.example.swp391_assetmanagement.enums.Location).values()}"
+                                        th:value="${l.value}" th:text="${l.name}"></option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
-                <div class="col-md-6">
-                    <h6 class="text-primary border-bottom pb-2">Personal Detail</h6>
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">Full Name</label>
-                        <input type="text" th:field="*{name}" class="form-control form-control-sm" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">Email</label>
-                        <input type="email" th:field="*{email}" class="form-control form-control-sm" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">Phone</label>
-                        <input type="text" th:field="*{phone}" class="form-control form-control-sm">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">Date of Birth</label>
-                        <input type="date" th:field="*{dateOfBirth}" class="form-control form-control-sm">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">Location</label>
-                        <select th:field="*{locationId}" class="form-select form-select-sm">
-                            <option th:each="l : ${T(com.example.swp391_assetmanagement.enums.Location).values()}"
-                                    th:value="${l.value}" th:text="${l.name}"></option>
-                        </select>
-                    </div>
+                <div class="mt-4 pt-3 border-top d-flex justify-content-end gap-2">
+                    <button type="button" class="btn btn-sm btn-secondary" onclick="history.back()">Cancel</button>
+                    <button type="submit" class="btn btn-sm btn-primary px-4"
+                            style="background-color: #29b6f6; border: none;">
+                        Save User
+                    </button>
                 </div>
-            </div>
-
-            <div class="mt-4 pt-3 border-top d-flex justify-content-end gap-2">
-                <button type="button" class="btn btn-sm btn-secondary" onclick="history.back()">Cancel</button>
-                <button type="submit" class="btn btn-sm btn-primary px-4" style="background-color: #29b6f6; border: none;">
-                    Save User
-                </button>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
-</div>
-
+</th:block>
+<th:block layout:fragment="additional-scripts">
+    <script th:src="@{/js/Template.js}"></script>
+</th:block>
 </body>
 </html>

@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout/manager :: manager-layout(~{:: .content-right})}"
-      th:with="activePage='viewRequest'">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/MainLayout}">
 <head>
     <title>Asset Tracker - Cấp Phát Tài Sản</title>
+    <th:block layout:fragment="additional-css">
+
+    </th:block>
 </head>
 <body>
+<th:block layout:fragment="content">
     <div class="content-right">
         <div class="header-section animate-fade">
             <a th:href="@{/viewRequest}" class="btn-back mb-3">
@@ -44,20 +48,20 @@
                 </div>
             </div>
 
-        <!-- ASSET SELECTION -->
-        <div class="animate-fade" style="animation-delay: 0.2s;">
-            <div class="filter-tabs">
-                <button class="tab-btn active" onclick="switchTab('stock')">Tài sản trong kho</button>
-                <button class="tab-btn" onclick="switchTab('recovered')">Tài sản thu hồi</button>
-            </div>
+            <!-- ASSET SELECTION -->
+            <div class="animate-fade" style="animation-delay: 0.2s;">
+                <div class="filter-tabs">
+                    <button class="tab-btn active" onclick="switchTab('stock')">Tài sản trong kho</button>
+                    <button class="tab-btn" onclick="switchTab('recovered')">Tài sản thu hồi</button>
+                </div>
 
-            <form id="allocationForm" th:action="@{/allocation/process}" method="POST">
-                <input type="hidden" name="requestId" th:value="${request.id}">
-                
-                <div class="asset-list-container mb-5">
-                    <!-- STOCK ASSETS TABLE -->
-                    <table class="asset-table" id="stockTable">
-                        <thead>
+                <form id="allocationForm" th:action="@{/allocation/process}" method="POST">
+                    <input type="hidden" name="requestId" th:value="${request.id}">
+
+                    <div class="asset-list-container mb-5">
+                        <!-- STOCK ASSETS TABLE -->
+                        <table class="asset-table" id="stockTable">
+                            <thead>
                             <tr>
                                 <th width="50"></th>
                                 <th>Mã Tài Sản</th>
@@ -65,27 +69,37 @@
                                 <th>Vị trí</th>
                                 <th>Tình trạng</th>
                             </tr>
-                        </thead>
-                        <tbody>
+                            </thead>
+                            <tbody>
                             <tr th:each="asset : ${stockAssets}"
                                 th:style="${#lists.contains(alreadyAssignedIds, asset.id)} ? 'background-color:#f1f5f9;' : ''">
                                 <td>
                                     <!-- Only show enabled checkbox if NOT already assigned to this request -->
                                     <input th:if="${!#lists.contains(alreadyAssignedIds, asset.id)}"
-                                           type="checkbox" class="form-check-input asset-check" 
+                                           type="checkbox" class="form-check-input asset-check"
                                            name="selectedAssetIds" th:value="${asset.id}"
                                            onchange="updateCount()">
                                     <!-- Show checked disabled checkbox if already assigned to THIS request -->
                                     <input th:if="${#lists.contains(alreadyAssignedIds, asset.id)}"
                                            type="checkbox" class="form-check-input" checked disabled>
                                 </td>
-                                <td th:text="${asset.assetCode}" th:style="${#lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">AS-001</td>
-                                <td th:text="${asset.description}" th:style="${#lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">MacBook Pro 2023</td>
+                                <td th:text="${asset.assetCode}"
+                                    th:style="${#lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">
+                                    AS-001
+                                </td>
+                                <td th:text="${asset.description}"
+                                    th:style="${#lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">
+                                    MacBook Pro 2023
+                                </td>
                                 <td th:text="${asset.locationId != null ? T(com.example.swp391_assetmanagement.enums.Location).of(asset.locationId).getName() : 'N/A'}"
-                                    th:style="${#lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">Kho Chính</td>
+                                    th:style="${#lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">
+                                    Kho Chính
+                                </td>
                                 <td>
-                                    <span th:if="${asset.assetStatusId == '01' and !#lists.contains(alreadyAssignedIds, asset.id)}" class="status-badge stock">Mới</span>
-                                    <span th:if="${asset.assetStatusId == '08' and !#lists.contains(alreadyAssignedIds, asset.id)}" class="status-badge stock">Trong kho</span>
+                                    <span th:if="${asset.assetStatusId == '01' and !#lists.contains(alreadyAssignedIds, asset.id)}"
+                                          class="status-badge stock">Mới</span>
+                                    <span th:if="${asset.assetStatusId == '08' and !#lists.contains(alreadyAssignedIds, asset.id)}"
+                                          class="status-badge stock">Trong kho</span>
                                     <span th:if="${#lists.contains(alreadyAssignedIds, asset.id)}"
                                           style="background:#fef9c3;color:#713f12;border-radius:9999px;padding:0.2rem 0.65rem;font-size:0.75rem;font-weight:600;display:inline-block;">🚚 Đang trong quá trình cấp phát</span>
                                 </td>
@@ -93,12 +107,12 @@
                             <tr th:if="${#lists.isEmpty(stockAssets)}">
                                 <td colspan="5" class="text-center py-4 text-muted">Không có tài sản mới trong kho.</td>
                             </tr>
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
 
-                    <!-- RECOVERED ASSETS TABLE (HIDDEN BY DEFAULT) -->
-                    <table class="asset-table d-none" id="recoveredTable">
-                        <thead>
+                        <!-- RECOVERED ASSETS TABLE (HIDDEN BY DEFAULT) -->
+                        <table class="asset-table d-none" id="recoveredTable">
+                            <thead>
                             <tr>
                                 <th width="50"></th>
                                 <th>Mã Tài Sản</th>
@@ -106,101 +120,118 @@
                                 <th>Vị trí</th>
                                 <th>Tình trạng</th>
                             </tr>
-                        </thead>
-                        <tbody>
+                            </thead>
+                            <tbody>
                             <tr th:each="asset : ${recoveredAssets}"
                                 th:style="${#lists.contains(alreadyAssignedIds, asset.id)} ? 'background-color:#f1f5f9;' : ''">
                                 <td>
                                     <!-- Enable checkbox: asset is ASSIGNED (02) but user suspended/disabled — selectable unless already in this request -->
                                     <input th:if="${!#lists.contains(alreadyAssignedIds, asset.id)}"
-                                           type="checkbox" class="form-check-input asset-check" 
+                                           type="checkbox" class="form-check-input asset-check"
                                            name="selectedAssetIds" th:value="${asset.id}"
                                            onchange="updateCount()">
                                     <!-- Show checked disabled checkbox if already assigned to THIS request -->
                                     <input th:if="${#lists.contains(alreadyAssignedIds, asset.id)}"
                                            type="checkbox" class="form-check-input" checked disabled>
                                 </td>
-                                <td th:text="${asset.assetCode}" th:style="${#lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">AS-054</td>
-                                <td th:text="${asset.description}" th:style="${#lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">Dữ liệu mẫu</td>
+                                <td th:text="${asset.assetCode}"
+                                    th:style="${#lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">
+                                    AS-054
+                                </td>
+                                <td th:text="${asset.description}"
+                                    th:style="${#lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">
+                                    Dữ liệu mẫu
+                                </td>
                                 <td th:text="${asset.locationId != null ? T(com.example.swp391_assetmanagement.enums.Location).of(asset.locationId).getName() : 'N/A'}"
-                                    th:style="${#lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">Phòng IT</td>
+                                    th:style="${#lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">
+                                    Phòng IT
+                                </td>
                                 <td>
-                                    <span th:if="${!#lists.contains(alreadyAssignedIds, asset.id)}" class="status-badge recovered">Có thể thu hồi</span>
+                                    <span th:if="${!#lists.contains(alreadyAssignedIds, asset.id)}"
+                                          class="status-badge recovered">Có thể thu hồi</span>
                                     <span th:if="${#lists.contains(alreadyAssignedIds, asset.id)}"
                                           style="background:#fef9c3;color:#713f12;border-radius:9999px;padding:0.2rem 0.65rem;font-size:0.75rem;font-weight:600;display:inline-block;">🚚 Đang trong quá trình cấp phát</span>
                                 </td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(recoveredAssets)}">
-                                <td colspan="5" class="text-center py-4 text-muted">Không có tài sản thu hồi khả dụng.</td>
+                                <td colspan="5" class="text-center py-4 text-muted">Không có tài sản thu hồi khả dụng.
+                                </td>
                             </tr>
-                        </tbody>
-                    </table>
-                </div>
+                            </tbody>
+                        </table>
+                    </div>
 
-                <div class="action-bar animate-fade" style="animation-delay: 0.3s;">
-                    <div class="selection-status">
+                    <div class="action-bar animate-fade" style="animation-delay: 0.3s;">
+                        <div class="selection-status">
                         <span class="selection-count">
                             Đã chọn: <span id="currentCount">0</span>
                             / <span id="remainingQty" th:text="${requestedQty - alreadyConfirmedCount}">10</span>
-                            <span th:if="${alreadyConfirmedCount > 0}" class="text-muted ms-2" style="font-size:0.8rem;">
-                                (đã giao <span th:text="${alreadyConfirmedCount}">2</span>/<span th:text="${requestedQty}">10</span>)
+                            <span th:if="${alreadyConfirmedCount > 0}" class="text-muted ms-2"
+                                  style="font-size:0.8rem;">
+                                (đã giao <span th:text="${alreadyConfirmedCount}">2</span>/<span
+                                    th:text="${requestedQty}">10</span>)
                             </span>
                         </span>
+                        </div>
+                        <div class="d-flex gap-3">
+                            <button type="button" class="btn btn-outline-secondary px-4" onclick="history.back()">Hủy
+                            </button>
+                            <button type="submit" id="submitBtn" class="btn-confirm" disabled>Xác nhận cấp phát</button>
+                        </div>
                     </div>
-                    <div class="d-flex gap-3">
-                        <button type="button" class="btn btn-outline-secondary px-4" onclick="history.back()">Hủy</button>
-                        <button type="submit" id="submitBtn" class="btn-confirm" disabled>Xác nhận cấp phát</button>
-                    </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
+
+        <script>
+            // remaining = total requested - already delivered in past rounds
+            const targetQty = parseInt(document.getElementById('remainingQty').innerText);
+
+            function switchTab(type) {
+                const stockTable = document.getElementById('stockTable');
+                const recoveredTable = document.getElementById('recoveredTable');
+                const btns = document.querySelectorAll('.tab-btn');
+
+                if (type === 'stock') {
+                    stockTable.classList.remove('d-none');
+                    recoveredTable.classList.add('d-none');
+                    btns[0].classList.add('active');
+                    btns[1].classList.remove('active');
+                } else {
+                    stockTable.classList.add('d-none');
+                    recoveredTable.classList.remove('d-none');
+                    btns[0].classList.remove('active');
+                    btns[1].classList.add('active');
+                }
+            }
+
+            function updateCount() {
+                const checks = document.querySelectorAll('.asset-check:checked');
+                const count = checks.length;
+                document.getElementById('currentCount').innerText = count;
+
+                const submitBtn = document.getElementById('submitBtn');
+
+                // Allow submit only if selection doesn't exceed target
+                if (count > 0 && count <= targetQty) {
+                    submitBtn.disabled = false;
+                } else {
+                    submitBtn.disabled = true;
+                }
+
+                // Visual warning if exceeded
+                const countLabel = document.getElementById('currentCount');
+                if (count > targetQty) {
+                    countLabel.classList.add('text-danger');
+                } else {
+                    countLabel.classList.remove('text-danger');
+                }
+            }
+        </script>
     </div>
-
-    <script>
-        // remaining = total requested - already delivered in past rounds
-        const targetQty = parseInt(document.getElementById('remainingQty').innerText);
-
-        function switchTab(type) {
-            const stockTable = document.getElementById('stockTable');
-            const recoveredTable = document.getElementById('recoveredTable');
-            const btns = document.querySelectorAll('.tab-btn');
-
-            if (type === 'stock') {
-                stockTable.classList.remove('d-none');
-                recoveredTable.classList.add('d-none');
-                btns[0].classList.add('active');
-                btns[1].classList.remove('active');
-            } else {
-                stockTable.classList.add('d-none');
-                recoveredTable.classList.remove('d-none');
-                btns[0].classList.remove('active');
-                btns[1].classList.add('active');
-            }
-        }
-
-        function updateCount() {
-            const checks = document.querySelectorAll('.asset-check:checked');
-            const count = checks.length;
-            document.getElementById('currentCount').innerText = count;
-            
-            const submitBtn = document.getElementById('submitBtn');
-            
-            // Allow submit only if selection doesn't exceed target
-            if (count > 0 && count <= targetQty) {
-                submitBtn.disabled = false;
-            } else {
-                submitBtn.disabled = true;
-            }
-
-            // Visual warning if exceeded
-            const countLabel = document.getElementById('currentCount');
-            if (count > targetQty) {
-                countLabel.classList.add('text-danger');
-            } else {
-                countLabel.classList.remove('text-danger');
-            }
-        }
-    </script>
-    </div>
+</th:block>
+<th:block layout:fragment="additional-scripts">
+    <script th:src="@{/js/Template.js}"></script>
+</th:block>
 </body>
 </html>

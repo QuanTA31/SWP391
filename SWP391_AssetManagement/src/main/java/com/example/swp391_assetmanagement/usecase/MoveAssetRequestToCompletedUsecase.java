@@ -1,5 +1,6 @@
 package com.example.swp391_assetmanagement.usecase;
 
+import com.example.swp391_assetmanagement.enums.AssetStatus;
 import com.example.swp391_assetmanagement.service.AssetRequestService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,8 @@ public class MoveAssetRequestToCompletedUsecase {
                     "Only IN_PROGRESS can move to COMPLETED");
             return;
         }
+
+        assetRequestService.updateAssetsToDisposed(requestId, AssetStatus.DISPOSED);
 
         session.setAttribute("success",
                 "Moved to COMPLETED successfully");
