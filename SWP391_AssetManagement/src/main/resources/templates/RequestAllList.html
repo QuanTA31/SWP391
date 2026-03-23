@@ -91,8 +91,7 @@
                                   style="display:inline">
                                 <input type="hidden" name="requestId" th:value="${item.id}"/>
                                 <button type="submit" class="btn btn-sm btn-success"
-                                        onclick="return confirm('Move this request to IN_PROGRESS?')">Move To In
-                                    Progress
+                                        onclick="return confirm('Move this request to IN_PROGRESS?')"> To Progress
                                 </button>
                             </form>
 
@@ -138,7 +137,7 @@
                                 <button type="submit"
                                         class="btn btn-sm btn-success"
                                         onclick="return confirm('Move this request to IN_PROGRESS?')">
-                                    Move To In Progress
+                                    To Progress
                                 </button>
                             </form>
 
@@ -154,7 +153,7 @@
                                 <button type="submit"
                                         class="btn btn-sm btn-success"
                                         onclick="return confirm('Move this request to COMPLETED?')">
-                                    Move To Completed
+                                    To Completed
                                 </button>
                             </form>
                         </th:block>
@@ -202,35 +201,29 @@
                                th:href="@{/viewInternalRequest/detail(id=${item.id})}">
                                 View
                             </a>
-                        </th:block>
 
+                            <th:block th:if="${#strings.equalsIgnoreCase(item.requestTypeName, 'RETRIEVAL')}">
+                                <a th:if="${session.ROLE == '03' and (item.requestStatusId == '03' or item.requestStatusId == '05')}"
+                                   class="btn btn-sm btn-primary text-white"
+                                   th:href="@{/recover-asset/warehouse/process(requestId=${item.id})}">
+                                    Process Recovery
+                                </a>
 
-                        <a th:if="${!item.isInternal}" class="btn btn-sm btn-warning text-dark"
-                           th:href="@{/viewExternalRequest/detail(id=${item.id})}">View</a>
-                        </th:block>
+                                <a th:unless="${session.ROLE == '03' and (item.requestStatusId == '03' or item.requestStatusId == '05')}"
+                                   class="btn btn-sm btn-info text-white"
+                                   th:href="@{/viewInternalRequest/detail(id=${item.id})}">
+                                    View
+                                </a>
+                            </th:block>
+                            <!-- MAINTENANCE -->
+                            <th:block th:if="${#strings.equalsIgnoreCase(item.requestTypeName,'MAINTENANCE')}">
 
-                        <th:block th:if="${#strings.equalsIgnoreCase(item.requestTypeName, 'RETRIEVAL')}">
-                            <a th:if="${session.ROLE == '03' and (item.requestStatusId == '03' or item.requestStatusId == '05')}"
-                               class="btn btn-sm btn-primary text-white"
-                               th:href="@{/recover-asset/warehouse/process(requestId=${item.id})}">
-                                Process Recovery
-                            </a>
+                                <a class="btn btn-sm btn-info text-white"
+                                   th:href="@{/maintenance-requests/view(assetRequestId=${item.id})}">
+                                    View
+                                </a>
 
-                            <a th:unless="${session.ROLE == '03' and (item.requestStatusId == '03' or item.requestStatusId == '05')}"
-                               class="btn btn-sm btn-info text-white"
-                               th:href="@{/viewInternalRequest/detail(id=${item.id})}">
-                                View
-                            </a>
-                        </th:block>
-                        <!-- MAINTENANCE -->
-                        <th:block th:if="${#strings.equalsIgnoreCase(item.requestTypeName,'MAINTENANCE')}">
-
-                            <a class="btn btn-sm btn-info text-white"
-                               th:href="@{/maintenance-requests/view(assetRequestId=${item.id})}">
-                                View
-                            </a>
-
-                        </th:block>
+                            </th:block>
                     </td>
                     <th:block th:if="${#strings.equalsIgnoreCase(item.requestTypeName,'EXTERNAL')}">
                         <a class="btn btn-sm btn-warning text-dark"
@@ -238,25 +231,26 @@
                             View
                         </a>
                     </th:block>
-                      <!-- MAINTENANCE -->
-                <th:block th:if="${#strings.equalsIgnoreCase(item.requestTypeName,'MAINTENANCE')}">
+                    <!-- MAINTENANCE -->
+                    <th:block th:if="${#strings.equalsIgnoreCase(item.requestTypeName,'MAINTENANCE')}">
 
-                  <a th:if="${session.ROLE == '05'}" class="btn btn-sm btn-info text-white"
-                     th:href="@{/maintenance-requests/department_manager/view(assetRequestId=${item.id})}">
-                    View
-                  </a>
+                        <a th:if="${session.ROLE == '05'}" class="btn btn-sm btn-info text-white"
+                           th:href="@{/maintenance-requests/department_manager/view(assetRequestId=${item.id})}">
+                            View
+                        </a>
 
-                  <a th:if="${session.ROLE == '03'}" class="btn btn-sm btn-info text-white"
-                     th:href="@{/maintenance-requests/warehouse/view(assetRequestId=${item.id})}">
-                    View
-                  </a>
+                        <a th:if="${session.ROLE == '03'}" class="btn btn-sm btn-info text-white"
+                           th:href="@{/maintenance-requests/warehouse/view(assetRequestId=${item.id})}">
+                            View
+                        </a>
 
-                  <a th:if="${session.ROLE != '05' and session.ROLE != '03'}" class="btn btn-sm btn-info text-white"
-                     th:href="@{/maintenance-requests/other/view(assetRequestId=${item.id})}">
-                    View
-                  </a>
+                        <a th:if="${session.ROLE != '05' and session.ROLE != '03'}"
+                           class="btn btn-sm btn-info text-white"
+                           th:href="@{/maintenance-requests/other/view(assetRequestId=${item.id})}">
+                            View
+                        </a>
 
-                </th:block>
+                    </th:block>
                     </td>
                 </tr>
                 </tbody>

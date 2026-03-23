@@ -1,7 +1,15 @@
 UPDATE asset_request
-SET
-    request_status_id = /* assetRequest.requestStatusId */'APPROVED',
-    approved_by = /* assetRequest.approvedBy */1,
-    note = /* assetRequest.note */'',
-    approved_date = CURRENT_DATE
+SET request_status_id = /* assetRequest.requestStatusId */''
+    /*%if assetRequest.approvedBy != null */
+  , approved_by       = /* assetRequest.approvedBy */1
+    /*%end */
+    /*%if assetRequest.note != null && assetRequest.note != "" */
+  , note              = /* assetRequest.note */''
+    /*%end */
+    /*%if assetRequest.approvedDate != null */
+  , approved_date     = /* assetRequest.approvedDate */''
+    /*%end */
+    /*%if assetRequest.handoverDate != null*/
+  , handover_date     = /* assetRequest.handoverDate */''
+    /*%end */
 WHERE id = /* assetRequest.id */1
