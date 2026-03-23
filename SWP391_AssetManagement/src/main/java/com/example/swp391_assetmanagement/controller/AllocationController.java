@@ -21,10 +21,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
 @RequestMapping("/allocation")
@@ -68,35 +65,40 @@ public class AllocationController {
         AssetRequest req = allocationService.getAssetRequestById(id).orElse(null);
         if (req == null) return "redirect:/viewRequest";
 
-        AssetInternalRequestDetail detail = allocationService.getInternalDetailByRequestId(id);
-        if (detail == null) {
-            detail = new AssetInternalRequestDetail();
-            detail.assetRequestId = id;
-        }
+        // Load ALL detail records for this request (N records = N units requested)
+        List<AssetInternalRequestDetail> details = allocationService.getInternalDetailsByRequestId(id);
 
-        // Map back to DTO
-        List<Assets> assignedAssets = new java.util.ArrayList<>();
-        if (detail.note != null && detail.note.startsWith("ASSIGNED_ASSETS:")) {
-            String csv = detail.note.substring("ASSIGNED_ASSETS:".length());
-            String[] ids = csv.split(",");
-            for (String assetIdStr : ids) {
-                try {
-                    Long aid = Long.parseLong(assetIdStr.trim());
-                    Assets asset = assetService.findById(aid);
-                    if (asset != null) assignedAssets.add(asset);
-                } catch (NumberFormatException ignored) {}
+        // Use the first record to get type/location info; quantity = number of records
+        AssetInternalRequestDetail firstDetail = details.isEmpty() ? null : details.get(0);
+
+        String assetTypeId = Objects.nonNull(firstDetail)
+                ? firstDetail.assetTypeId
+                : null;
+
+        String toLocationId = Objects.nonNull(firstDetail)
+                ? firstDetail.toLocationId
+                : null;
+
+        int quantity = details.size(); // 1 record per unit
+
+        // Collect assets already assigned (asset_id set on detail records)
+        List<Assets> assignedAssets = new ArrayList<>();
+        for (AssetInternalRequestDetail d : details) {
+            if (d.assetId != null) {
+                Assets asset = assetService.findById(d.assetId);
+                if (asset != null) assignedAssets.add(asset);
             }
         }
 
-        AllocationDTORequest.AllocationDTORequestBuilder dtoBuilder = AllocationDTORequest.builder()
+        AllocationDTORequest dto = AllocationDTORequest.builder()
                 .assetRequestId(id)
-                .assetId(detail.assetId)
-                .assetTypeId(detail.assetTypeId)
-                .reason((detail.note != null && !detail.note.startsWith("ASSIGNED_ASSETS:")) ? detail.note : req.note)
+                .assetTypeId(assetTypeId)
+                .reason(req.note)
                 .action("draft")
-                .locationId(detail.toLocationId)
-                .quantity(detail.quantity != null ? detail.quantity : 0)
-                .assignedAssets(assignedAssets);
+                .locationId(toLocationId)
+                .quantity(quantity)
+                .assignedAssets(assignedAssets)
+                .build();
 
         boolean isReadOnlyVal = !RequestStatus.DRAFT.getValue().equals(req.requestStatusId);
         model.addAttribute("isReadOnly", isReadOnlyVal);
@@ -104,7 +106,7 @@ public class AllocationController {
         String role = (String) session.getAttribute("ROLE");
         int roleInt = (role != null) ? Integer.parseInt(role) : -1;
         boolean isManager = (roleInt == 2);
-        
+
         String statusMessage = null;
         if (RequestStatus.APPROVED.getValue().equals(req.requestStatusId)) {
             statusMessage = "Yêu cầu này đã được duyệt.";
@@ -113,22 +115,22 @@ public class AllocationController {
         } else if (RequestStatus.IN_PROGRESS.getValue().equals(req.requestStatusId)) {
             statusMessage = "Yêu cầu đang trong quá trình cấp phát.";
         }
-        
+
         model.addAttribute("statusMessage", statusMessage);
         boolean isPending = RequestStatus.PENDING_APPROVAL.getValue().equals(req.requestStatusId);
         model.addAttribute("canApprove", isManager && isPending);
         model.addAttribute("canAllocate", false);
-        
-        model.addAttribute("requestStatusId", req.requestStatusId);
-        model.addAttribute("allocationRequest", dtoBuilder.build());
 
-        String locId = detail.toLocationId != null ? detail.toLocationId : (String) session.getAttribute("LOCATION_ID");
+        model.addAttribute("requestStatusId", req.requestStatusId);
+        model.addAttribute("allocationRequest", dto);
+
+        String locId = toLocationId != null ? toLocationId : (String) session.getAttribute("LOCATION_ID");
         String locationName = "N/A";
         if (locId != null && Location.hasValue(locId)) {
             locationName = Location.of(locId).getName();
         }
         model.addAttribute("locationName", locationName);
-        
+
         populateEnums(model);
         return "NewAllocationRequest";
     }
@@ -198,7 +200,6 @@ public class AllocationController {
     @GetMapping("/process")
     public String showProcessForm(@RequestParam("id") Long id, Model model, HttpSession session) {
         String role = (String) session.getAttribute("ROLE");
-        // Robust role check (02/2 or 03/3)
         if (role == null) return "redirect:/viewRequest";
         int roleInt = Integer.parseInt(role);
         if (roleInt != 2 && roleInt != 3) {
@@ -208,79 +209,54 @@ public class AllocationController {
         Optional<AssetRequest> req = allocationService.getAssetRequestById(id);
         if (req.isEmpty()) return "redirect:/viewRequest";
 
-        AssetInternalRequestDetail detail = allocationService.getInternalDetailByRequestId(id);
-        if (detail == null) {
-            // If detail is missing but it's an allocation, try to create one or handle it
-            // For now, redirect with message
-            return "redirect:/viewRequest";
-        }
+        // Load all N detail records for this request
+        List<AssetInternalRequestDetail> details = allocationService.getInternalDetailsByRequestId(id);
+        if (details.isEmpty()) return "redirect:/viewRequest";
 
-        // Count assets already CONFIRMED by Department: those in note where locationId = toLocationId
-        // (locationId is set to toLocationId when Department confirms receipt — not just when Manager assigns)
+        AssetInternalRequestDetail firstDetail = details.get(0);
+        String assetTypeId = firstDetail.assetTypeId;
+        String toLocationId = firstDetail.toLocationId;
+
+        // Count assets already confirmed by department (asset_id set + location transferred)
         int alreadyConfirmedCount = 0;
-        if (detail.note != null && detail.note.startsWith("ASSIGNED_ASSETS:")) {
-            String csv = detail.note.substring("ASSIGNED_ASSETS:".length());
-            for (String part : csv.split(",")) {
-                try {
-                    Long aid = Long.parseLong(part.trim());
-                    Assets a = assetService.findById(aid);
-                    if (a != null && detail.toLocationId != null
-                            && detail.toLocationId.equals(a.locationId)) {
+        List<Long> alreadyAssignedIds = new ArrayList<>();
+        List<Assets> alreadyAssignedAssets = new ArrayList<>();
+
+        for (AssetInternalRequestDetail d : details) {
+            if (d.assetId != null) {
+                alreadyAssignedIds.add(d.assetId);
+                Assets a = assetService.findById(d.assetId);
+                if (a != null) {
+                    alreadyAssignedAssets.add(a);
+                    if (toLocationId != null && toLocationId.equals(a.locationId)) {
                         alreadyConfirmedCount++;
                     }
-                } catch (NumberFormatException ignored) {}
-            }
-        }
-
-        // Separate the real reason from the ASSIGNED_ASSETS note encoding
-        String requestNote = req.get().note;
-        if (requestNote != null && requestNote.startsWith("ASSIGNED_ASSETS:")) {
-            requestNote = "";
-        }
-
-        // Fetch Assets (available ones)
-        List<Assets> stockAssets = new ArrayList<>(assetService.findByTypeAndStatus(detail.assetTypeId, "00")); // STOCK_IN
-        List<Assets> recoveredAssets = new ArrayList<>(assetService.findByTypeAndStatus(detail.assetTypeId, "08")); // STOCKED
-        List<Assets> transferringAssets = assetService.findByTypeAndStatus(detail.assetTypeId, "03"); // TRANSFERRING
-
-        // Load all assets already assigned in this request (TRANSFERRING or ASSIGNED in previous rounds)
-        // And place them into either the stock or recovered list so they appear in UI but are disabled
-        List<Assets> alreadyAssignedAssets = new ArrayList<>();
-        List<Long> alreadyAssignedIds = new ArrayList<>();
-        if (detail.note != null && detail.note.startsWith("ASSIGNED_ASSETS:")) {
-            String csv = detail.note.substring("ASSIGNED_ASSETS:".length());
-            for (String part : csv.split(",")) {
-                try {
-                    Long aid = Long.parseLong(part.trim());
-                    alreadyAssignedIds.add(aid);
-                    Assets a = assetService.findById(aid);
-                    if (a != null) {
-                       alreadyAssignedAssets.add(a);
-                       // We categorize them into stock or recovered based on a heuristic,
-                       // or simply put them all in stock for simplicity so Manager sees them.
-                       stockAssets.add(0, a); // Put at the top of the stock list
-                    }
-                } catch (NumberFormatException ignored) {}
-            }
-        }
-
-        // Add transferring assets from OTHER requests to stockAssets so they appear as disabled
-        if (transferringAssets != null) {
-            for (Assets ta : transferringAssets) {
-                if (!alreadyAssignedIds.contains(ta.id)) {
-                    stockAssets.add(ta); // Show them in the list so manager knows they exist but are taken
                 }
             }
         }
 
+        String requestNote = req.get().note;
+
+        // Fetch available assets
+        // Stock: status 01 (NEW) or 08 (STOCKED)
+        List<Assets> stockAssets = new ArrayList<>(assetService.findStockByType(assetTypeId));
+        // Recovered: status 02 (ASSIGNED) but user is SUSPENDED(02) or DISABLED(03)
+        List<Assets> recoveredAssets = new ArrayList<>(assetService.findRecoveredByType(assetTypeId));
+
+        // Put already-assigned assets at top of stock list so manager sees them (disabled)
+        for (Assets a : alreadyAssignedAssets) {
+            stockAssets.add(0, a);
+        }
+
         model.addAttribute("request", req.get());
-        model.addAttribute("detail", detail);
+        model.addAttribute("detail", firstDetail);
+        model.addAttribute("requestedQty", details.size()); // total N units requested
         model.addAttribute("requestNote", requestNote);
         model.addAttribute("alreadyConfirmedCount", alreadyConfirmedCount);
         model.addAttribute("alreadyAssignedIds", alreadyAssignedIds);
         model.addAttribute("stockAssets", stockAssets);
         model.addAttribute("recoveredAssets", recoveredAssets);
-        
+
         return "ProcessingAllocation";
     }
 
@@ -304,31 +280,29 @@ public class AllocationController {
         AssetRequest req = allocationService.getAssetRequestById(requestId).orElse(null);
         if (req == null) return "redirect:/viewRequest";
 
-        AssetInternalRequestDetail detail = allocationService.getInternalDetailByRequestId(requestId);
-        if (detail == null) return "redirect:/viewRequest";
+        List<AssetInternalRequestDetail> details = allocationService.getInternalDetailsByRequestId(requestId);
+        if (details.isEmpty()) return "redirect:/viewRequest";
+
+        AssetInternalRequestDetail firstDetail = details.get(0);
 
         // Guard: only show receipt page when Warehouse has dispatched (is_done = false explicitly)
-        // If is_done is null → Warehouse hasn't dispatched yet → go to normal edit view
-        // If is_done is true → already confirmed → go to normal edit view
-        if (detail.isDone == null || Boolean.TRUE.equals(detail.isDone)) {
+        // Check the first detail; in the N-records model all share the same dispatch state
+        if (firstDetail.isDone == null || Boolean.TRUE.equals(firstDetail.isDone)) {
             return "redirect:/allocation/department/edit?id=" + requestId;
         }
 
-        // Parse assigned asset IDs from note field
+        // Collect assigned assets from detail records (asset_id field)
         List<Assets> assignedAssets = new java.util.ArrayList<>();
-        if (detail.note != null && detail.note.startsWith("ASSIGNED_ASSETS:")) {
-            String csv = detail.note.substring("ASSIGNED_ASSETS:".length());
-            for (String part : csv.split(",")) {
-                try {
-                    Long aid = Long.parseLong(part.trim());
-                    Assets asset = assetService.findById(aid);
-                    if (asset != null) assignedAssets.add(asset);
-                } catch (NumberFormatException ignored) {}
+        for (AssetInternalRequestDetail d : details) {
+            if (d.assetId != null) {
+                Assets asset = assetService.findById(d.assetId);
+                if (asset != null) assignedAssets.add(asset);
             }
         }
 
         model.addAttribute("request", req);
-        model.addAttribute("detail", detail);
+        model.addAttribute("detail", firstDetail);
+        model.addAttribute("requestedQty", details.size()); // total N units originally requested
         model.addAttribute("assignedAssets", assignedAssets);
         return "ConfirmAllocationReceipt";
     }
@@ -353,27 +327,27 @@ public class AllocationController {
         AssetRequest req = allocationService.getAssetRequestById(requestId).orElse(null);
         if (req == null) return "redirect:/viewRequest";
 
-        AssetInternalRequestDetail detail = allocationService.getInternalDetailByRequestId(requestId);
-        if (detail == null) return "redirect:/viewRequest";
+        List<AssetInternalRequestDetail> details = allocationService.getInternalDetailsByRequestId(requestId);
+        if (details.isEmpty()) return "redirect:/viewRequest";
 
-        // Parse assets assigned by Manager
+        AssetInternalRequestDetail firstDetail = details.get(0);
+
+        // Collect assigned assets from detail records (asset_id field)
         List<Assets> warehouseAssets = new java.util.ArrayList<>();
-        if (detail.note != null && detail.note.startsWith("ASSIGNED_ASSETS:")) {
-            String csv = detail.note.substring("ASSIGNED_ASSETS:".length());
-            for (String part : csv.split(",")) {
-                try {
-                    Long aid = Long.parseLong(part.trim());
-                    Assets asset = assetService.findById(aid);
-                    if (asset != null) warehouseAssets.add(asset);
-                } catch (NumberFormatException ignored) {}
+        for (AssetInternalRequestDetail d : details) {
+            if (d.assetId != null) {
+                Assets asset = assetService.findById(d.assetId);
+                if (asset != null) warehouseAssets.add(asset);
             }
         }
 
-        // Show dispatch button only if not yet dispatched (is_done == null)
-        boolean canDispatch = (detail.isDone == null);
+        // Show dispatch button if ANY newly-assigned detail (assetId set, not yet dispatched)
+        boolean canDispatch = details.stream()
+                .anyMatch(d -> d.assetId != null && d.isDone == null);
 
         model.addAttribute("request", req);
-        model.addAttribute("detail", detail);
+        model.addAttribute("detail", firstDetail);
+        model.addAttribute("requestedQty", details.size()); // total N units originally requested
         model.addAttribute("warehouseAssets", warehouseAssets);
         model.addAttribute("canDispatch", canDispatch);
         return "WarehouseAllocationView";
@@ -384,10 +358,13 @@ public class AllocationController {
     public String warehouseDispatch(@RequestParam Long requestId,
                                     RedirectAttributes redirectAttributes) {
         try {
-            AssetInternalRequestDetail detail = allocationService.getInternalDetailByRequestId(requestId);
-            if (detail == null) throw new RuntimeException("Không tìm thấy chi tiết yêu cầu.");
-            detail.isDone = false; // Mark as dispatched by Warehouse
-            allocationService.updateIsDone(detail);
+            List<AssetInternalRequestDetail> details = allocationService.getInternalDetailsByRequestId(requestId);
+            if (details.isEmpty()) throw new RuntimeException("Không tìm thấy chi tiết yêu cầu.");
+            // Mark all detail records as dispatched (is_done = false = warehouse has sent)
+            for (AssetInternalRequestDetail d : details) {
+                d.isDone = false;
+                allocationService.updateIsDone(d);
+            }
             redirectAttributes.addFlashAttribute("successMessage", "Đã xác nhận cấp phát! Phòng ban sẽ nhận tài sản.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi: " + e.getMessage());

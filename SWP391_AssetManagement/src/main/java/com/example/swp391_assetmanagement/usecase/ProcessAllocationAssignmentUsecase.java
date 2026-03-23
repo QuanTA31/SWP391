@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 @Service
@@ -26,74 +25,59 @@ public class ProcessAllocationAssignmentUsecase {
 
     @Transactional
     public void execute(Long requestId, List<Long> selectedAssetIds) {
-        // 1. Fetch Request & Detail
+        // 1. Fetch Request
         AssetRequest request = allocationService.getAssetRequestById(requestId).orElse(null);
-
         if (request == null) {
             throw new RuntimeException("Request not found: " + requestId);
         }
-        
-        AssetInternalRequestDetail detail = allocationService.getInternalDetailByRequestId(requestId);
-        if (detail == null) {
+
+        // 2. Load all detail records for this request (N records = N units)
+        List<AssetInternalRequestDetail> details = allocationService.getInternalDetailsByRequestId(requestId);
+        if (details.isEmpty()) {
             throw new RuntimeException("Request detail not found for ID: " + requestId);
         }
 
-        // 2. Map multiple assets to the single detail row
-        // We Use the 'note' field to store the selected asset IDs as a comma-separated string
-        // This allows the "View" screen to find and display them later.
         if (!selectedAssetIds.isEmpty()) {
-            // Collect existing assigned asset IDs (if any) from the note field
-            LinkedHashSet<Long> allAssetIds = new LinkedHashSet<>();
-
-            String existingNote = detail.note;
-            if (existingNote != null && existingNote.startsWith("ASSIGNED_ASSETS:")) {
-                String csv = existingNote.substring("ASSIGNED_ASSETS:".length());
-                for (String part : csv.split(",")) {
-                    try {
-                        allAssetIds.add(Long.parseLong(part.trim()));
-                    } catch (NumberFormatException ignored) {}
+            // Find unassigned detail records and pair them with selected asset IDs
+            // Each detail row (asset_id == null) gets assigned one asset from the selection
+            List<AssetInternalRequestDetail> unassigned = new ArrayList<>();
+            for (AssetInternalRequestDetail d : details) {
+                if (d.assetId == null) {
+                    unassigned.add(d);
                 }
             }
 
-            // Append new IDs (LinkedHashSet ensures no duplicates, preserves order)
-            allAssetIds.addAll(selectedAssetIds);
-
-            // Set the first one as the primary assetId for legacy compatibility
-            detail.setAssetId(allAssetIds.iterator().next());
-
-            // Write merged list back to note
-            String mergedCsv = allAssetIds.stream()
-                    .map(String::valueOf)
-                    .collect(java.util.stream.Collectors.joining(","));
-
-            detail.setNote("ASSIGNED_ASSETS:" + mergedCsv);
-            allocationService.updateInternalDetail(detail);
-
-            // Mark ALL newly assigned assets (and any legacy ones that failed to update before) as TRANSFERRING
             List<Assets> toLock = new ArrayList<>();
-            for (Long aid : allAssetIds) {
-                Assets asset = assetService.findById(aid);
-                // If it's already 02 (ASSIGNED), leave it alone.
-                // If it's 00 (STOCKED) or 08 (RECOVERED), force it to 03 (TRANSFERRING).
-                if (asset != null && (AssetStatus.STOCK_IN.getValue().equals(asset.assetStatusId) || AssetStatus.STOCKED.getValue().equals(asset.assetStatusId))) {
+            int pairCount = Math.min(selectedAssetIds.size(), unassigned.size());
+
+            for (int i = 0; i < pairCount; i++) {
+                Long assetId = selectedAssetIds.get(i);
+                AssetInternalRequestDetail detail = unassigned.get(i);
+
+                detail.setAssetId(assetId);
+                // Reset is_done = null so Warehouse can dispatch this batch
+                detail.setIsDone(null);
+                allocationService.updateInternalDetail(detail);
+
+                // Mark asset as TRANSFERRING
+                Assets asset = assetService.findById(assetId);
+                if (asset != null &&
+                    (AssetStatus.NEW.getValue().equals(asset.assetStatusId)
+                     || AssetStatus.STOCK_IN.getValue().equals(asset.assetStatusId)
+                     || AssetStatus.STOCKED.getValue().equals(asset.assetStatusId)
+                     || AssetStatus.ASSIGNED.getValue().equals(asset.assetStatusId))) {
                     asset.assetStatusId = AssetStatus.TRANSFERRING.getValue(); // "03"
                     toLock.add(asset);
                 }
             }
+
             if (!toLock.isEmpty()) {
                 allocationService.batchUpdateAllocation(toLock);
             }
-
-            // Reset is_done to null so Warehouse can dispatch the new batch of assets
-            // (is_done may be true from a previous round confirmed by Department)
-            if (Boolean.TRUE.equals(detail.isDone) || Boolean.FALSE.equals(detail.isDone)) {
-                detail.setIsDone(null);
-                allocationService.updateIsDone(detail);
-            }
         }
 
-        // 3. Set Status to IN_PROGRESS (05)
-        request.setRequestStatusId(RequestStatus.IN_PROGRESS.getValue()); 
+        // 3. Set Status to IN_PROGRESS
+        request.setRequestStatusId(RequestStatus.IN_PROGRESS.getValue());
         assetRequestService.updatePurchaseRequestStatus(request);
     }
 }

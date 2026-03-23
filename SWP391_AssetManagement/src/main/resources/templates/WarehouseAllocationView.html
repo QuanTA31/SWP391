@@ -43,7 +43,7 @@
                 </div>
                 <div class="summary-item">
                     <label>Số lượng yêu cầu</label>
-                    <span th:text="${detail.quantity != null ? detail.quantity : 0}">5</span>
+                    <span th:text="${requestedQty}">5</span>
                 </div>
                 <div class="summary-item">
                     <label>Số lượng cấp phát</label>
@@ -85,7 +85,8 @@
                         <td>
                             <span th:if="${asset.assetStatusId == '02'}" class="badge bg-success-subtle text-success-emphasis">Đã cấp phát</span>
                             <span th:if="${asset.assetStatusId == '03'}" class="badge bg-info-subtle text-info-emphasis">Chờ giao</span>
-                            <span th:if="${asset.assetStatusId != '02' and asset.assetStatusId != '03'}" class="badge bg-secondary-subtle text-secondary-emphasis" th:text="${asset.assetStatusId}">Sẵn sàng</span>
+                            <span th:if="${asset.assetStatusId == '01' or asset.assetStatusId == '08'}" class="badge bg-warning-subtle text-warning-emphasis">Chờ giao</span>
+                            <span th:if="${asset.assetStatusId != '01' and asset.assetStatusId != '02' and asset.assetStatusId != '03' and asset.assetStatusId != '08'}" class="badge bg-secondary-subtle text-secondary-emphasis" th:text="${asset.assetStatusId}">Sẵn sàng</span>
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(warehouseAssets)}">
