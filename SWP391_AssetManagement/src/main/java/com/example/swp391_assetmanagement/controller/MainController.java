@@ -20,10 +20,6 @@ public class MainController {
 
     private final ManageAssetRequestProcessUsecase manageAssetRequestProcessUseCase;
 
-    private final ManagerAssetInternalProcessUsecase managerAssetInternalProcessUsecase;
-
-    private final ManagerAssetExternalProcessUsecase managerAssetExternalProcessUsecase;
-
     private final LoginUsecase loginUsecase;
 
     @GetMapping({"/", "/login"})
@@ -60,31 +56,6 @@ public class MainController {
         model.addAttribute("data", response);
 
         return "RequestAllList";
-    }
-
-
-    // 1. Xem chi tiết Internal
-    @GetMapping("/viewInternalRequest/detail")
-    public String viewInternalDetail(@RequestParam("id") Long id, Model model) {
-
-        ViewInternalProcessAllDTOResponse detailData = managerAssetInternalProcessUsecase.getDetailById(id);
-
-        model.addAttribute("detailData", detailData);
-        model.addAttribute("requestId", id);
-
-        return "Example_RequestInternalDetail";
-    }
-
-    // 2. Xem chi tiết External
-    @GetMapping("/viewExternalRequest/detail")
-    public String viewExternalDetail(@RequestParam("id") Long id, Model model) {
-
-        ViewExternalProcessAllDTOResponse detailData = managerAssetExternalProcessUsecase.getDetailById(id);
-
-        model.addAttribute("detailData", detailData);
-        model.addAttribute("requestId", id);
-
-        return "Example_RequestExternalDetail";
     }
 
     @GetMapping("/viewAsset")
