@@ -38,15 +38,14 @@
                         </a>
                     </th:block>
 
-                    <a th:if="${session.ROLE != '01' and session.ROLE != '05'}"
-                       th:href="@{/viewAsset}" class="menu-item"
-                       th:classappend="${activePage == 'viewAsset'} ? 'active' : ''">View Asset
-                    </a>
-
-                    <a th:if="${session.ROLE != '01'}"
-                       th:href="@{/viewRequest}" class="menu-item"
-                       th:classappend="${activePage == 'viewRequest'} ? 'active' : ''">View Request
-                    </a>
+                    <th:block th:if="${session.ROLE != '01' and session.ROLE != '06'}">
+                        <a th:href="@{/viewAsset}" class="menu-item"
+                           th:classappend="${activePage == 'viewAsset'} ? 'active' : ''">View Asset
+                        </a>
+                        <a th:href="@{/viewRequest}" class="menu-item"
+                           th:classappend="${activePage == 'viewRequest'} ? 'active' : ''">View Request
+                        </a>
+                    </th:block>
 
                     <th:block th:if="${session.ROLE == '05'}">
                         <a th:href="@{/allocation/department/create}" class="menu-item"
@@ -56,7 +55,7 @@
                         <a th:href="@{/maintenance-requests/create}" class="menu-item">Create Maintain Request</a>
                     </th:block>
 
-                    <a th:if="${session.ROLE == '03' or session.ROLE == '02'}"
+                    <a th:if="${session.ROLE == '03'}"
                        th:href="@{/purchase-requests/warehouse/view}" class="menu-item"
                        th:classappend="${activePage == 'createPurchase'} ? 'active' : ''">Create Purchase Request
                     </a>

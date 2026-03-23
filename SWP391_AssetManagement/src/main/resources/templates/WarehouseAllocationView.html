@@ -1,18 +1,23 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout/warehouse :: warehouse-layout(~{:: .content-right})}"
-      th:with="activePage='viewRequest'">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/MainLayout}">
 <head>
     <title>Asset Tracker - Xác Nhận Giao Tài Sản</title>
+    <th:block layout:fragment="additional-css">
+
+    </th:block>
 </head>
 <body>
+<th:block layout:fragment="content">
     <div class="content-right">
         <div class="header-section animate-fade mb-4">
             <a th:href="@{/viewRequest}" class="btn-back mb-3">
                 <i class="fas fa-arrow-left"></i> Quay lại danh sách
             </a>
             <h1 class="header-title">Xác Nhận Giao Tài Sản</h1>
-            <p class="text-secondary mb-0">Kiểm tra danh sách tài sản và bấm <strong>"Cấp phát"</strong> để xác nhận đã giao cho phòng ban.</p>
+            <p class="text-secondary mb-0">Kiểm tra danh sách tài sản và bấm <strong>"Cấp phát"</strong> để xác nhận đã
+                giao cho phòng ban.</p>
         </div>
 
         <!-- FLASH MESSAGES -->
@@ -33,7 +38,8 @@
 
         <!-- REQUEST SUMMARY -->
         <div class="summary-card animate-fade">
-            <div class="fw-semibold mb-3" style="font-size:0.8rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-secondary);">
+            <div class="fw-semibold mb-3"
+                 style="font-size:0.8rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-secondary);">
                 Thông Tin Yêu Cầu
             </div>
             <div class="summary-grid">
@@ -66,35 +72,41 @@
 
             <table class="asset-table">
                 <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Mã Tài Sản</th>
-                        <th>Mô Tả</th>
-                        <th>Vị Trí Hiện Tại</th>
-                        <th>Trạng Thái</th>
-                    </tr>
+                <tr>
+                    <th>#</th>
+                    <th>Mã Tài Sản</th>
+                    <th>Mô Tả</th>
+                    <th>Vị Trí Hiện Tại</th>
+                    <th>Trạng Thái</th>
+                </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="asset, s : ${warehouseAssets}">
-                        <td th:text="${s.count}">1</td>
-                        <td>
-                            <div class="fw-semibold" th:text="${asset.assetCode}">AS-001</div>
-                        </td>
-                        <td th:text="${asset.description}">MacBook Pro</td>
-                        <td th:text="${asset.locationId != null ? T(com.example.swp391_assetmanagement.enums.Location).of(asset.locationId).getName() : 'N/A'}">Kho</td>
-                        <td>
-                            <span th:if="${asset.assetStatusId == '02'}" class="badge bg-success-subtle text-success-emphasis">Đã cấp phát</span>
-                            <span th:if="${asset.assetStatusId == '03'}" class="badge bg-info-subtle text-info-emphasis">Chờ giao</span>
-                            <span th:if="${asset.assetStatusId == '01' or asset.assetStatusId == '08'}" class="badge bg-warning-subtle text-warning-emphasis">Chờ giao</span>
-                            <span th:if="${asset.assetStatusId != '01' and asset.assetStatusId != '02' and asset.assetStatusId != '03' and asset.assetStatusId != '08'}" class="badge bg-secondary-subtle text-secondary-emphasis" th:text="${asset.assetStatusId}">Sẵn sàng</span>
-                        </td>
-                    </tr>
-                    <tr th:if="${#lists.isEmpty(warehouseAssets)}">
-                        <td colspan="5" class="text-center py-4 text-muted">
-                            <i class="fas fa-exclamation-circle me-1"></i>
-                            Chưa có tài sản nào được phân công.
-                        </td>
-                    </tr>
+                <tr th:each="asset, s : ${warehouseAssets}">
+                    <td th:text="${s.count}">1</td>
+                    <td>
+                        <div class="fw-semibold" th:text="${asset.assetCode}">AS-001</div>
+                    </td>
+                    <td th:text="${asset.description}">MacBook Pro</td>
+                    <td th:text="${asset.locationId != null ? T(com.example.swp391_assetmanagement.enums.Location).of(asset.locationId).getName() : 'N/A'}">
+                        Kho
+                    </td>
+                    <td>
+                        <span th:if="${asset.assetStatusId == '02'}"
+                              class="badge bg-success-subtle text-success-emphasis">Đã cấp phát</span>
+                        <span th:if="${asset.assetStatusId == '03'}" class="badge bg-info-subtle text-info-emphasis">Chờ giao</span>
+                        <span th:if="${asset.assetStatusId == '01' or asset.assetStatusId == '08'}"
+                              class="badge bg-warning-subtle text-warning-emphasis">Chờ giao</span>
+                        <span th:if="${asset.assetStatusId != '01' and asset.assetStatusId != '02' and asset.assetStatusId != '03' and asset.assetStatusId != '08'}"
+                              class="badge bg-secondary-subtle text-secondary-emphasis"
+                              th:text="${asset.assetStatusId}">Sẵn sàng</span>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(warehouseAssets)}">
+                    <td colspan="5" class="text-center py-4 text-muted">
+                        <i class="fas fa-exclamation-circle me-1"></i>
+                        Chưa có tài sản nào được phân công.
+                    </td>
+                </tr>
                 </tbody>
             </table>
         </div>
@@ -122,5 +134,9 @@
             </span>
         </div>
     </div>
+</th:block>
+<th:block layout:fragment="additional-scripts">
+    <script th:src="@{/js/Template.js}"></script>
+</th:block>
 </body>
 </html>

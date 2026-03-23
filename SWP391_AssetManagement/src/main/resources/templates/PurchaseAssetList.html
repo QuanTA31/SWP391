@@ -1,113 +1,121 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout/warehouse :: warehouse-layout(~{::div.content-right})}">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/MainLayout}">
 <head>
     <title>Purchased Asset List</title>
+    <th:block layout:fragment="additional-css">
+
+    </th:block>
 </head>
 <body>
+<th:block layout:fragment="content">
+    <div class="content-right">
+        <div class="page-header mb-4">
+            <div class="page-title">📦 Purchased Asset List</div>
 
-<div class="content-right">
-    <div class="page-header mb-4">
-        <div class="page-title">📦 Purchased Asset List</div>
+            <form method="get" th:action="@{/purchase-requests/viewPurchaseAsset}" class="d-flex gap-2">
+                <input type="hidden" name="assetRequestId"
+                       th:value="${purchaseAsset.filterPurchaseAssetDTOResponse.assetRequestId}"/>
 
-        <form method="get" th:action="@{/purchase-requests/viewPurchaseAsset}" class="d-flex gap-2">
-            <input type="hidden" name="assetRequestId"
-                   th:value="${purchaseAsset.filterPurchaseAssetDTOResponse.assetRequestId}"/>
+                <select name="assetTypeId" class="form-select form-select-sm" style="width:180px">
+                    <option value="">All Asset Types</option>
+                    <option th:each="type : ${T(com.example.swp391_assetmanagement.enums.AssetType).values()}"
+                            th:value="${type.value}"
+                            th:text="${type.name}"
+                            th:selected="${type.value == purchaseAsset.filterPurchaseAssetDTOResponse.assetTypeId}">
+                    </option>
+                </select>
 
-            <select name="assetTypeId" class="form-select form-select-sm" style="width:180px">
-                <option value="">All Asset Types</option>
-                <option th:each="type : ${T(com.example.swp391_assetmanagement.enums.AssetType).values()}"
-                        th:value="${type.value}"
-                        th:text="${type.name}"
-                        th:selected="${type.value == purchaseAsset.filterPurchaseAssetDTOResponse.assetTypeId}">
-                </option>
-            </select>
+                <input type="text" name="searchWord" class="form-control form-control-sm"
+                       placeholder="Search Asset Code..."
+                       th:value="${purchaseAsset.filterPurchaseAssetDTOResponse.searchWord}"
+                       style="width:200px">
 
-            <input type="text" name="searchWord" class="form-control form-control-sm"
-                   placeholder="Search Asset Code..."
-                   th:value="${purchaseAsset.filterPurchaseAssetDTOResponse.searchWord}"
-                   style="width:200px">
-
-            <button type="submit" class="btn btn-sm btn-primary">Search</button>
-        </form>
-    </div>
-
-    <div class="card">
-        <div class="card-header">
-            <div class="icon">📋</div>
-            Assets in Request #<span th:text="${purchaseAsset.filterPurchaseAssetDTOResponse.assetRequestId}"></span>
-        </div>
-        <div class="table-wrapper">
-            <table class="table table-hover mb-0">
-                <thead>
-                <tr>
-                    <th>Asset Code</th>
-                    <th>Asset Type</th>
-                    <th>Warranty</th>
-                    <th>Original Price</th>
-                    <th>Description</th>
-                    <th>Receive Date</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:if="${purchaseAsset.purchaseAssetDTOResponses.isEmpty()}">
-                    <td colspan="6" class="text-center text-muted py-4">No assets found in this request.</td>
-                </tr>
-                <tr th:each="asset : ${purchaseAsset.purchaseAssetDTOResponses}">
-                    <td class="fw-bold" th:text="${asset.assetCode}"></td>
-                    <td th:text="${asset.assetTypeName}"></td>
-                    <td th:text="${#temporals.format(asset.warrantyPeriod,'yyyy-MM-dd')}"></td>
-                    <td th:text="${#numbers.formatDecimal(asset.originalPrice,0,'COMMA',0,'POINT')}"></td>
-                    <td th:text="${asset.description}"></td>
-                    <td th:text="${#temporals.format(asset.receivedDate,'yyyy-MM-dd')}"></td>
-                </tr>
-                </tbody>
-            </table>
+                <button type="submit" class="btn btn-sm btn-primary">Search</button>
+            </form>
         </div>
 
-        <div class="form-footer d-flex justify-content-between align-items-center">
-            <div class="action-left">
-                <form th:action="@{/purchase-requests/warehouse/complete}" method="post">
-                    <input type="hidden" name="assetRequestId"
-                           th:value="${purchaseAsset.filterPurchaseAssetDTOResponse.assetRequestId}"/>
-                    <button type="submit" class="btn btn-success"
-                            onclick="return confirm('Mark this purchase request as Completed?')">
-                        ✅ Complete Request
-                    </button>
-                </form>
+        <div class="card">
+            <div class="card-header">
+                <div class="icon">📋</div>
+                Assets in Request #<span
+                    th:text="${purchaseAsset.filterPurchaseAssetDTOResponse.assetRequestId}"></span>
+            </div>
+            <div class="table-wrapper">
+                <table class="table table-hover mb-0">
+                    <thead>
+                    <tr>
+                        <th>Asset Code</th>
+                        <th>Asset Type</th>
+                        <th>Warranty</th>
+                        <th>Original Price</th>
+                        <th>Description</th>
+                        <th>Receive Date</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${purchaseAsset.purchaseAssetDTOResponses.isEmpty()}">
+                        <td colspan="6" class="text-center text-muted py-4">No assets found in this request.</td>
+                    </tr>
+                    <tr th:each="asset : ${purchaseAsset.purchaseAssetDTOResponses}">
+                        <td class="fw-bold" th:text="${asset.assetCode}"></td>
+                        <td th:text="${asset.assetTypeName}"></td>
+                        <td th:text="${#temporals.format(asset.warrantyPeriod,'yyyy-MM-dd')}"></td>
+                        <td th:text="${#numbers.formatDecimal(asset.originalPrice,0,'COMMA',0,'POINT')}"></td>
+                        <td th:text="${asset.description}"></td>
+                        <td th:text="${#temporals.format(asset.receivedDate,'yyyy-MM-dd')}"></td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
 
-            <div class="pagination-area d-flex align-items-center gap-3">
-                <div class="small text-muted">
-                    Showing <strong
-                        th:text="${purchaseAsset.filterPurchaseAssetDTOResponse.totalItems == 0 ? 0 : (purchaseAsset.filterPurchaseAssetDTOResponse.page - 1) * purchaseAsset.filterPurchaseAssetDTOResponse.pageSize + 1}"></strong>
-                    – <strong
-                        th:text="${(purchaseAsset.filterPurchaseAssetDTOResponse.page - 1) * purchaseAsset.filterPurchaseAssetDTOResponse.pageSize + purchaseAsset.purchaseAssetDTOResponses.size()}"></strong>
-                    of <strong th:text="${purchaseAsset.filterPurchaseAssetDTOResponse.totalItems}"></strong>
+            <div class="form-footer d-flex justify-content-between align-items-center">
+                <div class="action-left">
+                    <form th:action="@{/purchase-requests/warehouse/complete}" method="post">
+                        <input type="hidden" name="assetRequestId"
+                               th:value="${purchaseAsset.filterPurchaseAssetDTOResponse.assetRequestId}"/>
+                        <button type="submit" class="btn btn-success"
+                                onclick="return confirm('Mark this purchase request as Completed?')">
+                            ✅ Complete Request
+                        </button>
+                    </form>
                 </div>
 
-                <ul class="pagination pagination-sm mb-0">
-                    <li class="page-item"
-                        th:classappend="${!purchaseAsset.filterPurchaseAssetDTOResponse.hasPreviousPage} ? 'disabled'">
-                        <a class="page-link"
-                           th:href="@{/purchase-requests/viewPurchaseAsset(pageIndex=${purchaseAsset.filterPurchaseAssetDTOResponse.page - 1}, assetTypeId=${purchaseAsset.filterPurchaseAssetDTOResponse.assetTypeId}, searchWord=${purchaseAsset.filterPurchaseAssetDTOResponse.searchWord}, assetRequestId=${purchaseAsset.filterPurchaseAssetDTOResponse.assetRequestId})}">«</a>
-                    </li>
-                    <li class="page-item"
-                        th:each="i : ${#numbers.sequence(1, purchaseAsset.filterPurchaseAssetDTOResponse.totalPages)}"
-                        th:classappend="${i == purchaseAsset.filterPurchaseAssetDTOResponse.page} ? 'active'">
-                        <a class="page-link" th:text="${i}"
-                           th:href="@{/purchase-requests/viewPurchaseAsset(pageIndex=${i}, assetTypeId=${purchaseAsset.filterPurchaseAssetDTOResponse.assetTypeId}, searchWord=${purchaseAsset.filterPurchaseAssetDTOResponse.searchWord}, assetRequestId=${purchaseAsset.filterPurchaseAssetDTOResponse.assetRequestId})}"></a>
-                    </li>
-                    <li class="page-item"
-                        th:classappend="${!purchaseAsset.filterPurchaseAssetDTOResponse.hasNextPage} ? 'disabled'">
-                        <a class="page-link"
-                           th:href="@{/purchase-requests/viewPurchaseAsset(pageIndex=${purchaseAsset.filterPurchaseAssetDTOResponse.page + 1}, assetTypeId=${purchaseAsset.filterPurchaseAssetDTOResponse.assetTypeId}, searchWord=${purchaseAsset.filterPurchaseAssetDTOResponse.searchWord}, assetRequestId=${purchaseAsset.filterPurchaseAssetDTOResponse.assetRequestId})}">»</a>
-                    </li>
-                </ul>
+                <div class="pagination-area d-flex align-items-center gap-3">
+                    <div class="small text-muted">
+                        Showing <strong
+                            th:text="${purchaseAsset.filterPurchaseAssetDTOResponse.totalItems == 0 ? 0 : (purchaseAsset.filterPurchaseAssetDTOResponse.page - 1) * purchaseAsset.filterPurchaseAssetDTOResponse.pageSize + 1}"></strong>
+                        – <strong
+                            th:text="${(purchaseAsset.filterPurchaseAssetDTOResponse.page - 1) * purchaseAsset.filterPurchaseAssetDTOResponse.pageSize + purchaseAsset.purchaseAssetDTOResponses.size()}"></strong>
+                        of <strong th:text="${purchaseAsset.filterPurchaseAssetDTOResponse.totalItems}"></strong>
+                    </div>
+
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item"
+                            th:classappend="${!purchaseAsset.filterPurchaseAssetDTOResponse.hasPreviousPage} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/purchase-requests/viewPurchaseAsset(pageIndex=${purchaseAsset.filterPurchaseAssetDTOResponse.page - 1}, assetTypeId=${purchaseAsset.filterPurchaseAssetDTOResponse.assetTypeId}, searchWord=${purchaseAsset.filterPurchaseAssetDTOResponse.searchWord}, assetRequestId=${purchaseAsset.filterPurchaseAssetDTOResponse.assetRequestId})}">«</a>
+                        </li>
+                        <li class="page-item"
+                            th:each="i : ${#numbers.sequence(1, purchaseAsset.filterPurchaseAssetDTOResponse.totalPages)}"
+                            th:classappend="${i == purchaseAsset.filterPurchaseAssetDTOResponse.page} ? 'active'">
+                            <a class="page-link" th:text="${i}"
+                               th:href="@{/purchase-requests/viewPurchaseAsset(pageIndex=${i}, assetTypeId=${purchaseAsset.filterPurchaseAssetDTOResponse.assetTypeId}, searchWord=${purchaseAsset.filterPurchaseAssetDTOResponse.searchWord}, assetRequestId=${purchaseAsset.filterPurchaseAssetDTOResponse.assetRequestId})}"></a>
+                        </li>
+                        <li class="page-item"
+                            th:classappend="${!purchaseAsset.filterPurchaseAssetDTOResponse.hasNextPage} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/purchase-requests/viewPurchaseAsset(pageIndex=${purchaseAsset.filterPurchaseAssetDTOResponse.page + 1}, assetTypeId=${purchaseAsset.filterPurchaseAssetDTOResponse.assetTypeId}, searchWord=${purchaseAsset.filterPurchaseAssetDTOResponse.searchWord}, assetRequestId=${purchaseAsset.filterPurchaseAssetDTOResponse.assetRequestId})}">»</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
-</div>
-
+</th:block>
+<th:block layout:fragment="additional-scripts">
+    <script th:src="@{/js/Template.js}"></script>
+</th:block>
 </body>
 </html>
