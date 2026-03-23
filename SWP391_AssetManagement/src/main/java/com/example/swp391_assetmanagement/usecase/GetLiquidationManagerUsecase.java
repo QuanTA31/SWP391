@@ -1,7 +1,8 @@
 package com.example.swp391_assetmanagement.usecase;
 
-import com.example.swp391_assetmanagement.dto.request.CreateLiquidationDTORequest;
-import com.example.swp391_assetmanagement.dto.request.CreateLiquidationDetailDTORequest;
+
+import com.example.swp391_assetmanagement.dto.response.CreateLiquidationDetailDTOResponse;
+import com.example.swp391_assetmanagement.dto.response.GetLiquidationManagerDTOResponse;
 import com.example.swp391_assetmanagement.entity.AssetExternalRequestDetail;
 import com.example.swp391_assetmanagement.enums.AssetType;
 import com.example.swp391_assetmanagement.service.AssetExternalRequestDetailService;
@@ -17,10 +18,10 @@ public class GetLiquidationManagerUsecase {
     private final AssetExternalRequestDetailService assetExternalRequestDetailService;
     private final AssetRequestService assetRequestService;
 
-    public CreateLiquidationDTORequest execute(Long assetRequestId) {
+    public GetLiquidationManagerDTOResponse execute(Long assetRequestId) {
 
-        CreateLiquidationDTORequest.CreateLiquidationDTORequestBuilder builder =
-                CreateLiquidationDTORequest.builder();
+        GetLiquidationManagerDTOResponse.GetLiquidationManagerDTOResponseBuilder builder =
+                GetLiquidationManagerDTOResponse.builder();
 
         assetRequestService.findAssetRequestByIdForUpdate(assetRequestId).ifPresent(assetRequest -> {
             builder.requestStatus(assetRequest.requestStatusId);
@@ -31,8 +32,8 @@ public class GetLiquidationManagerUsecase {
         List<AssetExternalRequestDetail> details =
                 assetExternalRequestDetailService.getByAssetRequestId(assetRequestId);
 
-        List<CreateLiquidationDetailDTORequest> detailsDTOs = details.stream()
-                .map(detail -> CreateLiquidationDetailDTORequest.builder()
+        List<CreateLiquidationDetailDTOResponse> detailsDTOs = details.stream()
+                .map(detail -> CreateLiquidationDetailDTOResponse.builder()
                         .assetExternalRequestDetailId(detail.id)
                         .assetTypeId(detail.assetTypeId)
                         .assetTypeName(AssetType.of(detail.assetTypeId).getName())
@@ -44,7 +45,7 @@ public class GetLiquidationManagerUsecase {
 
         return builder
                 .assetRequestId(assetRequestId)
-                .createLiquidationDetailDTORequestList(detailsDTOs)
+                .details(detailsDTOs)
                 .isSubmitted(true)
                 .build();
     }

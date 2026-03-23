@@ -35,13 +35,17 @@
                     <span th:text="${detail.toLocationId != null ? T(com.example.swp391_assetmanagement.enums.Location).of(detail.toLocationId).getName() : 'N/A'}">Phòng IT</span>
                 </div>
                 <div class="summary-item">
+                    <label>Người nhận (Client)</label>
+                    <span th:text="${toUserName}">Không chỉ định</span>
+                </div>
+                <div class="summary-item">
                     <label>Lý do</label>
                     <span th:text="${requestNote != null && !requestNote.isEmpty() ? requestNote : 'Không có ghi chú'}">Dùng cho nhân viên mới</span>
                 </div>
-                <div class="summary-item" th:if="${alreadyConfirmedCount > 0}">
-                    <label>Đã cấp phát</label>
+                <div class="summary-item" th:if="${#lists.size(alreadyAssignedIds) > 0}">
+                    <label>Đã gán tài sản</label>
                     <span>
-                        <span th:text="${alreadyConfirmedCount}">2</span>
+                        <span th:text="${#lists.size(alreadyAssignedIds)}">2</span>
                         /
                         <span th:text="${requestedQty}">10</span>
                     </span>
@@ -87,10 +91,11 @@
                                     th:style="${#lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">
                                     AS-001
                                 </td>
-                                <td th:text="${asset.description}"
+                                <td th:text="${asset.assetTypeId != null ? T(com.example.swp391_assetmanagement.enums.AssetType).of(asset.assetTypeId).getName() : ''}"
                                     th:style="${#lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">
-                                    MacBook Pro 2023
+                                    Laptop
                                 </td>
+
                                 <td th:text="${asset.locationId != null ? T(com.example.swp391_assetmanagement.enums.Location).of(asset.locationId).getName() : 'N/A'}"
                                     th:style="${#lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">
                                     Kho Chính
@@ -100,8 +105,10 @@
                                           class="status-badge stock">Mới</span>
                                     <span th:if="${asset.assetStatusId == '08' and !#lists.contains(alreadyAssignedIds, asset.id)}"
                                           class="status-badge stock">Trong kho</span>
-                                    <span th:if="${#lists.contains(alreadyAssignedIds, asset.id)}"
-                                          style="background:#fef9c3;color:#713f12;border-radius:9999px;padding:0.2rem 0.65rem;font-size:0.75rem;font-weight:600;display:inline-block;">🚚 Đang trong quá trình cấp phát</span>
+                                    <span th:if="${#lists.contains(alreadyAssignedIds, asset.id) and !#lists.contains(alreadyReceivedIds, asset.id)}"
+                                          style="background:#fef9c3;color:#713f12;border-radius:9999px;padding:0.2rem 0.65rem;font-size:0.75rem;font-weight:600;display:inline-block;"> Đang trong quá trình cấp phát</span>
+                                    <span th:if="${#lists.contains(alreadyReceivedIds, asset.id)}"
+                                          style="background:#dcfce7;color:#166534;border-radius:9999px;padding:0.2rem 0.65rem;font-size:0.75rem;font-weight:600;display:inline-block;">Đã nhận</span>
                                 </td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(stockAssets)}">
@@ -138,9 +145,9 @@
                                     th:style="${#lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">
                                     AS-054
                                 </td>
-                                <td th:text="${asset.description}"
+                                <td th:text="${asset.assetTypeId != null ? T(com.example.swp391_assetmanagement.enums.AssetType).of(asset.assetTypeId).getName() : ''}"
                                     th:style="${#lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">
-                                    Dữ liệu mẫu
+                                    Laptop
                                 </td>
                                 <td th:text="${asset.locationId != null ? T(com.example.swp391_assetmanagement.enums.Location).of(asset.locationId).getName() : 'N/A'}"
                                     th:style="${#lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">
@@ -149,8 +156,10 @@
                                 <td>
                                     <span th:if="${!#lists.contains(alreadyAssignedIds, asset.id)}"
                                           class="status-badge recovered">Có thể thu hồi</span>
-                                    <span th:if="${#lists.contains(alreadyAssignedIds, asset.id)}"
-                                          style="background:#fef9c3;color:#713f12;border-radius:9999px;padding:0.2rem 0.65rem;font-size:0.75rem;font-weight:600;display:inline-block;">🚚 Đang trong quá trình cấp phát</span>
+                                    <span th:if="${#lists.contains(alreadyAssignedIds, asset.id) and !#lists.contains(alreadyReceivedIds, asset.id)}"
+                                          style="background:#fef9c3;color:#713f12;border-radius:9999px;padding:0.2rem 0.65rem;font-size:0.75rem;font-weight:600;display:inline-block;">Đang trong quá trình cấp phát</span>
+                                    <span th:if="${#lists.contains(alreadyReceivedIds, asset.id)}"
+                                          style="background:#dcfce7;color:#166534;border-radius:9999px;padding:0.2rem 0.65rem;font-size:0.75rem;font-weight:600;display:inline-block;">Đã nhận</span>
                                 </td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(recoveredAssets)}">
@@ -165,10 +174,10 @@
                         <div class="selection-status">
                         <span class="selection-count">
                             Đã chọn: <span id="currentCount">0</span>
-                            / <span id="remainingQty" th:text="${requestedQty - alreadyConfirmedCount}">10</span>
-                            <span th:if="${alreadyConfirmedCount > 0}" class="text-muted ms-2"
+                            / <span id="remainingQty" th:text="${requestedQty - #lists.size(alreadyAssignedIds)}">10</span>
+                            <span th:if="${#lists.size(alreadyAssignedIds) > 0}" class="text-muted ms-2"
                                   style="font-size:0.8rem;">
-                                (đã giao <span th:text="${alreadyConfirmedCount}">2</span>/<span
+                                (đã gán <span th:text="${#lists.size(alreadyAssignedIds)}">2</span>/<span
                                     th:text="${requestedQty}">10</span>)
                             </span>
                         </span>

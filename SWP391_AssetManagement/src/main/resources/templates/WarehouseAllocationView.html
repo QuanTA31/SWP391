@@ -59,6 +59,10 @@
                     <label>Địa điểm nhận</label>
                     <span th:text="${detail.toLocationId != null ? T(com.example.swp391_assetmanagement.enums.Location).of(detail.toLocationId).getName() : 'N/A'}">Phòng IT</span>
                 </div>
+                <div class="summary-item">
+                    <label>Người nhận (Client)</label>
+                    <span th:text="${toUserName}">Không chỉ định</span>
+                </div>
             </div>
         </div>
 
@@ -75,7 +79,7 @@
                 <tr>
                     <th>#</th>
                     <th>Mã Tài Sản</th>
-                    <th>Mô Tả</th>
+                    <th>Tên Tài Sản</th>
                     <th>Vị Trí Hiện Tại</th>
                     <th>Trạng Thái</th>
                 </tr>
@@ -86,7 +90,7 @@
                     <td>
                         <div class="fw-semibold" th:text="${asset.assetCode}">AS-001</div>
                     </td>
-                    <td th:text="${asset.description}">MacBook Pro</td>
+                    <td th:text="${asset.assetTypeId != null ? T(com.example.swp391_assetmanagement.enums.AssetType).of(asset.assetTypeId).getName() : ''}">Laptop</td>
                     <td th:text="${asset.locationId != null ? T(com.example.swp391_assetmanagement.enums.Location).of(asset.locationId).getName() : 'N/A'}">
                         Kho
                     </td>

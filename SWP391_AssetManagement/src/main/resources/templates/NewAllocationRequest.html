@@ -79,14 +79,31 @@
                     </div>
 
                     <!-- ===== 2. ĐỊA ĐIỂM NHẬN ===== -->
-                    <div class="section-title">2. Địa Điểm Nhận</div>
+                    <div class="section-title">2. Phân Bổ (Nhận & Người Nhận Cuối)</div>
                     <div class="row mb-4">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-5 mb-3">
                             <label class="form-label">Địa điểm nhận <span class="text-danger">*</span></label>
                             <div class="form-control-plaintext fw-medium text-dark bg-light border rounded px-3 py-2">
                                 <span th:text="${locationName}">N/A</span>
                             </div>
                             <input type="hidden" th:field="*{locationId}">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Người nhận (Client)</label>
+                            <select th:if="${!isReadOnly}" class="form-select" th:field="*{toUserId}">
+                                <option value="">-- Có thể để trống --</option>
+                                <option th:each="u : ${departmentUsers}"
+                                        th:value="${u.id}"
+                                        th:text="${u.userCode + ' - ' + u.name}">
+                                </option>
+                            </select>
+                            <div th:if="${isReadOnly}"
+                                 class="form-control-plaintext fw-medium text-dark bg-light border rounded px-3 py-2">
+                                <span th:each="u : ${departmentUsers}"
+                                      th:if="${u.id == allocationRequest.toUserId}"
+                                      th:text="${u.userCode + ' - ' + u.name}"></span>
+                                <span th:if="${allocationRequest.toUserId == null}">Không chỉ định</span>
+                            </div>
                         </div>
                         <div class="col-md-3 mb-3">
                             <label class="form-label">Số lượng <span class="text-danger">*</span></label>

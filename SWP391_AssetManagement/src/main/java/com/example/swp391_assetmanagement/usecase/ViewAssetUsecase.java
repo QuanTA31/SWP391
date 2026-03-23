@@ -54,7 +54,6 @@ public class ViewAssetUsecase {
             locationIdList.add(Location.MEETING_ROOM.getValue());
             locationIdList.add(Location.IT_ROOM.getValue());
             locationIdList.add(Location.WAREHOUSE.getValue());
-            locationIdList.add(Location.OUTSIDE_COMPANY.getValue());
 
         } else if (Objects.equals(session.getAttribute("ROLE"), Roles.DEPARTMENT_MANAGER.getValue())) {
 
