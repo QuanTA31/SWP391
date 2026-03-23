@@ -3,6 +3,7 @@ package com.example.swp391_assetmanagement.service;
 import com.example.swp391_assetmanagement.entity.AssetInternalRequestDetail;
 import com.example.swp391_assetmanagement.entity.AssetRequest;
 import com.example.swp391_assetmanagement.service.servicerequest.RecoverServiceRequest;
+import com.example.swp391_assetmanagement.enums.AssetStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -46,4 +47,6 @@ public interface AssetRequestService {
     boolean isAllDetailsDone(Long requestId);
 
     int moveCompleted(Long requestId);
+
+    void updateAssetsToDisposed(Long requestId, AssetStatus status);
 }

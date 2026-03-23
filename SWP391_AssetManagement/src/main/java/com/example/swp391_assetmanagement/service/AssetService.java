@@ -1,6 +1,7 @@
 package com.example.swp391_assetmanagement.service;
 
 import com.example.swp391_assetmanagement.entity.Assets;
+import com.example.swp391_assetmanagement.enums.AssetStatus;
 import com.example.swp391_assetmanagement.service.servicerequest.AssetViewAllServiceRequest;
 import com.example.swp391_assetmanagement.service.servicerequest.LiquiAssetViewAllServiceRequest;
 import com.example.swp391_assetmanagement.service.serviceresponse.AssetLiquiServiceResponse;
@@ -26,4 +27,6 @@ public interface AssetService {
     List<AssetLiquiServiceResponse> findByIdOfLiquidation(List<Long> assetId);
 
     Assets findById(Long id);
+
+    void updateStatusByIds(List<Long> assetIds, AssetStatus status);
 }
