@@ -18,6 +18,9 @@ public interface CreateRequestRecoverDAO {
     int insertRequestRecover(AssetRequest request);
 
     @Insert(sqlFile = true)
+    int insertRecover(AssetRequest assetRequest);
+
+    @Insert(sqlFile = true)
     int inrsertAssetRecoverToSigleRequest(AssetInternalRequestDetail request);
 
     @Select

@@ -1,5 +1,6 @@
 package com.example.swp391_assetmanagement.service.serviceimpl;
 
+import com.example.swp391_assetmanagement.dao.AssetRequestDAO;
 import com.example.swp391_assetmanagement.dao.CreateRequestRecoverDAO;
 import com.example.swp391_assetmanagement.dao.UserDAO;
 import com.example.swp391_assetmanagement.entity.AssetInternalRequestDetail;
@@ -17,11 +18,18 @@ public class CreateRequestRecoverServiceImpl implements CreateRequestRecoverServ
 
     private final CreateRequestRecoverDAO dao;
     private final UserDAO userDAO;
+    private final AssetRequestDAO assetRequestDAO;
 
     @Override
     public Long createRequestRecover(AssetRequest request) {
         dao.insertRequestRecover(request);
         return request.id;
+    }
+
+    @Override
+    public Long insertRecover(AssetRequest assetRequest) {
+        dao.insertRecover(assetRequest);
+        return assetRequestDAO.getLastId();
     }
 
     @Override

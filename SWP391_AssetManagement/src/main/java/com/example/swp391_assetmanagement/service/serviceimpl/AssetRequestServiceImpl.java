@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -100,7 +101,6 @@ public class AssetRequestServiceImpl implements AssetRequestService {
     }
 
     @Override
-    @Transactional
     public void confirmDetailAndRestoreAsset(RecoverServiceRequest serviceRequest) {
         // 1. Truy vấn Entity
         AssetInternalRequestDetail detail = detailDAO.selectById(serviceRequest.getDetailId());
@@ -115,7 +115,7 @@ public class AssetRequestServiceImpl implements AssetRequestService {
                 asset.assetStatusId = serviceRequest.getTargetStatus();
                 asset.locationId = serviceRequest.getTargetLocation();
                 asset.currentUserId = null; // Clear người dùng cũ
-                assetsDAO.update(asset);
+                assetsDAO.updateRecovery(asset);
             }
         }
     }
@@ -133,5 +133,11 @@ public class AssetRequestServiceImpl implements AssetRequestService {
     @Override
     public boolean isAllDetailsDone(Long requestId) {
         return detailDAO.countRemainingItems(requestId) == 0;
+    }
+
+    @Override
+    public void updateHandoverDate(Long requestId, LocalDate handoverDate) {
+        // Thực thi cập nhật ngày bàn giao vào DB
+        assetRequestDAO.updateHandoverDate(requestId, handoverDate);
     }
 }
