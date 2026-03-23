@@ -39,13 +39,14 @@ public class CreatePurchaseRequestUsecase {
         Long userId = userService.getIdByUserCode(session.getAttribute("USER_CODE").toString());
 
         // Check type request
-        String assetRequestType = assetRequestService.findRequestTypeById(request.getAssetRequestId());
+        if (!ObjectUtils.isEmpty(request.getAssetRequestId())) {
+            String assetRequestType = assetRequestService.findRequestTypeById(request.getAssetRequestId());
 
-        if (ObjectUtils.isEmpty(assetRequestType)
-                || !Objects.equals(RequestType.of(assetRequestType).getValue(), RequestType.PROCUREMENT.getValue())) {
-            throw new ValidationException();
+            if (ObjectUtils.isEmpty(assetRequestType)
+                    || !Objects.equals(RequestType.of(assetRequestType).getValue(), RequestType.PROCUREMENT.getValue())) {
+                throw new ValidationException();
+            }
         }
-
         // Check update or insert
         // insert
         if (Objects.isNull(request.getAssetRequestId())) {

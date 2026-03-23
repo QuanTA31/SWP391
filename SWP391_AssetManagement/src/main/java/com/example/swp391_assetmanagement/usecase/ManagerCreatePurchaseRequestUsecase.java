@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -61,6 +62,7 @@ public class ManagerCreatePurchaseRequestUsecase {
         assetRequestService.findAssetRequestByIdForUpdate(request.getAssetRequestId()).ifPresent(
                 assetRequest -> {
                     assetRequest.setApprovedBy(userId);
+                    assetRequest.setApprovedDate(LocalDate.now());
                     assetRequest.setRequestStatusId(request.getIsApproved()
                             ? RequestStatus.APPROVED.getValue() : RequestStatus.CANCELLED.getValue());
                     assetRequest.setNote(request.getNote());
