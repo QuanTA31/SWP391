@@ -48,6 +48,6 @@ public interface AssetInternalRequestDetailDAO {
     @Select
     int countRemainingItems(Long requestId);
 
-    @Delete(sqlFile = true)
-    int deleteByRequestId(Long requestId);
+//    @Delete(sqlFile = true)
+//    int deleteByRequestId(Long requestId);
 }
