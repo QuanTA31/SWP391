@@ -6,6 +6,7 @@ import com.example.swp391_assetmanagement.dao.AssetsDAO;
 import com.example.swp391_assetmanagement.entity.AssetInternalRequestDetail;
 import com.example.swp391_assetmanagement.entity.AssetRequest;
 import com.example.swp391_assetmanagement.entity.Assets;
+import com.example.swp391_assetmanagement.enums.AssetStatus;
 import com.example.swp391_assetmanagement.enums.RequestStatus;
 import com.example.swp391_assetmanagement.service.AssetRequestService;
 import com.example.swp391_assetmanagement.service.servicerequest.RecoverServiceRequest;
@@ -86,6 +87,16 @@ public class AssetRequestServiceImpl implements AssetRequestService {
     public int moveCompleted(Long requestId) {
         return assetRequestDAO.moveCompleted(requestId, RequestStatus.IN_PROGRESS.getValue(),
                 RequestStatus.COMPLETED.getValue());
+    }
+
+    @Override
+    public void updateAssetsToDisposed(Long requestId, AssetStatus status) {
+        if (requestId == null || status == null) return;
+
+        assetRequestDAO.updateAssetsByRequestId(
+                requestId,
+                status.getValue()
+        );
     }
 
     //Retrival

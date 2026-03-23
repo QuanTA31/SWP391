@@ -1,6 +1,7 @@
 package com.example.swp391_assetmanagement.dao;
 
 import com.example.swp391_assetmanagement.entity.Assets;
+import com.example.swp391_assetmanagement.enums.AssetStatus;
 import com.example.swp391_assetmanagement.service.servicerequest.AssetViewAllServiceRequest;
 import com.example.swp391_assetmanagement.service.servicerequest.LiquiAssetViewAllServiceRequest;
 import com.example.swp391_assetmanagement.service.serviceresponse.AssetLiquiServiceResponse;
@@ -63,4 +64,7 @@ public interface AssetsDAO {
 
     @Select
     List<AssetLiquiServiceResponse> findByIdOfLiquidation(List<Long> assetId);
+
+    @Update(sqlFile = true)
+    int updateStatusByIds(List<Long> assetIds, String status);
 }

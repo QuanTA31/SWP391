@@ -18,7 +18,8 @@ public enum AssetStatus implements EnumBase<AssetStatus> {
     DISPOSED("06", "DISPOSED"),
     LOST("07", "LOST"),
     STOCKED("08", "STOCKED"),
-    RETRIVAL("09","RETRIVAL");
+    RETRIVAL("09","RETRIVAL"),
+    LIQUIDATION("10", "LIQUIDATION");
 
     private final String value;
     private final String name;
