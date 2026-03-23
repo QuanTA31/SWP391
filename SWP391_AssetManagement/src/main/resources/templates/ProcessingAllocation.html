@@ -24,7 +24,7 @@
                 </div>
                 <div class="summary-item">
                     <label>Số lượng yêu cầu</label>
-                    <span id="targetQuantity" th:text="${detail.quantity}">10</span>
+                    <span id="targetQuantity" th:text="${requestedQty}">10</span>
                 </div>
                 <div class="summary-item">
                     <label>Phòng ban nhận</label>
@@ -39,7 +39,7 @@
                     <span>
                         <span th:text="${alreadyConfirmedCount}">2</span>
                         /
-                        <span th:text="${detail.quantity}">10</span>
+                        <span th:text="${requestedQty}">10</span>
                     </span>
                 </div>
             </div>
@@ -68,30 +68,25 @@
                         </thead>
                         <tbody>
                             <tr th:each="asset : ${stockAssets}"
-                                th:style="${asset.assetStatusId == '02' or asset.assetStatusId == '03' or #lists.contains(alreadyAssignedIds, asset.id)} ? 'background-color:#f1f5f9;' : ''">
+                                th:style="${#lists.contains(alreadyAssignedIds, asset.id)} ? 'background-color:#f1f5f9;' : ''">
                                 <td>
-                                    <!-- Only show enabled checkbox if it is NOT yet assigned anywhere -->
-                                    <input th:if="${asset.assetStatusId != '02' and asset.assetStatusId != '03' and !#lists.contains(alreadyAssignedIds, asset.id)}"
+                                    <!-- Only show enabled checkbox if NOT already assigned to this request -->
+                                    <input th:if="${!#lists.contains(alreadyAssignedIds, asset.id)}"
                                            type="checkbox" class="form-check-input asset-check" 
                                            name="selectedAssetIds" th:value="${asset.id}"
                                            onchange="updateCount()">
-                                    <!-- Show unchecked disabled checkbox if assigned to ANOTHER request -->
-                                    <input th:if="${(asset.assetStatusId == '02' or asset.assetStatusId == '03') and !#lists.contains(alreadyAssignedIds, asset.id)}"
-                                           type="checkbox" class="form-check-input" disabled>
                                     <!-- Show checked disabled checkbox if already assigned to THIS request -->
                                     <input th:if="${#lists.contains(alreadyAssignedIds, asset.id)}"
                                            type="checkbox" class="form-check-input" checked disabled>
                                 </td>
-                                <td th:text="${asset.assetCode}" th:style="${asset.assetStatusId == '02' or asset.assetStatusId == '03' or #lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">AS-001</td>
-                                <td th:text="${asset.description}" th:style="${asset.assetStatusId == '02' or asset.assetStatusId == '03' or #lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">MacBook Pro 2023</td>
+                                <td th:text="${asset.assetCode}" th:style="${#lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">AS-001</td>
+                                <td th:text="${asset.description}" th:style="${#lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">MacBook Pro 2023</td>
                                 <td th:text="${asset.locationId != null ? T(com.example.swp391_assetmanagement.enums.Location).of(asset.locationId).getName() : 'N/A'}"
-                                    th:style="${asset.assetStatusId == '02' or asset.assetStatusId == '03' or #lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">Kho Chính</td>
+                                    th:style="${#lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">Kho Chính</td>
                                 <td>
-                                    <span th:if="${asset.assetStatusId == '00' and !#lists.contains(alreadyAssignedIds, asset.id)}" class="status-badge stock">Trong kho</span>
-                                    <span th:if="${asset.assetStatusId == '08' and !#lists.contains(alreadyAssignedIds, asset.id)}" class="status-badge stock">Thu hồi</span>
-                                    <span th:if="${asset.assetStatusId == '02' or (#lists.contains(alreadyAssignedIds, asset.id) and asset.assetStatusId == '02')}"
-                                          style="background:#dcfce7;color:#166534;border-radius:9999px;padding:0.2rem 0.65rem;font-size:0.75rem;font-weight:600;display:inline-block;">✓ Đã nhận</span>
-                                    <span th:if="${asset.assetStatusId == '03' or (#lists.contains(alreadyAssignedIds, asset.id) and asset.assetStatusId != '02')}"
+                                    <span th:if="${asset.assetStatusId == '01' and !#lists.contains(alreadyAssignedIds, asset.id)}" class="status-badge stock">Mới</span>
+                                    <span th:if="${asset.assetStatusId == '08' and !#lists.contains(alreadyAssignedIds, asset.id)}" class="status-badge stock">Trong kho</span>
+                                    <span th:if="${#lists.contains(alreadyAssignedIds, asset.id)}"
                                           style="background:#fef9c3;color:#713f12;border-radius:9999px;padding:0.2rem 0.65rem;font-size:0.75rem;font-weight:600;display:inline-block;">🚚 Đang trong quá trình cấp phát</span>
                                 </td>
                             </tr>
@@ -114,29 +109,24 @@
                         </thead>
                         <tbody>
                             <tr th:each="asset : ${recoveredAssets}"
-                                th:style="${asset.assetStatusId == '02' or asset.assetStatusId == '03' or #lists.contains(alreadyAssignedIds, asset.id)} ? 'background-color:#f1f5f9;' : ''">
+                                th:style="${#lists.contains(alreadyAssignedIds, asset.id)} ? 'background-color:#f1f5f9;' : ''">
                                 <td>
-                                    <!-- Only show enabled checkbox if it is NOT yet assigned anywhere -->
-                                    <input th:if="${asset.assetStatusId != '02' and asset.assetStatusId != '03' and !#lists.contains(alreadyAssignedIds, asset.id)}"
+                                    <!-- Enable checkbox: asset is ASSIGNED (02) but user suspended/disabled — selectable unless already in this request -->
+                                    <input th:if="${!#lists.contains(alreadyAssignedIds, asset.id)}"
                                            type="checkbox" class="form-check-input asset-check" 
                                            name="selectedAssetIds" th:value="${asset.id}"
                                            onchange="updateCount()">
-                                    <!-- Show unchecked disabled checkbox if assigned to ANOTHER request -->
-                                    <input th:if="${(asset.assetStatusId == '02' or asset.assetStatusId == '03') and !#lists.contains(alreadyAssignedIds, asset.id)}"
-                                           type="checkbox" class="form-check-input" disabled>
                                     <!-- Show checked disabled checkbox if already assigned to THIS request -->
                                     <input th:if="${#lists.contains(alreadyAssignedIds, asset.id)}"
                                            type="checkbox" class="form-check-input" checked disabled>
                                 </td>
-                                <td th:text="${asset.assetCode}" th:style="${asset.assetStatusId == '02' or asset.assetStatusId == '03' or #lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">AS-054</td>
-                                <td th:text="${asset.description}" th:style="${asset.assetStatusId == '02' or asset.assetStatusId == '03' or #lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">Dữ liệu mẫu</td>
+                                <td th:text="${asset.assetCode}" th:style="${#lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">AS-054</td>
+                                <td th:text="${asset.description}" th:style="${#lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">Dữ liệu mẫu</td>
                                 <td th:text="${asset.locationId != null ? T(com.example.swp391_assetmanagement.enums.Location).of(asset.locationId).getName() : 'N/A'}"
-                                    th:style="${asset.assetStatusId == '02' or asset.assetStatusId == '03' or #lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">Phòng IT</td>
+                                    th:style="${#lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">Phòng IT</td>
                                 <td>
-                                    <span th:if="${asset.assetStatusId == '08' and !#lists.contains(alreadyAssignedIds, asset.id)}" class="status-badge recovered">Đã Thu Hồi</span>
-                                    <span th:if="${asset.assetStatusId == '02' or (#lists.contains(alreadyAssignedIds, asset.id) and asset.assetStatusId == '02')}"
-                                          style="background:#dcfce7;color:#166534;border-radius:9999px;padding:0.2rem 0.65rem;font-size:0.75rem;font-weight:600;display:inline-block;">✓ Đã nhận</span>
-                                    <span th:if="${asset.assetStatusId == '03' or (#lists.contains(alreadyAssignedIds, asset.id) and asset.assetStatusId != '02')}"
+                                    <span th:if="${!#lists.contains(alreadyAssignedIds, asset.id)}" class="status-badge recovered">Có thể thu hồi</span>
+                                    <span th:if="${#lists.contains(alreadyAssignedIds, asset.id)}"
                                           style="background:#fef9c3;color:#713f12;border-radius:9999px;padding:0.2rem 0.65rem;font-size:0.75rem;font-weight:600;display:inline-block;">🚚 Đang trong quá trình cấp phát</span>
                                 </td>
                             </tr>
@@ -151,9 +141,9 @@
                     <div class="selection-status">
                         <span class="selection-count">
                             Đã chọn: <span id="currentCount">0</span>
-                            / <span id="remainingQty" th:text="${detail.quantity - alreadyConfirmedCount}">10</span>
+                            / <span id="remainingQty" th:text="${requestedQty - alreadyConfirmedCount}">10</span>
                             <span th:if="${alreadyConfirmedCount > 0}" class="text-muted ms-2" style="font-size:0.8rem;">
-                                (đã giao <span th:text="${alreadyConfirmedCount}">2</span>/<span th:text="${detail.quantity}">10</span>)
+                                (đã giao <span th:text="${alreadyConfirmedCount}">2</span>/<span th:text="${requestedQty}">10</span>)
                             </span>
                         </span>
                     </div>

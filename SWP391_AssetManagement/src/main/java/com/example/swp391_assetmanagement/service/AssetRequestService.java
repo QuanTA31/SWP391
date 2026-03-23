@@ -5,6 +5,7 @@ import com.example.swp391_assetmanagement.entity.AssetRequest;
 import com.example.swp391_assetmanagement.service.servicerequest.RecoverServiceRequest;
 import com.example.swp391_assetmanagement.enums.AssetStatus;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,6 +46,8 @@ public interface AssetRequestService {
     void updateRequestStatus(Long requestId, String statusId);
     //if all request detail is done set request to complete or if warehouse click on the button in screen set it to in progres
     boolean isAllDetailsDone(Long requestId);
+
+    void updateHandoverDate(Long requestId, LocalDate handoverDate);
 
     int moveCompleted(Long requestId);
 

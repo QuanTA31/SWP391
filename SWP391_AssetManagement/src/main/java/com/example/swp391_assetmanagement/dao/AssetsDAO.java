@@ -35,6 +35,12 @@ public interface AssetsDAO {
     List<Assets> findByTypeAndStatus(String typeId, String statusId);
 
     @Select
+    List<Assets> findStockByType(String typeId);
+
+    @Select
+    List<Assets> findRecoveredByType(String typeId);
+
+    @Select
     Assets findById(Long id);
 
     @Update(sqlFile = true)
@@ -47,6 +53,8 @@ public interface AssetsDAO {
     @Select
     Assets selectById(Long id);
     // update asset in progress retrival
+    @Update(sqlFile = true)
+    int updateRecovery(Assets asset);
 
     @BatchUpdate(sqlFile = true)
     int[] batchUpdateAllocation(List<Assets> assetsList);

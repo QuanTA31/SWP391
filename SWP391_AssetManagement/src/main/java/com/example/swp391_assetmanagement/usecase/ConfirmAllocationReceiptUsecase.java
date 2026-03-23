@@ -19,30 +19,23 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ConfirmAllocationReceiptUsecase {
 
-    //private final AssetInternalRequestDetailDAO assetInternalRequestDetailDAO;
-    //private final AssetRequestDAO assetRequestDAO;
-    //private final AssetsDAO assetsDAO;
     private final AssetService assetService;
     private final AssetRequestService assetRequestService;
     private final AllocationService allocationService;
 
     @Transactional
     public void execute(Long requestId) {
-        // 1. Load detail
-        //AssetInternalRequestDetail detail = assetInternalRequestDetailDAO.findByAssetRequestId(requestId);
-        AssetInternalRequestDetail detail = allocationService.getInternalDetailByRequestId(requestId);
-        if (detail == null) {
+        // 1. Load all detail records for this request (N records = N units)
+        List<AssetInternalRequestDetail> details = allocationService.getInternalDetailsByRequestId(requestId);
+        if (details.isEmpty()) {
             throw new RuntimeException("Không tìm thấy chi tiết cấp phát cho Request ID: " + requestId);
         }
 
-        // 2. Parse assigned asset IDs from note field (stored as "ASSIGNED_ASSETS:1,2,3")
+        // 2. Collect assigned asset IDs from detail records (asset_id field)
         List<Long> assignedAssetIds = new ArrayList<>();
-        if (detail.note != null && detail.note.startsWith("ASSIGNED_ASSETS:")) {
-            String csv = detail.note.substring("ASSIGNED_ASSETS:".length());
-            for (String part : csv.split(",")) {
-                try {
-                    assignedAssetIds.add(Long.parseLong(part.trim()));
-                } catch (NumberFormatException ignored) {}
+        for (AssetInternalRequestDetail d : details) {
+            if (d.assetId != null) {
+                assignedAssetIds.add(d.assetId);
             }
         }
 
@@ -50,15 +43,16 @@ public class ConfirmAllocationReceiptUsecase {
             throw new RuntimeException("Không có tài sản nào được cấp phát trong yêu cầu này.");
         }
 
-        // 3. Mark each assigned asset as ASSIGNED (status="02")
+        String toLocationId = details.get(0).toLocationId;
+
+        // 3. Mark each assigned asset as ASSIGNED (status="02") and move to destination location
         List<Assets> toUpdate = new ArrayList<>();
         for (Long assetId : assignedAssetIds) {
             Assets asset = assetService.findById(assetId);
             if (asset != null) {
                 asset.assetStatusId = AssetStatus.ASSIGNED.getValue();
-                // Update locationId to the destination location
-                if (detail.toLocationId != null) {
-                    asset.locationId = detail.toLocationId;
+                if (toLocationId != null) {
+                    asset.locationId = toLocationId;
                 }
                 toUpdate.add(asset);
             }
@@ -67,24 +61,26 @@ public class ConfirmAllocationReceiptUsecase {
             allocationService.batchUpdateAllocation(toUpdate);
         }
 
-        // 4. Determine completion: compare assigned count vs requested quantity
-        int assignedCount = assignedAssetIds.size();
-        int requestedQty = detail.quantity != null ? detail.quantity : 0;
+        // 4. Mark all assigned detail records as is_done = true (department confirmed receipt)
+        for (AssetInternalRequestDetail d : details) {
+            if (d.assetId != null) {
+                d.isDone = true;
+                allocationService.updateIsDone(d);
+            }
+        }
 
-        if (assignedCount >= requestedQty) {
-            // Case 2: fully fulfilled → COMPLETED
-//            AssetRequest request = assetRequestDAO.findAssetRequestByIdForUpdate(requestId).orElse(null);
+        // 5. Determine completion: assigned count vs total detail records
+        int assignedCount = assignedAssetIds.size();
+        int totalRequested = details.size(); // each record = 1 unit
+
+        if (assignedCount >= totalRequested) {
+            // Fully fulfilled → COMPLETED
             AssetRequest request = allocationService.getAssetRequestById(requestId).orElse(null);
             if (request != null) {
                 request.requestStatusId = RequestStatus.COMPLETED.getValue();
-//                assetRequestDAO.updateStatus(request);
                 assetRequestService.updatePurchaseRequestStatus(request);
             }
-        } else {
-            // Case 1: partially fulfilled → mark is_done = true, keep IN_PROGRESS
-            detail.isDone = true;
-//            assetInternalRequestDetailDAO.updateIsDone(detail);
-            allocationService.updateIsDone(detail);
         }
+        // Else: partially fulfilled → stay IN_PROGRESS, department can request more
     }
 }

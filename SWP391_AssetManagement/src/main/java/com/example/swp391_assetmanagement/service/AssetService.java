@@ -20,6 +20,10 @@ public interface AssetService {
 
     List<Assets> findByTypeAndStatus(String typeId, String statusId);
 
+    List<Assets> findStockByType(String typeId);
+
+    List<Assets> findRecoveredByType(String typeId);
+
     int[] updateAsset(List<Assets> assetsList);
 
     List<LiquiAssetViewAllServiceResponse> liquiViewAllAsset(LiquiAssetViewAllServiceRequest assetRequest);

@@ -41,6 +41,11 @@ public class AssetInternalRequestDetailServiceImpl implements AssetInternalReque
         return assetInternalRequestDetailDAO.updateOfMaintain(detail);
     }
 
+    @Override
+    public void createDetail(AssetInternalRequestDetail detail) {
+        createRequestRecoverDAO.inrsertAssetRecoverToSigleRequest(detail);
+    }
+
     //Retrival
     @Override
     public void batchInsert(List<AssetInternalRequestDetail> details) {

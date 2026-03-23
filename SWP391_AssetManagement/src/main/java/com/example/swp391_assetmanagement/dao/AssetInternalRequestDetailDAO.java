@@ -3,6 +3,7 @@ package com.example.swp391_assetmanagement.dao;
 import com.example.swp391_assetmanagement.entity.AssetInternalRequestDetail;
 import com.example.swp391_assetmanagement.service.serviceresponse.AssetForRepairServiceResponse;
 import org.seasar.doma.Dao;
+import org.seasar.doma.Delete;
 import org.seasar.doma.Insert;
 import org.seasar.doma.Select;
 import org.seasar.doma.Update;
@@ -46,4 +47,7 @@ public interface AssetInternalRequestDetailDAO {
     //count request detail by request id
     @Select
     int countRemainingItems(Long requestId);
+
+    @Delete(sqlFile = true)
+    int deleteByRequestId(Long requestId);
 }

@@ -49,6 +49,16 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
+    public List<Assets> findStockByType(String typeId) {
+        return assetsDAO.findStockByType(typeId);
+    }
+
+    @Override
+    public List<Assets> findRecoveredByType(String typeId) {
+        return assetsDAO.findRecoveredByType(typeId);
+    }
+
+    @Override
     public int[] updateAsset(List<Assets> assetsList) {
         return assetsDAO.batchUpdate(assetsList);
     }
