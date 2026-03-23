@@ -1,7 +1,8 @@
 package com.example.swp391_assetmanagement.usecase;
 
-import com.example.swp391_assetmanagement.dto.request.CreateLiquidationDTORequest;
-import com.example.swp391_assetmanagement.dto.request.CreateLiquidationDetailDTORequest;
+
+import com.example.swp391_assetmanagement.dto.response.CreateLiquidationDTOResponse;
+import com.example.swp391_assetmanagement.dto.response.CreateLiquidationDetailDTOResponse;
 import com.example.swp391_assetmanagement.entity.AssetExternalRequestDetail;
 import com.example.swp391_assetmanagement.enums.AssetType;
 import com.example.swp391_assetmanagement.enums.RequestStatus;
@@ -16,30 +17,32 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class GetLiquidationPurchasingUsecase {
+
     private final AssetExternalRequestDetailService assetExternalRequestDetailService;
     private final AssetRequestService assetRequestService;
 
-    public CreateLiquidationDTORequest execute(Long assetRequestId) {
+    public CreateLiquidationDTOResponse execute(Long assetRequestId) {
 
-        CreateLiquidationDTORequest.CreateLiquidationDTORequestBuilder
-                createLiquidationDTORequest = CreateLiquidationDTORequest.builder();
+        CreateLiquidationDTOResponse.CreateLiquidationDTOResponseBuilder response =
+                CreateLiquidationDTOResponse.builder();
 
-        if(assetRequestId == null) {
-            createLiquidationDTORequest.createLiquidationDetailDTORequestList(Collections.emptyList());
-            createLiquidationDTORequest.isSubmitted(false);
-            createLiquidationDTORequest.assetRequestId(null);
-            createLiquidationDTORequest.requestStatus(null);
-            return createLiquidationDTORequest.build();
+        if (assetRequestId == null) {
+            return response
+                    .details(Collections.emptyList())
+                    .isSubmitted(false)
+                    .assetRequestId(null)
+                    .requestStatus(null)
+                    .build();
         }
 
-        assetRequestService.findAssetRequestByIdForUpdate(assetRequestId).ifPresent(assetRequest -> {
-            createLiquidationDTORequest.requestStatus(assetRequest.requestStatusId);
-        });
+        assetRequestService.findAssetRequestByIdForUpdate(assetRequestId)
+                .ifPresent(assetRequest -> response.requestStatus(assetRequest.requestStatusId));
 
-        List<AssetExternalRequestDetail> details = assetExternalRequestDetailService.getByAssetRequestId(assetRequestId);
+        List<AssetExternalRequestDetail> details =
+                assetExternalRequestDetailService.getByAssetRequestId(assetRequestId);
 
-        List<CreateLiquidationDetailDTORequest> detailDTOs = details.stream()
-                .map(detail -> CreateLiquidationDetailDTORequest.builder()
+        List<CreateLiquidationDetailDTOResponse> detailDTOs = details.stream()
+                .map(detail -> CreateLiquidationDetailDTOResponse.builder()
                         .assetExternalRequestDetailId(detail.id)
                         .assetTypeId(detail.assetTypeId)
                         .assetTypeName(AssetType.of(detail.assetTypeId).getName())
@@ -48,10 +51,13 @@ public class GetLiquidationPurchasingUsecase {
                         .note(detail.note)
                         .build())
                 .toList();
-        createLiquidationDTORequest.assetRequestId(assetRequestId);
-        createLiquidationDTORequest.createLiquidationDetailDTORequestList(detailDTOs);
-        createLiquidationDTORequest.isSubmitted(!RequestStatus.DRAFT.getValue()
-                .equals(createLiquidationDTORequest.build().getRequestStatus()));
-        return createLiquidationDTORequest.build();
+
+        String requestStatus = response.build().getRequestStatus();
+
+        return response
+                .assetRequestId(assetRequestId)
+                .details(detailDTOs)
+                .isSubmitted(!String.valueOf(RequestStatus.DRAFT.getValue()).equals(requestStatus))
+                .build();
     }
 }
