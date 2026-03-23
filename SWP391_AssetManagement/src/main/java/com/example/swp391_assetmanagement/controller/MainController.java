@@ -62,23 +62,6 @@ public class MainController {
         return "RequestAllList";
     }
 
-//    @GetMapping("/viewInternalRequest")
-//    public String viewRequest(@ModelAttribute ViewInternalProcessRequest request, HttpSession session, Model model) {
-//
-//        ViewInternalProcessAllResponse response = managerAssetInternalProcessUsecase.viewInternalProcess(request, session);
-//        model.addAttribute("internal", response);
-//
-//        return "RequestInternalList";
-//    }
-//
-//    @GetMapping("/viewExternalRequest")
-//    public String viewRequest(@ModelAttribute ViewExternalProcessRequest request, HttpSession session, Model model) {
-//
-//        ViewExternalProcessAllResponse response = managerAssetExternalProcessUsecase.viewExternalProcess(request, session);
-//        model.addAttribute("external", response);
-//
-//        return "RequestExternalList";
-//    }
 
     // 1. Xem chi tiết Internal
     @GetMapping("/viewInternalRequest/detail")
