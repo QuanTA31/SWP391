@@ -8,8 +8,12 @@ import com.example.swp391_assetmanagement.entity.Assets;
 import com.example.swp391_assetmanagement.enums.AssetType;
 import com.example.swp391_assetmanagement.enums.Location;
 import com.example.swp391_assetmanagement.enums.RequestStatus;
+import com.example.swp391_assetmanagement.enums.Location;
+import com.example.swp391_assetmanagement.enums.RequestStatus;
 import com.example.swp391_assetmanagement.service.AllocationService;
 import com.example.swp391_assetmanagement.service.AssetService;
+import com.example.swp391_assetmanagement.service.UserService;
+import com.example.swp391_assetmanagement.service.serviceresponse.UserDropdownResponse;
 import com.example.swp391_assetmanagement.usecase.ApproveAllocationRequestUsecase;
 import com.example.swp391_assetmanagement.usecase.ConfirmAllocationReceiptUsecase;
 import com.example.swp391_assetmanagement.usecase.CreateAllocationRequestUsecase;
@@ -32,6 +36,7 @@ public class AllocationController {
     private final AllocationService allocationService;
     private final ApproveAllocationRequestUsecase approveAllocationRequestUsecase;
     private final AssetService assetService;
+    private final UserService userService;
     private final ProcessAllocationAssignmentUsecase processAllocationAssignmentUsecase;
     private final ConfirmAllocationReceiptUsecase confirmAllocationReceiptUsecase;
 
@@ -54,6 +59,12 @@ public class AllocationController {
             locationName = Location.of(locationId).getName();
         }
         model.addAttribute("locationName", locationName);
+
+        List<UserDropdownResponse> departmentUsers = new ArrayList<>();
+        if (locationId != null) {
+            departmentUsers = userService.getActiveUsersByLocation(locationId);
+        }
+        model.addAttribute("departmentUsers", departmentUsers);
 
         populateEnums(model);
         return "NewAllocationRequest";
@@ -79,6 +90,10 @@ public class AllocationController {
                 ? firstDetail.toLocationId
                 : null;
 
+        Long toUserId = Objects.nonNull(firstDetail)
+                ? firstDetail.toUserId
+                : null;
+
         int quantity = details.size(); // 1 record per unit
 
         // Collect assets already assigned and RECEIVED by department
@@ -100,6 +115,7 @@ public class AllocationController {
                 .locationId(toLocationId)
                 .quantity(quantity)
                 .assignedAssets(assignedAssets)
+                .toUserId(toUserId)
                 .build();
 
         boolean isReadOnlyVal = !RequestStatus.DRAFT.getValue().equals(req.requestStatusId);
@@ -133,6 +149,12 @@ public class AllocationController {
         }
         model.addAttribute("locationName", locationName);
 
+        List<UserDropdownResponse> departmentUsers = new ArrayList<>();
+        if (locId != null) {
+            departmentUsers = userService.getActiveUsersByLocation(locId);
+        }
+        model.addAttribute("departmentUsers", departmentUsers);
+
         populateEnums(model);
         return "NewAllocationRequest";
     }
@@ -146,6 +168,7 @@ public class AllocationController {
             @RequestParam(required = false) String locationId,
             @RequestParam(required = false) Integer quantity,
             @RequestParam(required = false) String reason,
+            @RequestParam(required = false) Long toUserId,
             @RequestParam String action,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
@@ -158,6 +181,7 @@ public class AllocationController {
                 .quantity(quantity)
                 .reason(reason)
                 .action(action)
+                .toUserId(toUserId)
                 .build();
 
         try {
@@ -243,6 +267,15 @@ public class AllocationController {
 
         String requestNote = req.get().note;
 
+        Long toUserId = firstDetail.toUserId;
+        String toUserName = "Không chỉ định";
+        if (toUserId != null) {
+            String uName = userService.getUserNameById(toUserId);
+            if (uName != null) {
+                toUserName = uName;
+            }
+        }
+
         // Fetch available assets
         // Stock: status 01 (NEW) or 08 (STOCKED)
         List<Assets> stockAssets = new ArrayList<>(assetService.findStockByType(assetTypeId));
@@ -263,6 +296,7 @@ public class AllocationController {
         model.addAttribute("alreadyReceivedIds", alreadyReceivedIds);
         model.addAttribute("stockAssets", stockAssets);
         model.addAttribute("recoveredAssets", recoveredAssets);
+        model.addAttribute("toUserName", toUserName);
 
         return "ProcessingAllocation";
     }
@@ -311,6 +345,17 @@ public class AllocationController {
         model.addAttribute("detail", firstDetail);
         model.addAttribute("requestedQty", details.size()); // total N units originally requested
         model.addAttribute("assignedAssets", assignedAssets);
+
+        Long toUserId = firstDetail.toUserId;
+        String toUserName = "Không chỉ định";
+        if (toUserId != null) {
+            String uName = userService.getUserNameById(toUserId);
+            if (uName != null) {
+                toUserName = uName;
+            }
+        }
+        model.addAttribute("toUserName", toUserName);
+
         return "ConfirmAllocationReceipt";
     }
 
@@ -357,6 +402,17 @@ public class AllocationController {
         model.addAttribute("requestedQty", details.size()); // total N units originally requested
         model.addAttribute("warehouseAssets", warehouseAssets);
         model.addAttribute("canDispatch", canDispatch);
+
+        Long toUserId = firstDetail.toUserId;
+        String toUserName = "Không chỉ định";
+        if (toUserId != null) {
+            String uName = userService.getUserNameById(toUserId);
+            if (uName != null) {
+                toUserName = uName;
+            }
+        }
+        model.addAttribute("toUserName", toUserName);
+
         return "WarehouseAllocationView";
     }
 

@@ -35,6 +35,10 @@
                     <span th:text="${detail.toLocationId != null ? T(com.example.swp391_assetmanagement.enums.Location).of(detail.toLocationId).getName() : 'N/A'}">Phòng IT</span>
                 </div>
                 <div class="summary-item">
+                    <label>Người nhận (Client)</label>
+                    <span th:text="${toUserName}">Không chỉ định</span>
+                </div>
+                <div class="summary-item">
                     <label>Lý do</label>
                     <span th:text="${requestNote != null && !requestNote.isEmpty() ? requestNote : 'Không có ghi chú'}">Dùng cho nhân viên mới</span>
                 </div>
@@ -87,10 +91,11 @@
                                     th:style="${#lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">
                                     AS-001
                                 </td>
-                                <td th:text="${asset.description}"
+                                <td th:text="${asset.assetTypeId != null ? T(com.example.swp391_assetmanagement.enums.AssetType).of(asset.assetTypeId).getName() : ''}"
                                     th:style="${#lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">
-                                    MacBook Pro 2023
+                                    Laptop
                                 </td>
+
                                 <td th:text="${asset.locationId != null ? T(com.example.swp391_assetmanagement.enums.Location).of(asset.locationId).getName() : 'N/A'}"
                                     th:style="${#lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">
                                     Kho Chính
@@ -140,9 +145,9 @@
                                     th:style="${#lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">
                                     AS-054
                                 </td>
-                                <td th:text="${asset.description}"
+                                <td th:text="${asset.assetTypeId != null ? T(com.example.swp391_assetmanagement.enums.AssetType).of(asset.assetTypeId).getName() : ''}"
                                     th:style="${#lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">
-                                    Dữ liệu mẫu
+                                    Laptop
                                 </td>
                                 <td th:text="${asset.locationId != null ? T(com.example.swp391_assetmanagement.enums.Location).of(asset.locationId).getName() : 'N/A'}"
                                     th:style="${#lists.contains(alreadyAssignedIds, asset.id)} ? 'color:#94a3b8;' : ''">
