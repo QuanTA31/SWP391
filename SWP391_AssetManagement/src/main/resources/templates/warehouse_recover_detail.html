@@ -48,7 +48,7 @@
                 <div class="row">
                     <div class="col-md-6 mb-2">
                         <span class="info-label">Request ID:</span>
-                        <span class="fw-bold" th:text="${request.id}"></span>
+                        <span class="fw-bold" th:text="${request.requestId}"></span>
                     </div>
                     <div class="col-md-6 mb-2">
                         <span class="info-label">Created Date:</span>
@@ -82,13 +82,13 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="item : ${details}">
+                        <tr th:each="item : ${request.items}">
                             <td class="fw-bold" th:text="${item.assetId}"></td>
-                            <td th:text="${item.assetTypeId}"></td>
+                            <td th:text="${item.assetTypeName}"></td>
                             <td>
-                                <span class="badge bg-light text-dark border" th:text="${item.fromUserId}"></span>
+                                <span class="badge bg-light text-dark border" th:text="${item.fromUserName}"></span>
                             </td>
-                            <td th:text="${item.fromLocationId}"></td>
+                            <td th:text="${item.fromLocationName}"></td>
                             <td class="text-center">
                                 <span th:if="${item.isDone}" class="badge bg-success">Recovered</span>
                                 <span th:unless="${item.isDone}" class="badge bg-warning text-dark">Pending</span>
@@ -99,8 +99,8 @@
                                       method="post"
                                       onsubmit="return confirm('Xác nhận đã thu hồi tài sản này về kho?')">
 
-                                    <input type="hidden" name="detailId" th:value="${item.id}" />
-                                    <input type="hidden" name="requestId" th:value="${request.id}" />
+                                    <input type="hidden" name="detailId" th:value="${item.detailId}" />
+                                    <input type="hidden" name="requestId" th:value="${request.requestId}" />
 
                                     <button type="submit" class="btn btn-sm btn-success px-3">
                                         Confirm
@@ -109,7 +109,7 @@
                                 <span th:if="${item.isDone}" class="text-muted small italic">Completed</span>
                             </td>
                         </tr>
-                        <tr th:if="${#lists.isEmpty(details)}">
+                        <tr th:if="${#lists.isEmpty(request.items)}">
                             <td colspan="6" class="text-center py-4 text-muted">No items found in this request.</td>
                         </tr>
                         </tbody>

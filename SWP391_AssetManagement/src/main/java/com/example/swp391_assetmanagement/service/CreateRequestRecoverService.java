@@ -10,6 +10,8 @@ public interface CreateRequestRecoverService {
 
     Long createRequestRecover(AssetRequest request);
 
+    Long insertRecover(AssetRequest request);
+
     void createRequestInternalRecover(AssetInternalRequestDetail detail);
 
     List<Assets> getAssetsByCodes(List<String> assetCodes);

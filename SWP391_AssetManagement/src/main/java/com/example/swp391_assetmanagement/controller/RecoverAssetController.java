@@ -1,6 +1,7 @@
 package com.example.swp391_assetmanagement.controller;
 
 import com.example.swp391_assetmanagement.dto.request.ViewAssetByUserDisabledDTORequest;
+import com.example.swp391_assetmanagement.dto.response.RecoverProcessDTOResponse;
 import com.example.swp391_assetmanagement.dto.response.ViewAssetByUserDisabledDTOResponse;
 import com.example.swp391_assetmanagement.entity.AssetInternalRequestDetail;
 import com.example.swp391_assetmanagement.entity.AssetRequest;
@@ -23,14 +24,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RecoverAssetController {
 
-    private final ViewAssetByUserDisabledUsecase viewAssetByUserDisabledUsecase;
-    private final ExecuteRecoverUsecase executeRecoverUsecase;
     private final WarehouseRecoverUsecase warehouseRecoverUsecase;
 
     @GetMapping("/manager/recoverAsset")
     public String viewUser(@ModelAttribute ViewAssetByUserDisabledDTORequest request, HttpSession session, Model model) {
 
-        ViewAssetByUserDisabledDTOResponse response = viewAssetByUserDisabledUsecase.viewAssetDisabled(request,session);
+        ViewAssetByUserDisabledDTOResponse response = warehouseRecoverUsecase.viewAssetDisabled(request,session);
         model.addAttribute("assets", response);
         model.addAttribute("locations", Location.values());
         model.addAttribute("assetTypes", AssetType.values());
@@ -48,7 +47,7 @@ public class RecoverAssetController {
         }
 
         try {
-            executeRecoverUsecase.execute(assetCodes, userCode);
+            warehouseRecoverUsecase.execute(assetCodes, userCode);
             ra.addFlashAttribute("message", "Thu hồi tài sản thành công!");
         } catch (Exception e) {
             ra.addFlashAttribute("error", "Lỗi: " + e.getMessage());
@@ -59,15 +58,14 @@ public class RecoverAssetController {
 
     @GetMapping("/warehouse/process")
     public String viewProcess(@RequestParam Long requestId, Model model) {
-        // 1. Logic điều phối trạng thái
+        // 1. Chuyển trạng thái sang IN_PROGRESS
         warehouseRecoverUsecase.prepareProcessing(requestId);
 
-        // 2. Lấy dữ liệu THÔNG QUA UseCase
-        AssetRequest request = warehouseRecoverUsecase.getRequestInfo(requestId);
-        List<AssetInternalRequestDetail> details = warehouseRecoverUsecase.getRequestDetails(requestId);
+        // 2. Lấy "gói dữ liệu" DTO
+        RecoverProcessDTOResponse data = warehouseRecoverUsecase.getRecoverProcessData(requestId);
 
-        model.addAttribute("request", request);
-        model.addAttribute("details", details);
+        // 3. Đưa vào model (Dùng tên "request" để bạn không phải sửa quá nhiều code HTML cũ)
+        model.addAttribute("request", data);
 
         return "warehouse_recover_detail";
     }
