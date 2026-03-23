@@ -1,6 +1,6 @@
 UPDATE asset_request
 SET request_status_id = /* assetRequest.requestStatusId */''
-    /*%if assetRequest.approvedBy != null && assetRequest.approvedBy != "" */
+    /*%if assetRequest.approvedBy != null */
   , approved_by       = /* assetRequest.approvedBy */1
     /*%end */
     /*%if assetRequest.note != null && assetRequest.note != "" */
