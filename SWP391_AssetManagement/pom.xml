@@ -91,6 +91,12 @@
             <scope>test</scope>
         </dependency>
 
+        <!--   Layout     -->
+        <dependency>
+            <groupId>nz.net.ultraq.thymeleaf</groupId>
+            <artifactId>thymeleaf-layout-dialect</artifactId>
+            <version>3.3.0</version>
+        </dependency>
     </dependencies>
 
 
