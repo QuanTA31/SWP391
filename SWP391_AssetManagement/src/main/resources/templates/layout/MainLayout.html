@@ -56,6 +56,12 @@
                th:href="@{/purchase-requests/warehouse/view}" class="menu-item"
                th:classappend="${activePage == 'createPurchase'} ? 'active' : ''">Create Purchase Request
             </a>
+
+            <div style="flex-grow: 1;"></div>
+            <hr class="my-3">
+            <a th:href="@{/logout}" class="menu-item text-danger fw-semibold">
+                <i class="fas fa-sign-out-alt me-2"></i>Logout
+            </a>
         </div>
 
         <th:block layout:fragment="content"></th:block>
