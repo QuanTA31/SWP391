@@ -3,6 +3,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/MainLayout}">
 <head>
+    <meta charset="utf-8">
     <th:block layout:fragment="additional-css">
         <link rel="stylesheet" th:href="@{/css/OptionDetail.css}">
     </th:block>
@@ -10,29 +11,35 @@
 <body>
 <th:block layout:fragment="content">
     <div class="content-right">
+
         <div class="toolbar">
             <div class="toolbar-left">
                 <span class="fw-semibold">View Request</span>
             </div>
+
             <form method="get" th:action="@{/viewRequest}">
                 <div class="toolbar-right">
                     <select name="requestStatusId" class="form-select form-select-sm">
                         <option value="">Request Status</option>
                         <option th:each="st : ${T(com.example.swp391_assetmanagement.enums.RequestStatus).values()}"
-                                th:value="${st.value}" th:text="${st.name}"
-                                th:selected="${data?.filters?.requestStatusId == st.value}">
+                                th:value="${st.value}"
+                                th:text="${st.name}"
+                                th:selected="${data != null and data.filters != null and st.value == data.filters.requestStatusId}">
                         </option>
                     </select>
 
                     <select name="requestTypeId" class="form-select form-select-sm">
                         <option value="">Request Type</option>
                         <option th:each="tp : ${T(com.example.swp391_assetmanagement.enums.RequestType).values()}"
-                                th:value="${tp.value}" th:text="${tp.name}"
-                                th:selected="${data?.filters?.requestTypeId == tp.value}">
+                                th:value="${tp.value}"
+                                th:text="${tp.name}"
+                                th:selected="${data != null and data.filters != null and tp.value == data.filters.requestTypeId}">
                         </option>
                     </select>
 
-                    <button type="submit" class="btn btn-sm btn-save-draft">Apply Filter</button>
+                    <button type="submit" class="btn btn-sm btn-save-draft">
+                        Apply Filter
+                    </button>
                 </div>
             </form>
         </div>
@@ -45,15 +52,16 @@
                         <th>Request Type</th>
                         <th>Requested By</th>
                         <th>Request Date</th>
-                        <th>Status</th>
+                        <th>Request Status</th>
                         <th>Approved By</th>
                         <th>Approval Date</th>
                         <th>Handover Date</th>
                         <th>Note</th>
                         <th>Created At</th>
-                        <th class="text-center">Action</th>
+                        <th>Action</th>
                     </tr>
                     </thead>
+
                     <tbody>
                     <tr th:if="${data == null or data.allProcessResponses == null or data.allProcessResponses.isEmpty()}">
                         <td colspan="10" class="text-center text-muted">No data found</td>
@@ -64,26 +72,26 @@
                         <td th:text="${item.requestedBy}"></td>
                         <td th:text="${#temporals.format(item.requestedDate, 'yyyy-MM-dd')}"></td>
                         <td th:text="${item.requestStatusName}"></td>
-                        <td th:text="${item.approvalBy ?: '-'}"></td>
+                        <td th:text="${item.approvalBy != null ? item.approvalBy : '-'}"></td>
                         <td th:text="${item.approvalDate != null ? #temporals.format(item.approvalDate, 'yyyy-MM-dd') : '-'}"></td>
                         <td th:text="${item.handoverDate != null ? #temporals.format(item.handoverDate, 'yyyy-MM-dd') : '-'}"></td>
                         <td th:text="${item.note}"></td>
                         <td th:text="${#temporals.format(item.createdAt, 'yyyy-MM-dd')}"></td>
-
-                        <td class="text-center">
+                        <td>
                             <th:block th:if="${#strings.equalsIgnoreCase(item.requestTypeName,'PROCUREMENT')}">
-                                <a th:if="${session.ROLE == '03' or session.ROLE == '04'}"
-                                   class="btn btn-sm btn-info text-white"
+                                <a th:if="${session.ROLE == '03'}" class="btn btn-sm btn-info text-white"
                                    th:href="@{/purchase-requests/warehouse/view(assetRequestId=${item.id})}">View</a>
                                 <a th:if="${session.ROLE == '02'}" class="btn btn-sm btn-info text-white"
                                    th:href="@{/purchase-requests/manager/view(assetRequestId=${item.id})}">View</a>
+                                <a th:if="${session.ROLE == '04'}" class="btn btn-sm btn-info text-white"
+                                   th:href="@{/purchase-requests/warehouse/view(assetRequestId=${item.id})}">View</a>
 
                                 <form th:if="${item.requestStatusName == 'RESEARCH_DONE' and session.ROLE == '04'}"
                                       th:action="@{/purchase-requests/purchasing/progress}" method="post"
                                       style="display:inline">
                                     <input type="hidden" name="requestId" th:value="${item.id}"/>
                                     <button type="submit" class="btn btn-sm btn-success"
-                                            onclick="return confirm('Move to IN_PROGRESS?')">To Progress
+                                            onclick="return confirm('Move this request to IN_PROGRESS?')"> To Progress
                                     </button>
                                 </form>
 
@@ -91,71 +99,159 @@
                                       th:action="@{/purchase-requests/warehouse/createAssets}" method="post"
                                       style="display:inline">
                                     <input type="hidden" name="assetRequestId" th:value="${item.id}"/>
-                                    <button type="submit" class="btn btn-sm btn-info text-white">Create Asset</button>
+                                    <button type="submit" class="btn btn-sm btn-info text-white">Create asset</button>
                                 </form>
 
                                 <a th:if="${session.ROLE == '03' and item.requestStatusName == 'STOCK_IN'}"
                                    th:href="@{/purchase-requests/viewPurchaseAsset(assetRequestId=${item.id})}"
-                                   class="btn btn-sm btn-info text-white">View Purchased</a>
+                                   class="btn btn-sm btn-info text-white">View Purchase Asset</a>
                             </th:block>
 
-                            <th:block th:if="${#strings.equalsIgnoreCase(item.requestTypeName,'LIQUIDATION')}">
-                                <a th:if="${session.ROLE == '02'}" class="btn btn-sm btn-info text-white"
-                                   th:href="@{/liquidate/manager/view(assetRequestId=${item.id})}">View</a>
-                                <a th:if="${session.ROLE == '04'}" class="btn btn-sm btn-info text-white"
-                                   th:href="@{/liquidate/purchasing/view(assetRequestId=${item.id})}">View</a>
+                            <!-- LIQUIDATION -->
+                            <th:block th:if="${item.requestTypeName != null
+                  and #strings.equalsIgnoreCase(item.requestTypeName,'LIQUIDATION')}">
 
-                                <form th:if="${item.requestStatusName == 'RESEARCH_DONE' and session.ROLE == '04'}"
-                                      th:action="@{/liquidate/purchasing/progress}" method="post"
-                                      style="display:inline">
-                                    <input type="hidden" name="requestId" th:value="${item.id}"/>
-                                    <button type="submit" class="btn btn-sm btn-success">To Progress</button>
-                                </form>
-                                <form th:if="${item.requestStatusName == 'IN_PROGRESS' and session.ROLE == '04'}"
-                                      th:action="@{/liquidate/purchasing/complete}" method="post"
-                                      style="display:inline">
-                                    <input type="hidden" name="requestId" th:value="${item.id}"/>
-                                    <button type="submit" class="btn btn-sm btn-success">Complete</button>
-                                </form>
-                            </th:block>
-
-                            <th:block th:if="${#strings.containsIgnoreCase(item.requestTypeName, 'ALLOCATION')}">
-                                <a th:if="${session.ROLE == '03' and item.requestStatusId == '05'}"
-                                   class="btn btn-sm btn-primary"
-                                   th:href="@{/allocation/warehouse/view(requestId=${item.id})}">View</a>
-                                <a th:if="${session.ROLE == '02' and (item.requestStatusId == '03' or (item.requestStatusId == '05' and item.assignedQuantity < item.quantity))}"
-                                   class="btn btn-sm btn-success text-white"
-                                   th:href="@{/allocation/process(id=${item.id})}">Allocate</a>
-                                <a th:if="${session.ROLE == '05' and item.requestStatusId == '05' and !item.isDone}"
-                                   class="btn btn-sm btn-success text-white"
-                                   th:href="@{/allocation/department/receipt(requestId=${item.id})}">Confirm</a>
-                                <a class="btn btn-sm btn-primary"
-                                   th:href="@{/allocation/department/edit(id=${item.id})}">View</a>
-                            </th:block>
-
-                            <th:block th:if="${#strings.equalsIgnoreCase(item.requestTypeName,'MAINTENANCE')}">
-                                <a th:if="${session.ROLE == '05'}" class="btn btn-sm btn-info text-white"
-                                   th:href="@{/maintenance-requests/department_manager/view(assetRequestId=${item.id})}">View</a>
-                                <a th:if="${session.ROLE == '03'}" class="btn btn-sm btn-info text-white"
-                                   th:href="@{/maintenance-requests/warehouse/view(assetRequestId=${item.id})}">View</a>
-                                <a th:if="${session.ROLE != '05' and session.ROLE != '03'}"
+                                <!-- MANAGER -->
+                                <a th:if="${session.ROLE == '02'}"
                                    class="btn btn-sm btn-info text-white"
-                                   th:href="@{/maintenance-requests/other/view(assetRequestId=${item.id})}">View</a>
+                                   th:href="@{/liquidate/manager/view(assetRequestId=${item.id})}">
+                                    View
+                                </a>
+
+                                <!-- PURCHASING -->
+                                <a th:if="${session.ROLE == '04'}"
+                                   class="btn btn-sm btn-info text-white"
+                                   th:href="@{/liquidate/purchasing/view(assetRequestId=${item.id})}">
+                                    View
+                                </a>
+
+                                <form th:if="${item.requestStatusName == 'RESEARCH_DONE'
+              and item.requestTypeName == 'LIQUIDATION'
+              and session.ROLE == '04'}"
+                                      th:action="@{/liquidate/purchasing/progress}"
+                                      method="post"
+                                      style="display:inline">
+
+                                    <input type="hidden" name="requestId" th:value="${item.id}"/>
+
+                                    <button type="submit"
+                                            class="btn btn-sm btn-success"
+                                            onclick="return confirm('Move this request to IN_PROGRESS?')">
+                                        To Progress
+                                    </button>
+                                </form>
+
+                                <form th:if="${item.requestStatusName == 'IN_PROGRESS'
+              and item.requestTypeName == 'LIQUIDATION'
+              and session.ROLE == '04'}"
+                                      th:action="@{/liquidate/purchasing/complete}"
+                                      method="post"
+                                      style="display:inline">
+
+                                    <input type="hidden" name="requestId" th:value="${item.id}"/>
+
+                                    <button type="submit"
+                                            class="btn btn-sm btn-success"
+                                            onclick="return confirm('Move this request to COMPLETED?')">
+                                        To Completed
+                                    </button>
+                                </form>
                             </th:block>
 
-                            <a th:if="${#strings.equalsIgnoreCase(item.requestTypeName, 'INTERNAL')}"
-                               class="btn btn-sm btn-primary" th:href="@{/viewInternalRequest/detail(id=${item.id})}">View</a>
-                            <a th:if="${#strings.equalsIgnoreCase(item.requestTypeName, 'EXTERNAL')}"
-                               class="btn btn-sm btn-warning text-dark"
-                               th:href="@{/viewExternalRequest/detail(id=${item.id})}">View</a>
+                            <!-- INTERNAL / EXTERNAL / ALLOCATION --> <!-- check lại do đá liquidation-->
+                            <th:block
+                                    th:if="${#strings.equalsIgnoreCase(item.requestTypeName,'INTERNAL') or #strings.equalsIgnoreCase(item.requestTypeName,'ALLOCATION')}">
+                                <!-- ALLOCATION -->
+                                <a th:if="${#strings.containsIgnoreCase(item.requestTypeName, 'ALLOCATION')
+               and session.ROLE == '03'
+               and item.requestStatusId == '05'}"
+                                   class="btn btn-sm btn-primary"
+                                   th:href="@{/allocation/warehouse/view(requestId=${item.id})}">
+                                    View
+                                </a>
+                                <a th:if="${#strings.containsIgnoreCase(item.requestTypeName, 'ALLOCATION')
+               and session.ROLE == '02'
+               and (item.requestStatusId == '03' or (item.requestStatusId == '05' and item.assignedQuantity < item.quantity))}"
+                                   class="btn btn-sm btn-success text-white ms-1"
+                                   th:href="@{/allocation/process(id=${item.id})}">
+                                    Allocation
+                                </a>
 
-                            <th:block th:if="${#strings.equalsIgnoreCase(item.requestTypeName, 'RETRIEVAL')}">
-                                <a th:if="${session.ROLE == '03' and (item.requestStatusId == '03' or item.requestStatusId == '05')}"
-                                   class="btn btn-sm btn-primary text-white"
-                                   th:href="@{/recover-asset/warehouse/process(requestId=${item.id})}">Process</a>
-                                <a th:else class="btn btn-sm btn-info text-white"
-                                   th:href="@{/viewInternalRequest/detail(id=${item.id})}">View</a>
+                                <!-- DEPARTMENT RECEIPT (Role 05, status 05, isDone=false (dispatched)) -->
+                                <a th:if="${#strings.containsIgnoreCase(item.requestTypeName, 'ALLOCATION')
+               and session.ROLE == '05'
+               and item.requestStatusId == '05'
+               and item.isDone == false}"
+                                   class="btn btn-sm btn-success text-white ms-1"
+                                   th:href="@{/allocation/department/receipt(requestId=${item.id})}">
+                                    Confirm Receipt
+                                </a>
+
+                                <!-- GENERIC VIEW (Manager, or Department (if not Receipt stage)) -->
+                                <a th:if="${#strings.containsIgnoreCase(item.requestTypeName, 'ALLOCATION')
+               and !(session.ROLE == '03' and item.requestStatusId == '05')
+               and !(session.ROLE == '05' and item.requestStatusId == '05' and item.isDone == false)}"
+                                   class="btn btn-sm btn-primary ms-1"
+                                   th:href="@{/allocation/department/edit(id=${item.id})}">
+                                    View
+                                </a>
+                                <!-- NORMAL INTERNAL -->
+                                <a th:unless="${#strings.containsIgnoreCase(item.requestTypeName, 'ALLOCATION')}"
+                                   class="btn btn-sm btn-primary"
+                                   th:href="@{/viewInternalRequest/detail(id=${item.id})}">
+                                    View
+                                </a>
+
+                                <th:block th:if="${#strings.equalsIgnoreCase(item.requestTypeName, 'RETRIEVAL')}">
+                                    <a th:if="${session.ROLE == '03' and (item.requestStatusId == '03' or item.requestStatusId == '05')}"
+                                       class="btn btn-sm btn-primary text-white"
+                                       th:href="@{/recover-asset/warehouse/process(requestId=${item.id})}">
+                                        Process Recovery
+                                    </a>
+
+                                    <a th:unless="${session.ROLE == '03' and (item.requestStatusId == '03' or item.requestStatusId == '05')}"
+                                       class="btn btn-sm btn-info text-white"
+                                       th:href="@{/viewInternalRequest/detail(id=${item.id})}">
+                                        View
+                                    </a>
+                                </th:block>
+                                <!-- MAINTENANCE -->
+                                <th:block th:if="${#strings.equalsIgnoreCase(item.requestTypeName,'MAINTENANCE')}">
+
+                                    <a class="btn btn-sm btn-info text-white"
+                                       th:href="@{/maintenance-requests/view(assetRequestId=${item.id})}">
+                                        View
+                                    </a>
+
+                                </th:block>
                             </th:block>
+                        </td>
+                        <th:block th:if="${#strings.equalsIgnoreCase(item.requestTypeName,'EXTERNAL')}">
+                            <a class="btn btn-sm btn-warning text-dark"
+                               th:href="@{/viewExternalRequest/detail(id=${item.id})}">
+                                View
+                            </a>
+                        </th:block>
+                        <!-- MAINTENANCE -->
+                        <th:block th:if="${#strings.equalsIgnoreCase(item.requestTypeName,'MAINTENANCE')}">
+
+                            <a th:if="${session.ROLE == '05'}" class="btn btn-sm btn-info text-white"
+                               th:href="@{/maintenance-requests/department_manager/view(assetRequestId=${item.id})}">
+                                View
+                            </a>
+
+                            <a th:if="${session.ROLE == '03'}" class="btn btn-sm btn-info text-white"
+                               th:href="@{/maintenance-requests/warehouse/view(assetRequestId=${item.id})}">
+                                View
+                            </a>
+
+                            <a th:if="${session.ROLE != '05' and session.ROLE != '03'}"
+                               class="btn btn-sm btn-info text-white"
+                               th:href="@{/maintenance-requests/other/view(assetRequestId=${item.id})}">
+                                View
+                            </a>
+
+                        </th:block>
                         </td>
                     </tr>
                     </tbody>
@@ -163,12 +259,14 @@
             </div>
         </div>
 
-        <div class="content-pagination" th:if="${data?.filters != null}">
+        <div class="content-pagination" th:if="${data != null and data.filters != null}">
             <div class="pagination-info">
-                Showing <strong th:text="${(data.filters.page - 1) * data.filters.pageSize + 1}"></strong> –
-                <strong th:text="${(data.filters.page - 1) * data.filters.pageSize + data.allProcessResponses.size()}"></strong>
-                of <strong th:text="${data.filters.totalItems}"></strong>
+                Showing
+                <strong th:text="${(data.filters.page - 1) * data.filters.pageSize + 1}">1</strong> –
+                <strong th:text="${(data.filters.page - 1) * data.filters.pageSize + data.allProcessResponses.size()}">10</strong>
+                of <strong th:text="${data.filters.totalItems}">0</strong>
             </div>
+
             <ul class="pagination pagination-sm mb-0">
                 <li class="page-item" th:classappend="${!data.filters.hasPreviousPage} ? 'disabled'">
                     <a class="page-link"
