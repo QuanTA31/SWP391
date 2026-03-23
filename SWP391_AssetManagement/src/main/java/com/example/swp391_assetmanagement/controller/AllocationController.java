@@ -81,10 +81,12 @@ public class AllocationController {
 
         int quantity = details.size(); // 1 record per unit
 
-        // Collect assets already assigned (asset_id set on detail records)
+        // Collect assets already assigned and RECEIVED by department
         List<Assets> assignedAssets = new ArrayList<>();
         for (AssetInternalRequestDetail d : details) {
-            if (d.assetId != null) {
+            // Only add to assignedAssets if department has confirmed receipt (isDone == true)
+            // This prevents the department from seeing assets prematurely when the manager just selected them.
+            if (d.assetId != null && Boolean.TRUE.equals(d.isDone)) {
                 Assets asset = assetService.findById(d.assetId);
                 if (asset != null) assignedAssets.add(asset);
             }
@@ -220,6 +222,7 @@ public class AllocationController {
         // Count assets already confirmed by department (asset_id set + location transferred)
         int alreadyConfirmedCount = 0;
         List<Long> alreadyAssignedIds = new ArrayList<>();
+        List<Long> alreadyReceivedIds = new ArrayList<>();
         List<Assets> alreadyAssignedAssets = new ArrayList<>();
 
         for (AssetInternalRequestDetail d : details) {
@@ -228,8 +231,11 @@ public class AllocationController {
                 Assets a = assetService.findById(d.assetId);
                 if (a != null) {
                     alreadyAssignedAssets.add(a);
-                    if (toLocationId != null && toLocationId.equals(a.locationId)) {
+                    // Dùng cờ isDone == true để biết chính xác Department đã nhận thay vì check locationId
+                    // Vì nếu tài sản tình cờ đang ở cùng location đích thì nó sẽ bị dính lỗi hiển thị sớm.
+                    if (Boolean.TRUE.equals(d.isDone)) {
                         alreadyConfirmedCount++;
+                        alreadyReceivedIds.add(d.assetId);
                     }
                 }
             }
@@ -254,6 +260,7 @@ public class AllocationController {
         model.addAttribute("requestNote", requestNote);
         model.addAttribute("alreadyConfirmedCount", alreadyConfirmedCount);
         model.addAttribute("alreadyAssignedIds", alreadyAssignedIds);
+        model.addAttribute("alreadyReceivedIds", alreadyReceivedIds);
         model.addAttribute("stockAssets", stockAssets);
         model.addAttribute("recoveredAssets", recoveredAssets);
 
