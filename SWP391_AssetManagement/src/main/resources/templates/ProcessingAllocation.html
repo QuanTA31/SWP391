@@ -38,10 +38,10 @@
                     <label>Lý do</label>
                     <span th:text="${requestNote != null && !requestNote.isEmpty() ? requestNote : 'Không có ghi chú'}">Dùng cho nhân viên mới</span>
                 </div>
-                <div class="summary-item" th:if="${alreadyConfirmedCount > 0}">
-                    <label>Đã cấp phát</label>
+                <div class="summary-item" th:if="${#lists.size(alreadyAssignedIds) > 0}">
+                    <label>Đã gán tài sản</label>
                     <span>
-                        <span th:text="${alreadyConfirmedCount}">2</span>
+                        <span th:text="${#lists.size(alreadyAssignedIds)}">2</span>
                         /
                         <span th:text="${requestedQty}">10</span>
                     </span>
@@ -100,8 +100,10 @@
                                           class="status-badge stock">Mới</span>
                                     <span th:if="${asset.assetStatusId == '08' and !#lists.contains(alreadyAssignedIds, asset.id)}"
                                           class="status-badge stock">Trong kho</span>
-                                    <span th:if="${#lists.contains(alreadyAssignedIds, asset.id)}"
-                                          style="background:#fef9c3;color:#713f12;border-radius:9999px;padding:0.2rem 0.65rem;font-size:0.75rem;font-weight:600;display:inline-block;">🚚 Đang trong quá trình cấp phát</span>
+                                    <span th:if="${#lists.contains(alreadyAssignedIds, asset.id) and !#lists.contains(alreadyReceivedIds, asset.id)}"
+                                          style="background:#fef9c3;color:#713f12;border-radius:9999px;padding:0.2rem 0.65rem;font-size:0.75rem;font-weight:600;display:inline-block;"> Đang trong quá trình cấp phát</span>
+                                    <span th:if="${#lists.contains(alreadyReceivedIds, asset.id)}"
+                                          style="background:#dcfce7;color:#166534;border-radius:9999px;padding:0.2rem 0.65rem;font-size:0.75rem;font-weight:600;display:inline-block;">Đã nhận</span>
                                 </td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(stockAssets)}">
@@ -149,8 +151,10 @@
                                 <td>
                                     <span th:if="${!#lists.contains(alreadyAssignedIds, asset.id)}"
                                           class="status-badge recovered">Có thể thu hồi</span>
-                                    <span th:if="${#lists.contains(alreadyAssignedIds, asset.id)}"
-                                          style="background:#fef9c3;color:#713f12;border-radius:9999px;padding:0.2rem 0.65rem;font-size:0.75rem;font-weight:600;display:inline-block;">🚚 Đang trong quá trình cấp phát</span>
+                                    <span th:if="${#lists.contains(alreadyAssignedIds, asset.id) and !#lists.contains(alreadyReceivedIds, asset.id)}"
+                                          style="background:#fef9c3;color:#713f12;border-radius:9999px;padding:0.2rem 0.65rem;font-size:0.75rem;font-weight:600;display:inline-block;">Đang trong quá trình cấp phát</span>
+                                    <span th:if="${#lists.contains(alreadyReceivedIds, asset.id)}"
+                                          style="background:#dcfce7;color:#166534;border-radius:9999px;padding:0.2rem 0.65rem;font-size:0.75rem;font-weight:600;display:inline-block;">Đã nhận</span>
                                 </td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(recoveredAssets)}">
@@ -165,10 +169,10 @@
                         <div class="selection-status">
                         <span class="selection-count">
                             Đã chọn: <span id="currentCount">0</span>
-                            / <span id="remainingQty" th:text="${requestedQty - alreadyConfirmedCount}">10</span>
-                            <span th:if="${alreadyConfirmedCount > 0}" class="text-muted ms-2"
+                            / <span id="remainingQty" th:text="${requestedQty - #lists.size(alreadyAssignedIds)}">10</span>
+                            <span th:if="${#lists.size(alreadyAssignedIds) > 0}" class="text-muted ms-2"
                                   style="font-size:0.8rem;">
-                                (đã giao <span th:text="${alreadyConfirmedCount}">2</span>/<span
+                                (đã gán <span th:text="${#lists.size(alreadyAssignedIds)}">2</span>/<span
                                     th:text="${requestedQty}">10</span>)
                             </span>
                         </span>
@@ -182,56 +186,55 @@
                 </form>
             </div>
         </div>
-
-        <script>
-            // remaining = total requested - already delivered in past rounds
-            const targetQty = parseInt(document.getElementById('remainingQty').innerText);
-
-            function switchTab(type) {
-                const stockTable = document.getElementById('stockTable');
-                const recoveredTable = document.getElementById('recoveredTable');
-                const btns = document.querySelectorAll('.tab-btn');
-
-                if (type === 'stock') {
-                    stockTable.classList.remove('d-none');
-                    recoveredTable.classList.add('d-none');
-                    btns[0].classList.add('active');
-                    btns[1].classList.remove('active');
-                } else {
-                    stockTable.classList.add('d-none');
-                    recoveredTable.classList.remove('d-none');
-                    btns[0].classList.remove('active');
-                    btns[1].classList.add('active');
-                }
-            }
-
-            function updateCount() {
-                const checks = document.querySelectorAll('.asset-check:checked');
-                const count = checks.length;
-                document.getElementById('currentCount').innerText = count;
-
-                const submitBtn = document.getElementById('submitBtn');
-
-                // Allow submit only if selection doesn't exceed target
-                if (count > 0 && count <= targetQty) {
-                    submitBtn.disabled = false;
-                } else {
-                    submitBtn.disabled = true;
-                }
-
-                // Visual warning if exceeded
-                const countLabel = document.getElementById('currentCount');
-                if (count > targetQty) {
-                    countLabel.classList.add('text-danger');
-                } else {
-                    countLabel.classList.remove('text-danger');
-                }
-            }
-        </script>
     </div>
 </th:block>
 <th:block layout:fragment="additional-scripts">
     <script th:src="@{/js/Template.js}"></script>
+    <script>
+        // remaining = total requested - already delivered in past rounds
+        const targetQty = parseInt(document.getElementById('remainingQty').innerText);
+
+        function switchTab(type) {
+            const stockTable = document.getElementById('stockTable');
+            const recoveredTable = document.getElementById('recoveredTable');
+            const btns = document.querySelectorAll('.tab-btn');
+
+            if (type === 'stock') {
+                stockTable.classList.remove('d-none');
+                recoveredTable.classList.add('d-none');
+                btns[0].classList.add('active');
+                btns[1].classList.remove('active');
+            } else {
+                stockTable.classList.add('d-none');
+                recoveredTable.classList.remove('d-none');
+                btns[0].classList.remove('active');
+                btns[1].classList.add('active');
+            }
+        }
+
+        function updateCount() {
+            const checks = document.querySelectorAll('.asset-check:checked');
+            const count = checks.length;
+            document.getElementById('currentCount').innerText = count;
+
+            const submitBtn = document.getElementById('submitBtn');
+
+            // Allow submit only if selection doesn't exceed target
+            if (count > 0 && count <= targetQty) {
+                submitBtn.disabled = false;
+            } else {
+                submitBtn.disabled = true;
+            }
+
+            // Visual warning if exceeded
+            const countLabel = document.getElementById('currentCount');
+            if (count > targetQty) {
+                countLabel.classList.add('text-danger');
+            } else {
+                countLabel.classList.remove('text-danger');
+            }
+        }
+    </script>
 </th:block>
 </body>
 </html>

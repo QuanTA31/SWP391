@@ -1,143 +1,213 @@
-/* ── Page layout ─────────────────────────────── */
-body { background: #f4f6fb; }
+/* ===== Base ===== */
 
-.page-card {
-    background: #fff;
-    border-radius: 14px;
-    box-shadow: 0 4px 24px rgba(0,0,0,.08);
-    padding: 2rem 2.5rem;
-    max-width: 780px;
-    margin: 2.5rem auto;
+.content-right {
+    flex: 1;
+    padding: 24px;
+}
+.app-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
-/* ── Header ──────────────────────────────────── */
+
+/* ===== Card ===== */
+.page-card {
+    width: 100%;
+    max-width: 100%;   /* ❗ bỏ giới hạn */
+    margin: 0;         /* ❗ bỏ auto center */
+}
+
+/* ===== Header ===== */
 .page-header {
     display: flex;
     align-items: center;
-    gap: .75rem;
-    margin-bottom: 1.75rem;
+    gap: 1rem;
+    margin-bottom: 1.8rem;
     padding-bottom: 1rem;
-    border-bottom: 2px solid #e8ecf4;
+    border-bottom: 1px solid #eef1f6;
 }
+
 .page-header .icon-box {
-    width: 44px; height: 44px;
-    background: linear-gradient(135deg, #4361ee, #7209b7);
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    color: #fff; font-size: 1.3rem;
-    flex-shrink: 0;
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #cd854c, #cd854d);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.3rem;
 }
+
 .page-header h4 {
+    font-size: 1.2rem;
+    font-weight: 700;
     margin: 0;
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: #1e2a45;
+    color: #1f2937;
 }
+
 .page-header small {
-    color: #7b8db0;
-    font-size: .8rem;
+    font-size: 0.8rem;
+    color: #94a3b8;
 }
 
-/* ── Section title ───────────────────────────── */
+/* ===== Section ===== */
 .section-label {
-    font-size: .7rem;
+    font-size: 0.72rem;
     font-weight: 700;
-    letter-spacing: .08em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: #4361ee;
-    margin-bottom: .6rem;
+    color: #f19563;
+    margin-bottom: 0.5rem;
 }
 
-/* ── Form controls ───────────────────────────── */
-.form-control, .form-select {
-    border-radius: 8px;
-    border: 1.5px solid #dde3f0;
-    font-size: .9rem;
-    transition: border-color .2s, box-shadow .2s;
-}
-.form-control:focus, .form-select:focus {
-    border-color: #4361ee;
-    box-shadow: 0 0 0 3px rgba(67,97,238,.12);
-}
-.form-label {
-    font-size: .85rem;
-    font-weight: 600;
-    color: #3a4a6b;
-    margin-bottom: .35rem;
-}
-
-/* ── Priority badges ─────────────────────────── */
-.priority-group { display: flex; gap: .6rem; flex-wrap: wrap; }
-.priority-option input[type="radio"] { display: none; }
-.priority-option label {
-    display: inline-flex; align-items: center; gap: .4rem;
-    padding: .4rem .95rem;
-    border-radius: 20px;
-    font-size: .82rem; font-weight: 600;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: all .2s;
-    user-select: none;
-}
-/* LOW */
-.priority-option.low label   { background: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; }
-.priority-option.low input:checked + label { background: #2e7d32; color: #fff; border-color: #2e7d32; }
-/* MEDIUM */
-.priority-option.medium label { background: #fff3e0; color: #e65100; border-color: #ffe0b2; }
-.priority-option.medium input:checked + label { background: #ef6c00; color: #fff; border-color: #ef6c00; }
-/* HIGH */
-.priority-option.high label   { background: #fce4ec; color: #c62828; border-color: #f8bbd0; }
-.priority-option.high input:checked + label { background: #c62828; color: #fff; border-color: #c62828; }
-/* CRITICAL */
-.priority-option.critical label { background: #ede7f6; color: #4527a0; border-color: #d1c4e9; }
-.priority-option.critical input:checked + label { background: #4527a0; color: #fff; border-color: #4527a0; }
-
-/* ── Asset select ────────────────────────────── */
-.asset-select-wrap { position: relative; }
-.asset-select-wrap .form-select { padding-right: 2.4rem; }
-
-/* ── Alert error ─────────────────────────────── */
-.alert-error {
-    background: #fff0f1;
-    border: 1.5px solid #f5c2c7;
+/* ===== Inputs ===== */
+.form-control,
+.form-select {
     border-radius: 10px;
-    color: #842029;
-    padding: .75rem 1rem;
-    font-size: .87rem;
-    display: flex; align-items: center; gap: .6rem;
+    border: 1.5px solid #e2e8f0;
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #cd854d;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.form-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #334155;
+}
+
+/* ===== Priority ===== */
+.priority-group {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+}
+
+.priority-option input {
+    display: none;
+}
+
+.priority-option label {
+    padding: 0.45rem 1rem;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    transition: all 0.2s ease;
+}
+
+/* LOW */
+.priority-option.low label {
+    background: #ecfdf5;
+    color: #059669;
+}
+.priority-option.low input:checked + label {
+    background: #059669;
+    color: #fff;
+}
+
+/* MEDIUM */
+.priority-option.medium label {
+    background: #fff7ed;
+    color: #ea580c;
+}
+.priority-option.medium input:checked + label {
+    background: #ea580c;
+    color: #fff;
+}
+
+/* HIGH */
+.priority-option.high label {
+    background: #fef2f2;
+    color: #dc2626;
+}
+.priority-option.high input:checked + label {
+    background: #dc2626;
+    color: #fff;
+}
+
+/* CRITICAL */
+.priority-option.critical label {
+    background: #f5f3ff;
+    color: #7c3aed;
+}
+.priority-option.critical input:checked + label {
+    background: #7c3aed;
+    color: #fff;
+}
+
+/* ===== Alert ===== */
+.alert-error {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+    color: #b91c1c;
+    padding: 0.75rem 1rem;
+    font-size: 0.87rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     margin-bottom: 1.2rem;
 }
 
-/* ── Action buttons ──────────────────────────── */
-.action-bar {
-    display: flex; justify-content: flex-end; gap: .75rem;
-    margin-top: 1.75rem;
-    padding-top: 1.2rem;
-    border-top: 1.5px solid #eef0f7;
+/* ===== Divider ===== */
+.section-divider {
+    border-top: 1px dashed #e2e8f0;
+    margin: 1.4rem 0;
 }
-.btn-save-draft {
-    border: 2px solid #4361ee;
-    color: #4361ee;
-    background: #fff;
-    border-radius: 8px;
-    padding: .5rem 1.4rem;
-    font-size: .9rem; font-weight: 600;
-    transition: all .2s;
-}
-.btn-save-draft:hover { background: #f0f2ff; }
 
+/* ===== Buttons ===== */
+.action-bar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.8rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid #eef2f7;
+}
+
+.btn-save-draft {
+    border: 1.5px solid #cd854d;
+    color: #cd854d;
+    background: white;
+    border-radius: 8px;
+    padding: 0.45rem 1.3rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.btn-save-draft:hover {
+    background: #eef2ff;
+}
+
+/* Submit button */
 .btn-submit-req {
-    background: linear-gradient(135deg, #4361ee, #7209b7);
-    color: #fff;
+    background: linear-gradient(135deg, #32418e, #365faa);
+    color: white;
     border: none;
     border-radius: 8px;
-    padding: .5rem 1.6rem;
-    font-size: .9rem; font-weight: 600;
-    box-shadow: 0 3px 12px rgba(67,97,238,.35);
-    transition: opacity .2s, transform .15s;
+    padding: 0.45rem 1.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
+    transition: all 0.2s ease;
 }
-.btn-submit-req:hover { opacity: .9; transform: translateY(-1px); }
-.btn-submit-req:active { transform: translateY(0); }
 
-/* ── Divider ─────────────────────────────────── */
-.section-divider { border-top: 1.5px dashed #e0e5f2; margin: 1.4rem 0; }
+.btn-submit-req:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.btn-submit-req:active {
+    transform: scale(0.97);
+}
