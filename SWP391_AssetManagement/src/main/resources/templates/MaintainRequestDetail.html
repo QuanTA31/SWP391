@@ -188,7 +188,7 @@
                 </form>
 
                 <!-- WAREHOUSE: Hoàn tất / Không sửa được (khi đang APPROVED hoặc IN_PROGRESS) -->
-                <form th:if="${role == '03' and (requestStatusId == '05' or requestStatusId == '03')}"
+                <form th:if="${role == '03' and requestStatusId == '05' }"
                       th:action="@{/maintenance-requests/warehouse/finish-repair}"
                       method="POST" class="m-0 d-flex">
                     <input type="hidden" name="requestId" th:value="${requestId}"/>
