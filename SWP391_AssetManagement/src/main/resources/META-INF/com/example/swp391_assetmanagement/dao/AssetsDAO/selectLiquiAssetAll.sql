@@ -21,14 +21,12 @@ FROM assets a
 /*%end */
 
 WHERE a.location_id = '05'
+AND a.asset_status_id IN ('01', '08')
 /*%if request.assetRequestId != null */
   AND d.asset_request_id = /* request.assetRequestId */0
 /*%end */
 /*%if request.assetTypeId != null && request.assetTypeId != "" */
   AND a.asset_type_id = /* request.assetTypeId */''
-/*%end */
-/*%if request.assetStatusId != null && request.assetStatusId != "" */
-  AND a.asset_status_id = /* request.assetStatusId */''
 /*%end */
 /*%if request.searchWord != null && request.searchWord != "" */
   AND a.asset_code LIKE CONCAT('%', /* request.searchWord */'', '%')

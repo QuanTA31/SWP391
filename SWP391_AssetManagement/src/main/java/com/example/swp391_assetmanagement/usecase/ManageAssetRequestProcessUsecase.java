@@ -8,6 +8,7 @@ import com.example.swp391_assetmanagement.enums.RequestStatus;
 import com.example.swp391_assetmanagement.enums.RequestType;
 import com.example.swp391_assetmanagement.enums.Roles;
 import com.example.swp391_assetmanagement.service.AssetAllProcessService;
+import com.example.swp391_assetmanagement.service.UserService;
 import com.example.swp391_assetmanagement.service.servicerequest.AllProcessServiceRequest;
 import com.example.swp391_assetmanagement.service.serviceresponse.RequestProcessAllServiceResponse;
 import jakarta.servlet.http.HttpSession;
@@ -31,6 +32,8 @@ public class ManageAssetRequestProcessUsecase {
 
     private final AssetAllProcessService assetAllProcessService;
 
+    private final UserService userService;
+
     @Transactional(readOnly = true)
     public ViewAllProcessDTOResponse viewAllProcess(ViewAllProcessDTORequest request, HttpSession session) {
 
@@ -45,6 +48,10 @@ public class ManageAssetRequestProcessUsecase {
 
         if (role == null) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+        Long departmentId = null;
+        if (Roles.DEPARTMENT_MANAGER.getValue().equals(role)) {
+             departmentId = userService.getIdByUserCode((String) session.getAttribute("USER_CODE"));
         }
 
 // MANAGER (02): xem tất cả request (trừ Draft)
@@ -96,7 +103,7 @@ public class ManageAssetRequestProcessUsecase {
                 AllProcessServiceRequest.builder()
                         .requestStatusId(request.getRequestStatusId())
                         .requestTypeId(request.getRequestTypeId())
-                 //       .approvalStatusId(request.getApprovalStatusId())
+                        .departmentId(departmentId)
                         .requestTypeIdList(requestTypeIdList)
                         .excludeStatusIdList(excludeStatusIdList)
                         .offset((pageIndex-1)*PAGE_SIZE)

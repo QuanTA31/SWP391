@@ -11,6 +11,8 @@ public class AllProcessServiceRequest {
 
     private String requestStatusId;
 
+    private Long departmentId;
+
     private String requestTypeId;
 
  //   private String approvalStatusId;

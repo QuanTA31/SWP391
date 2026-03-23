@@ -3,6 +3,7 @@ package com.example.swp391_assetmanagement.service;
 import com.example.swp391_assetmanagement.entity.AssetInternalRequestDetail;
 import com.example.swp391_assetmanagement.entity.AssetRequest;
 import com.example.swp391_assetmanagement.service.servicerequest.RecoverServiceRequest;
+import com.example.swp391_assetmanagement.enums.AssetStatus;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -49,4 +50,6 @@ public interface AssetRequestService {
     void updateHandoverDate(Long requestId, LocalDate handoverDate);
 
     int moveCompleted(Long requestId);
+
+    void updateAssetsToDisposed(Long requestId, AssetStatus status);
 }

@@ -58,4 +58,7 @@ public interface AssetRequestDAO {
 
     @Update(sqlFile = true)
     int moveCompleted(Long id, String inProgress, String completed);
+
+    @Update(sqlFile = true)
+    int updateAssetsByRequestId(Long requestId, String status);
 }

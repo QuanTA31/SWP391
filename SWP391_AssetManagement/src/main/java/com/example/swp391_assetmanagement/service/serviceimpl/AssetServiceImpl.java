@@ -1,6 +1,7 @@
 package com.example.swp391_assetmanagement.service.serviceimpl;
 
 import com.example.swp391_assetmanagement.entity.Assets;
+import com.example.swp391_assetmanagement.enums.AssetStatus;
 import com.example.swp391_assetmanagement.service.AssetService;
 import com.example.swp391_assetmanagement.service.servicerequest.AssetViewAllServiceRequest;
 import com.example.swp391_assetmanagement.service.servicerequest.LiquiAssetViewAllServiceRequest;
@@ -81,6 +82,13 @@ public class AssetServiceImpl implements AssetService {
     @Override
     public Assets findById(Long id) {
         return assetsDAO.findById(id);
+    }
+
+    @Override
+    public void updateStatusByIds(List<Long> assetIds, AssetStatus status) {
+        if (assetIds == null || assetIds.isEmpty()) return;
+
+        assetsDAO.updateStatusByIds(assetIds, status.getValue());
     }
 
 }

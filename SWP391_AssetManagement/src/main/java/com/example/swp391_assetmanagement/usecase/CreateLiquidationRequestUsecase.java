@@ -79,5 +79,6 @@ public class CreateLiquidationRequestUsecase {
             }).toList();
             assetsAssetRequestExternalService.batchInsert(assetRequestExternals);
         }
+        assetService.updateStatusByIds(assetIds, AssetStatus.LIQUIDATION);
     }
 }

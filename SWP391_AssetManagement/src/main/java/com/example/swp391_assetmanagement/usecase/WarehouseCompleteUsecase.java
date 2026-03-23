@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
 @Service
@@ -40,6 +41,7 @@ public class WarehouseCompleteUsecase {
         assetRequestService.findAssetRequestByIdForUpdate(assetRequestId).ifPresent(
                 assetRequest -> {
                     assetRequest.setRequestStatusId(RequestStatus.COMPLETED.getValue());
+                    assetRequest.setHandoverDate(LocalDate.now());
                     assetRequestService.updatePurchaseRequest(assetRequest);
                 }
         );

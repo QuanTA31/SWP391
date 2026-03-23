@@ -1,226 +1,226 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout/warehouse :: warehouse-layout(~{::div.page-wrapper})}">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/MainLayout}">
 <head>
-    <meta charset="UTF-8"/>
     <title>New Purchase Request</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/MainView.css}">
-    <link rel="stylesheet" th:href="@{/css/createPurchaseRequest.css}">
+    <th:block layout:fragment="additional-css">
+        <link rel="stylesheet" th:href="@{/css/createPurchaseRequest.css}">
+    </th:block>
 </head>
 <body>
+<th:block layout:fragment="content">
+    <div class="page-wrapper">
 
-<div class="page-wrapper">
+        <div class="page-header">
+            <div class="page-title">📋 Purchase Request</div>
 
-    <div class="page-header">
-        <div class="page-title">📋 Purchase Request</div>
+            <span class="badge badge-draft"
+                  th:if="${purchaseRequest.requestStatus == null}">New Request</span>
+            <span class="badge badge-draft"
+                  th:if="${purchaseRequest.requestStatus == '01'}">Draft</span>
+            <span class="badge badge-pending"
+                  th:if="${purchaseRequest.requestStatus == '02'}">Pending Approval</span>
+            <span class="badge badge-view"
+                  th:if="${purchaseRequest.requestStatus == '03'}">Approved</span>
+            <span class="badge badge-info"
+                  th:if="${purchaseRequest.requestStatus == '04'}">Research</span>
+            <span class="badge badge-info"
+                  th:if="${purchaseRequest.requestStatus == '05'}">In Progress</span>
+            <span class="badge badge-success"
+                  th:if="${purchaseRequest.requestStatus == '06'}">Completed</span>
+            <span class="badge badge-danger"
+                  th:if="${purchaseRequest.requestStatus == '07'}">Cancelled</span>
+        </div>
 
-        <span class="badge badge-draft"
-              th:if="${purchaseRequest.requestStatus == null}">New Request</span>
-        <span class="badge badge-draft"
-              th:if="${purchaseRequest.requestStatus == '01'}">Draft</span>
-        <span class="badge badge-pending"
-              th:if="${purchaseRequest.requestStatus == '02'}">Pending Approval</span>
-        <span class="badge badge-view"
-              th:if="${purchaseRequest.requestStatus == '03'}">Approved</span>
-        <span class="badge badge-info"
-              th:if="${purchaseRequest.requestStatus == '04'}">Research</span>
-        <span class="badge badge-info"
-              th:if="${purchaseRequest.requestStatus == '05'}">In Progress</span>
-        <span class="badge badge-success"
-              th:if="${purchaseRequest.requestStatus == '06'}">Completed</span>
-        <span class="badge badge-danger"
-              th:if="${purchaseRequest.requestStatus == '07'}">Cancelled</span>
-    </div>
+        <form th:action="@{/purchase-requests/warehouse/create}"
+              th:object="${purchaseRequest}"
+              method="post"
+              id="purchaseForm">
 
-    <form th:action="@{/purchase-requests/warehouse/create}"
-          th:object="${purchaseRequest}"
-          method="post"
-          id="purchaseForm">
+            <input type="hidden" th:field="*{assetRequestId}"/>
+            <input type="hidden" th:field="*{isSubmitted}" id="isSubmittedField"/>
+            <input type="hidden" th:field="*{requestStatus}"/>
 
-        <input type="hidden" th:field="*{assetRequestId}"/>
-        <input type="hidden" th:field="*{isSubmitted}" id="isSubmittedField"/>
-        <input type="hidden" th:field="*{requestStatus}"/>
-
-        <div class="card" th:if="${purchaseRequest.assetRequestId != null}">
-            <div class="card-header">
-                <div class="icon">📄</div>
-                Request Information
-            </div>
-            <div class="card-body">
-                <div class="info-grid">
-                    <div class="info-item">
-                        <label>Request Id</label>
-                        <span th:text="'#' + ${purchaseRequest.assetRequestId}">—</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Request Type</label>
-                        <span>Purchase</span>
-                    </div>
-                    <div class="info-item">
-                        <label>Request Date</label>
-                        <span>—</span>
+            <div class="card" th:if="${purchaseRequest.assetRequestId != null}">
+                <div class="card-header">
+                    <div class="icon">📄</div>
+                    Request Information
+                </div>
+                <div class="card-body">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label>Request Id</label>
+                            <span th:text="'#' + ${purchaseRequest.assetRequestId}">—</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Request Type</label>
+                            <span>Purchase</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Request Date</label>
+                            <span>—</span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="card">
-            <div class="card-header">
-                <div class="icon">📦</div>
-                Asset Request List
-            </div>
-            <div class="table-wrapper">
-                <table id="detailTable">
-                    <thead>
-                    <tr>
-                        <th style="width:40px">#</th>
-                        <th>Asset Type</th>
-                        <th style="width:120px">Quantity</th>
-                        <th>Note</th>
-                        <th th:if="${role == '03' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null)}"
-                            style="width:50px"></th>
-                        <th th:if="${role == '04' and purchaseRequest.requestStatus == '03'}"
-                            style="width:200px">Actions
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody id="detailBody">
-                    <tr th:each="detail, stat : *{createPurchaseRequestDetailDTORequestList}"
-                        th:id="'row-' + ${stat.index}">
-                        <td style="display:none">
-                            <input type="hidden" class="detail-id"
-                                   th:name="'createPurchaseRequestDetailDTORequestList[' + ${stat.index} + '].assetExternalRequestDetailId'"
-                                   th:value="${detail.assetExternalRequestDetailId}"/>
-                        </td>
-                        <td class="row-index" th:text="${stat.index + 1}">1</td>
-                        <td>
+            <div class="card">
+                <div class="card-header">
+                    <div class="icon">📦</div>
+                    Asset Request List
+                </div>
+                <div class="table-wrapper">
+                    <table id="detailTable">
+                        <thead>
+                        <tr>
+                            <th style="width:40px">#</th>
+                            <th>Asset Type</th>
+                            <th style="width:120px">Quantity</th>
+                            <th>Note</th>
+                            <th th:if="${role == '03' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null)}"
+                                style="width:50px"></th>
+                            <th th:if="${role == '04' and purchaseRequest.requestStatus == '03'}"
+                                style="width:200px">Actions
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody id="detailBody">
+                        <tr th:each="detail, stat : *{createPurchaseRequestDetailDTORequestList}"
+                            th:id="'row-' + ${stat.index}">
+                            <td style="display:none">
+                                <input type="hidden" class="detail-id"
+                                       th:name="'createPurchaseRequestDetailDTORequestList[' + ${stat.index} + '].assetExternalRequestDetailId'"
+                                       th:value="${detail.assetExternalRequestDetailId}"/>
+                            </td>
+                            <td class="row-index" th:text="${stat.index + 1}">1</td>
+                            <td>
                             <span th:if="${!(role == '03' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null))}"
                                   class="readonly-cell"
                                   th:text="${detail.assetTypeName}">—</span>
-                            <select th:if="${role == '03' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null)}"
-                                    class="asset-type-select"
-                                    th:name="'createPurchaseRequestDetailDTORequestList[' + ${stat.index} + '].assetTypeId'">
-                                <option value="">-- Asset Type --</option>
-                                <option th:each="type : ${assetTypes}"
-                                        th:value="${type.value}"
-                                        th:text="${type.label}"
-                                        th:selected="${type.value == detail.assetTypeId}">
-                                </option>
-                            </select>
-                        </td>
-                        <td>
+                                <select th:if="${role == '03' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null)}"
+                                        class="asset-type-select"
+                                        th:name="'createPurchaseRequestDetailDTORequestList[' + ${stat.index} + '].assetTypeId'">
+                                    <option value="">-- Asset Type --</option>
+                                    <option th:each="type : ${assetTypes}"
+                                            th:value="${type.value}"
+                                            th:text="${type.label}"
+                                            th:selected="${type.value == detail.assetTypeId}">
+                                    </option>
+                                </select>
+                            </td>
+                            <td>
                             <span th:if="${!(role == '03' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null))}"
                                   class="readonly-cell"
                                   th:text="${detail.quantity}">—</span>
-                            <input th:if="${role == '03' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null)}"
-                                   class="quantity-input" type="number" min="1"
-                                   th:name="'createPurchaseRequestDetailDTORequestList[' + ${stat.index} + '].quantity'"
-                                   th:value="${detail.quantity}" placeholder="0"/>
-                        </td>
-                        <td>
+                                <input th:if="${role == '03' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null)}"
+                                       class="quantity-input" type="number" min="1"
+                                       th:name="'createPurchaseRequestDetailDTORequestList[' + ${stat.index} + '].quantity'"
+                                       th:value="${detail.quantity}" placeholder="0"/>
+                            </td>
+                            <td>
                             <span th:if="${!(role == '03' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null))}"
                                   class="readonly-cell"
                                   th:text="${detail.note}">—</span>
-                            <textarea
-                                    th:if="${role == '03' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null)}"
-                                    class="note-input"
-                                    th:name="'createPurchaseRequestDetailDTORequestList[' + ${stat.index} + '].note'"
-                                    rows="1" placeholder="Note..."
-                                    th:text="${detail.note}"></textarea>
-                        </td>
-                        <td th:if="${role == '03' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null)}">
-                            <button type="button" class="btn btn-ghost"
-                                    onclick="removeRow(this)">✕
-                            </button>
-                        </td>
-                        <td th:if="${(role == '04' or role == '02') and (detail.externalStatusId == '02' or detail.externalStatusId == '03')}">
-                            <a th:href="@{/purchase-requests/option-detail/list(asset_external_request_detail_id=${detail.assetExternalRequestDetailId})}"
-                               class="btn btn-outline btn-sm">
-                                🔍 Options
-                            </a>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
+                                <textarea
+                                        th:if="${role == '03' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null)}"
+                                        class="note-input"
+                                        th:name="'createPurchaseRequestDetailDTORequestList[' + ${stat.index} + '].note'"
+                                        rows="1" placeholder="Note..."
+                                        th:text="${detail.note}"></textarea>
+                            </td>
+                            <td th:if="${role == '03' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null)}">
+                                <button type="button" class="btn btn-ghost"
+                                        onclick="removeRow(this)">✕
+                                </button>
+                            </td>
+                            <td th:if="${(role == '04' or role == '02') and (detail.externalStatusId == '02' or detail.externalStatusId == '03')}">
+                                <a th:href="@{/purchase-requests/option-detail/list(asset_external_request_detail_id=${detail.assetExternalRequestDetailId})}"
+                                   class="btn btn-outline btn-sm">
+                                    🔍 Options
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-            <div class="add-row-area"
-                 th:if="${role == '03' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null)}">
-                <button type="button" class="btn btn-outline" onclick="addRow()">+ Add Row</button>
-            </div>
+                <div class="add-row-area"
+                     th:if="${role == '03' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null)}">
+                    <button type="button" class="btn btn-outline" onclick="addRow()">+ Add Row</button>
+                </div>
 
-            <div class="form-footer"
-                 th:if="${role == '03' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null)}">
-                <button type="button" class="btn btn-sm btn-secondary" onclick="history.back()">Cancel</button>
-                <button type="button" class="btn btn-outline" onclick="saveDraft()">💾 Save Draft</button>
-                <button type="button" class="btn btn-primary" onclick="submitForm()">📤 Submit</button>
-            </div>
-
-            <div class="form-footer"
-                 th:if="${role == '04' and purchaseRequest.requestStatus == '03'}">
-                <button type="button" class="btn btn-sm btn-secondary" onclick="history.back()">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="submitResearch()">📤 Submit</button>
-            </div>
-        </div>
-
-        <div class="card"
-             th:if="${role == '02' and purchaseRequest.requestStatus == '02' and approvalRequest != null}">
-            <div class="card-header">
-                <div class="icon">✅</div>
-                Request Approval
-            </div>
-            <div class="card-body">
-                <div class="approval-section">
+                <div class="form-footer"
+                     th:if="${role == '03' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null)}">
                     <button type="button" class="btn btn-sm btn-secondary" onclick="history.back()">Cancel</button>
-                    <button type="button" class="btn btn-success" onclick="approveRequest()">✅ Approve</button>
-                    <button type="button" class="btn btn-danger" onclick="rejectRequest()">❌ Reject</button>
+                    <button type="button" class="btn btn-outline" onclick="saveDraft()">💾 Save Draft</button>
+                    <button type="button" class="btn btn-primary" onclick="submitForm()">📤 Submit</button>
+                </div>
+
+                <div class="form-footer"
+                     th:if="${role == '04' and purchaseRequest.requestStatus == '03'}">
+                    <button type="button" class="btn btn-sm btn-secondary" onclick="history.back()">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitResearch()">📤 Submit</button>
                 </div>
             </div>
-        </div>
-    </form>
 
-    <form th:if="${role == '04' and purchaseRequest.requestStatus == '03'}"
-          id="researchForm"
-          th:action="@{/purchase-requests/purchasing/research}"
-          method="post">
-        <input type="hidden" name="assetRequestId" th:value="${purchaseRequest.assetRequestId}"/>
-    </form>
+            <div class="card"
+                 th:if="${role == '02' and purchaseRequest.requestStatus == '02' and approvalRequest != null}">
+                <div class="card-header">
+                    <div class="icon">✅</div>
+                    Request Approval
+                </div>
+                <div class="card-body">
+                    <div class="approval-section">
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="history.back()">Cancel</button>
+                        <button type="button" class="btn btn-success" onclick="approveRequest()">✅ Approve</button>
+                        <button type="button" class="btn btn-danger" onclick="rejectRequest()">❌ Reject</button>
+                    </div>
+                </div>
+            </div>
+        </form>
 
-    <form th:if="${role == '02' and purchaseRequest.requestStatus == '02' and approvalRequest != null}"
-          id="approvalForm"
-          th:action="@{/purchase-requests/manager/approval}"
-          method="post">
-        <input type="hidden" name="assetRequestId" th:value="${purchaseRequest.assetRequestId}"/>
-        <input type="hidden" name="isApproved" id="approvedField" value=""/>
-    </form>
+        <form th:if="${role == '04' and purchaseRequest.requestStatus == '03'}"
+              id="researchForm"
+              th:action="@{/purchase-requests/purchasing/research}"
+              method="post">
+            <input type="hidden" name="assetRequestId" th:value="${purchaseRequest.assetRequestId}"/>
+        </form>
 
-    <script th:inline="javascript">
-        const assetTypes = /*[[${assetTypes}]]*/ [];
-        let rowIndex = document.querySelectorAll('#detailBody tr').length;
+        <form th:if="${role == '02' and purchaseRequest.requestStatus == '02' and approvalRequest != null}"
+              id="approvalForm"
+              th:action="@{/purchase-requests/manager/approval}"
+              method="post">
+            <input type="hidden" name="assetRequestId" th:value="${purchaseRequest.assetRequestId}"/>
+            <input type="hidden" name="isApproved" id="approvedField" value=""/>
+        </form>
 
-        function buildSelectOptions(selectedValue) {
-            let html = '<option value="">-- Select Asset Type --</option>';
-            if (assetTypes && assetTypes.length) {
-                assetTypes.forEach(function (type) {
-                    const val = type.value;
-                    const label = type.label || type.value;
-                    const sel = (val === selectedValue) ? 'selected' : '';
-                    html += `<option value="${val}" ${sel}>${label}</option>`;
-                });
+        <script th:inline="javascript">
+            const assetTypes = /*[[${assetTypes}]]*/ [];
+            let rowIndex = document.querySelectorAll('#detailBody tr').length;
+
+            function buildSelectOptions(selectedValue) {
+                let html = '<option value="">-- Select Asset Type --</option>';
+                if (assetTypes && assetTypes.length) {
+                    assetTypes.forEach(function (type) {
+                        const val = type.value;
+                        const label = type.label || type.value;
+                        const sel = (val === selectedValue) ? 'selected' : '';
+                        html += `<option value="${val}" ${sel}>${label}</option>`;
+                    });
+                }
+                return html;
             }
-            return html;
-        }
 
-        function submitResearch() {
-            document.getElementById('researchForm').submit();
-        }
+            function submitResearch() {
+                document.getElementById('researchForm').submit();
+            }
 
-        function addRow() {
-            const tbody = document.getElementById('detailBody');
-            const i = rowIndex;
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
+            function addRow() {
+                const tbody = document.getElementById('detailBody');
+                const i = rowIndex;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
                 <td style="display:none">
                     <input type="hidden" class="detail-id"
                            name="createPurchaseRequestDetailDTORequestList[${i}].assetExternalRequestDetailId"
@@ -247,79 +247,82 @@
                     <button type="button" class="btn btn-ghost" onclick="removeRow(this)">✕</button>
                 </td>
             `;
-            tbody.appendChild(tr);
-            rowIndex++;
-            reIndex();
-        }
-
-        function removeRow(btn) {
-            btn.closest('tr').remove();
-            reIndex();
-        }
-
-        function reIndex() {
-            const rows = document.querySelectorAll('#detailBody tr');
-            rows.forEach(function (row, i) {
-                const indexCell = row.querySelector('.row-index');
-                if (indexCell) indexCell.textContent = i + 1;
-                const prefix = `createPurchaseRequestDetailDTORequestList[${i}]`;
-                const detailId = row.querySelector('.detail-id');
-                if (detailId) detailId.name = `${prefix}.assetExternalRequestDetailId`;
-                const typeSelect = row.querySelector('.asset-type-select');
-                if (typeSelect) typeSelect.name = `${prefix}.assetTypeId`;
-                const qtyInput = row.querySelector('.quantity-input');
-                if (qtyInput) qtyInput.name = `${prefix}.quantity`;
-                const noteInput = row.querySelector('.note-input');
-                if (noteInput) noteInput.name = `${prefix}.note`;
-            });
-        }
-
-        function saveDraft() {
-            if (!validateRows()) return;
-            document.getElementById('isSubmittedField').value = 'false';
-            document.getElementById('purchaseForm').submit();
-        }
-
-        function submitForm() {
-            if (!validateRows()) return;
-            document.getElementById('isSubmittedField').value = 'true';
-            document.getElementById('purchaseForm').submit();
-        }
-
-        function validateRows() {
-            const rows = document.querySelectorAll('#detailBody tr');
-            if (rows.length === 0) {
-                alert('Please add at least one asset type.');
-                return false;
+                tbody.appendChild(tr);
+                rowIndex++;
+                reIndex();
             }
-            for (let s of document.querySelectorAll('#detailBody .asset-type-select')) {
-                if (!s.value) {
-                    alert('Please select asset type for all rows.');
-                    s.focus();
+
+            function removeRow(btn) {
+                btn.closest('tr').remove();
+                reIndex();
+            }
+
+            function reIndex() {
+                const rows = document.querySelectorAll('#detailBody tr');
+                rows.forEach(function (row, i) {
+                    const indexCell = row.querySelector('.row-index');
+                    if (indexCell) indexCell.textContent = i + 1;
+                    const prefix = `createPurchaseRequestDetailDTORequestList[${i}]`;
+                    const detailId = row.querySelector('.detail-id');
+                    if (detailId) detailId.name = `${prefix}.assetExternalRequestDetailId`;
+                    const typeSelect = row.querySelector('.asset-type-select');
+                    if (typeSelect) typeSelect.name = `${prefix}.assetTypeId`;
+                    const qtyInput = row.querySelector('.quantity-input');
+                    if (qtyInput) qtyInput.name = `${prefix}.quantity`;
+                    const noteInput = row.querySelector('.note-input');
+                    if (noteInput) noteInput.name = `${prefix}.note`;
+                });
+            }
+
+            function saveDraft() {
+                if (!validateRows()) return;
+                document.getElementById('isSubmittedField').value = 'false';
+                document.getElementById('purchaseForm').submit();
+            }
+
+            function submitForm() {
+                if (!validateRows()) return;
+                document.getElementById('isSubmittedField').value = 'true';
+                document.getElementById('purchaseForm').submit();
+            }
+
+            function validateRows() {
+                const rows = document.querySelectorAll('#detailBody tr');
+                if (rows.length === 0) {
+                    alert('Please add at least one asset type.');
                     return false;
                 }
-            }
-            for (let inp of document.querySelectorAll('#detailBody .quantity-input')) {
-                if (!inp.value || parseInt(inp.value) < 1) {
-                    alert('Quantity must be greater than 0.');
-                    inp.focus();
-                    return false;
+                for (let s of document.querySelectorAll('#detailBody .asset-type-select')) {
+                    if (!s.value) {
+                        alert('Please select asset type for all rows.');
+                        s.focus();
+                        return false;
+                    }
                 }
+                for (let inp of document.querySelectorAll('#detailBody .quantity-input')) {
+                    if (!inp.value || parseInt(inp.value) < 1) {
+                        alert('Quantity must be greater than 0.');
+                        inp.focus();
+                        return false;
+                    }
+                }
+                return true;
             }
-            return true;
-        }
 
-        function approveRequest() {
-            document.getElementById('approvedField').value = 'true';
-            document.getElementById('approvalForm').submit();
-        }
+            function approveRequest() {
+                document.getElementById('approvedField').value = 'true';
+                document.getElementById('approvalForm').submit();
+            }
 
-        function rejectRequest() {
-            document.getElementById('approvedField').value = 'false';
-            document.getElementById('approvalForm').submit();
-        }
-    </script>
-</div>
-
+            function rejectRequest() {
+                document.getElementById('approvedField').value = 'false';
+                document.getElementById('approvalForm').submit();
+            }
+        </script>
+    </div>
+</th:block>
+<th:block layout:fragment="additional-scripts">
+    <script th:src="@{/js/Template.js}"></script>
+</th:block>
 </body>
 </html>
