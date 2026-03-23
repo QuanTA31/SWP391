@@ -43,7 +43,7 @@ public class LiquidateController {
 
         LiquiDateCreateDTOResponse assets = liquiAssetManagerUsecase.execute(liquiDateCreateDTORequest, session);
         model.addAttribute("liquidationRequest", assets);
-
+        model.addAttribute("assets", assets);
         return "createLiquidationRequest";
     }
 
