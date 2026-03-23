@@ -2,6 +2,8 @@ package com.example.swp391_assetmanagement.controller;
 
 import com.example.swp391_assetmanagement.common.RoleChecker;
 import com.example.swp391_assetmanagement.dto.request.*;
+import com.example.swp391_assetmanagement.dto.response.CreateLiquidationDTOResponse;
+import com.example.swp391_assetmanagement.dto.response.GetLiquidationManagerDTOResponse;
 import com.example.swp391_assetmanagement.dto.response.LiquiDateCreateDTOResponse;
 import com.example.swp391_assetmanagement.enums.AssetType;
 import com.example.swp391_assetmanagement.enums.Roles;
@@ -40,7 +42,7 @@ public class LiquidateController {
 //        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.MANAGER);
 
         LiquiDateCreateDTOResponse assets = liquiAssetManagerUsecase.execute(liquiDateCreateDTORequest, session);
-        model.addAttribute("assets", assets);
+        model.addAttribute("liquidationRequest", assets);
 
         return "createLiquidationRequest";
     }
@@ -63,7 +65,7 @@ public class LiquidateController {
             @ModelAttribute LiquiDateCreateDTORequest liquiDateCreateDTORequest,
             Model model,
             HttpSession session) {
-        CreateLiquidationDTORequest createLiquidationDTORequest =
+        GetLiquidationManagerDTOResponse createLiquidationDTORequest =
                 getLiquidationManagerUsecase.execute(assetRequestId);
         LiquiDateCreateDTOResponse assets =
                 liquiAssetManagerUsecase.execute(liquiDateCreateDTORequest, session);
@@ -204,7 +206,7 @@ public class LiquidateController {
             Model model,
             HttpSession session) {
         roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.PURCHASING);
-        CreateLiquidationDTORequest dto =
+        CreateLiquidationDTOResponse dto =
                 getLiquidationPurchasingUsecase.execute(assetRequestId);
         model.addAttribute("liquidationRequest", dto);
         model.addAttribute("assetTypes",

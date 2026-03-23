@@ -94,12 +94,12 @@
                         </thead>
                         <tbody id="detailBody">
 
-                        <tr th:each="detail, stat : *{createLiquidationDetailDTORequestList}"
+                        <tr th:each="detail, stat : *{details}"
                             th:id="'row-' + ${stat.index}">
 
                             <td style="display:none">
                                 <input type="hidden" class="detail-id"
-                                       th:name="'createLiquidationDetailDTORequestList[' + ${stat.index} + '].assetExternalRequestDetailId'"
+                                       th:name="'details[' + ${stat.index} + '].assetExternalRequestDetailId'"
                                        th:value="${detail.assetExternalRequestDetailId}"/>
                             </td>
 
@@ -112,7 +112,7 @@
                                   th:text="${detail.assetTypeName}">—</span>
                                 <select th:if="${role == '03' and (liquidationRequest.requestStatus == '01' or liquidationRequest.requestStatus == null)}"
                                         class="asset-type-select"
-                                        th:name="'createLiquidationDetailDTORequestList[' + ${stat.index} + '].assetTypeId'">
+                                        th:name="'details[' + ${stat.index} + '].assetTypeId'">
                                     <option value="">-- Asset Type --</option>
                                     <option th:each="type : ${assetTypes}"
                                             th:value="${type.value}"
@@ -129,7 +129,7 @@
                                   th:text="${detail.quantity}">—</span>
                                 <input th:if="${role == '03' and (liquidationRequest.requestStatus == '01' or liquidationRequest.requestStatus == null)}"
                                        class="quantity-input" type="number" min="1"
-                                       th:name="'createLiquidationDetailDTORequestList[' + ${stat.index} + '].quantity'"
+                                       th:name="'details[' + ${stat.index} + '].quantity'"
                                        th:value="${detail.quantity}" placeholder="0"/>
                             </td>
 
@@ -141,7 +141,7 @@
                                 <textarea
                                         th:if="${role == '03' and (liquidationRequest.requestStatus == '01' or liquidationRequest.requestStatus == null)}"
                                         class="note-input"
-                                        th:name="'createLiquidationDetailDTORequestList[' + ${stat.index} + '].note'"
+                                        th:name="'details[' + ${stat.index} + '].note'"
                                         rows="1" placeholder="Note..."
                                         th:text="${detail.note}"></textarea>
                             </td>
@@ -254,24 +254,24 @@
             tr.innerHTML = `
             <td style="display:none">
                 <input type="hidden" class="detail-id"
-                       name="createLiquidationDetailDTORequestList[${i}].assetExternalRequestDetailId"
+                       name="details[${i}].assetExternalRequestDetailId"
                        value=""/>
             </td>
             <td class="row-index"></td>
             <td>
                 <select class="asset-type-select"
-                        name="createLiquidationDetailDTORequestList[${i}].assetTypeId">
+                        name="details[${i}].assetTypeId">
                     ${buildSelectOptions('')}
                 </select>
             </td>
             <td>
                 <input type="number" class="quantity-input" min="1"
-                       name="createLiquidationDetailDTORequestList[${i}].quantity"
+                       name="details[${i}].quantity"
                        placeholder="0"/>
             </td>
             <td>
                 <textarea class="note-input"
-                          name="createLiquidationDetailDTORequestList[${i}].note"
+                          name="details[${i}].note"
                           rows="1" placeholder="Note..."></textarea>
             </td>
             <td>
@@ -294,7 +294,7 @@
                 const indexCell = row.querySelector('.row-index');
                 if (indexCell) indexCell.textContent = i + 1;
 
-                const prefix = `createLiquidationDetailDTORequestList[${i}]`;
+                const prefix = `details[${i}]`;
 
                 const detailId = row.querySelector('.detail-id');
                 if (detailId) detailId.name = `${prefix}.assetExternalRequestDetailId`;

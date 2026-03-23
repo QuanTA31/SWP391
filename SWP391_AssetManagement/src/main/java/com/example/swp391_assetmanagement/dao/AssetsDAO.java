@@ -64,4 +64,7 @@ public interface AssetsDAO {
 
     @Update(sqlFile = true)
     int updateStatusByIds(List<Long> assetIds, String status);
+
+    @Update(sqlFile = true)
+    int updateStatusByRequestId(Long requestId, String status);
 }

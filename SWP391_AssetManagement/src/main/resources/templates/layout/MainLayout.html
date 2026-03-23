@@ -44,6 +44,12 @@
                 </a>
             </th:block>
 
+            <th:block th:if="${session.ROLE == '02'}">
+                <a th:href="@{/liquidate/manager/viewAsset}" class="menu-item"
+                   th:classappend="${activePage == 'viewAsset'} ? 'active' : ''">Create Liquidation Request
+                </a>
+            </th:block>
+
             <th:block th:if="${session.ROLE == '05'}">
                 <a th:href="@{/allocation/department/create}" class="menu-item"
                    th:classappend="${activePage == 'createAllocation'} ? 'active' : ''">Create Allocation
