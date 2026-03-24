@@ -54,20 +54,12 @@
                     <input type="hidden" name="assetRequestId"
                            th:value="${liquiDateCreateDTORequest.assetRequestId}">
 
-                    <select name="locationId" class="form-select form-select-sm">
-                        <option value="">Location</option>
-                        <option th:each="loc : ${T(com.example.swp391_assetmanagement.enums.Location).values()}"
-                                th:value="${loc.value}" th:text="${loc.name}"
-                                th:selected="${assets.filters.locationId == loc.value}"></option>
-                    </select>
-
                     <select name="assetTypeId" class="form-select form-select-sm">
                         <option value="">Asset Type</option>
                         <option th:each="type : ${T(com.example.swp391_assetmanagement.enums.AssetType).values()}"
                                 th:value="${type.value}" th:text="${type.name}"
                                 th:selected="${assets.filters.assetTypeId == type.value}"></option>
                     </select>
-
                     <select name="assetStatusId" class="form-select form-select-sm">
                         <option value="">Asset Status</option>
                         <option th:each="status : ${T(com.example.swp391_assetmanagement.enums.AssetStatus).values()}"
@@ -147,7 +139,7 @@
                                 <td class="text-multiline" th:title="${asset.describe}"
                                     th:text="${asset.describe}"></td>
                                 <td th:text="${#numbers.formatDecimal(asset.originalPrice, 0, 'COMMA', 0, 'POINT')}"></td>
-                                <td th:text="${asset.warrantyPeriod != null ? asset.warrantyPeriod + ' months' : '-'}"></td>
+                                <td th:text="${asset.warrantyPeriod != null ? asset.warrantyPeriod : '-'}"></td>
                                 <td th:text="${#temporals.format(asset.receivedDate, 'yyyy-MM-dd')}"></td>
                                 <td th:text="${asset.locationName}"></td>
                                 <td>
