@@ -46,7 +46,7 @@
     <div class="content-right">
         <div class="toolbar">
             <div class="toolbar-left">
-                <span class="fw-semibold">Tạo yêu cầu thanh lý</span>
+                <span class="fw-semibold">Create liquidation request</span>
             </div>
 
             <form method="get" th:action="@{/liquidate/manager/viewAsset}">
@@ -92,18 +92,17 @@
                     <div class="d-flex align-items-center flex-grow-1">
                             <span class="badge bg-info me-2" id="selectedCount"
                                   th:text="${assets.assetResponses.?[isSelected == true].size()}">0</span>
-                        <span class="fw-medium">Tài sản đã chọn</span>
+                        <span class="fw-medium">Selected Assets</span>
 
                         <div th:if="${hasSelected}" class="ms-3 view-only-badge">
-                            <i class="bi bi-eye"></i> Lưu ý: Đã tồn tại tài sản trong yêu cầu. Chế độ xem được kích
-                            hoạt.
+                            <i class="bi bi-eye"></i> Note: The property already exists in the request. The view is enabled.
                         </div>
                     </div>
 
                     <button type="submit" id="btnSubmit" th:if="${!hasSelected}"
                             class="btn btn-sm btn-danger px-4"
-                            onclick="return confirm('Xác nhận tạo yêu cầu thanh lý?')">
-                        Gửi yêu cầu thanh lý
+                            onclick="return confirm('Confirm creating a liquidation request?')">
+                        Submit liquidation request
                     </button>
                 </div>
 
@@ -130,7 +129,7 @@
 
                             <tbody>
                             <tr th:if="${assets.assetResponses == null || assets.assetResponses.isEmpty()}">
-                                <td colspan="10" class="text-center text-muted py-4">Không tìm thấy dữ liệu</td>
+                                <td colspan="10" class="text-center text-muted py-4">No data found</td>
                             </tr>
 
                             <tr th:each="asset : ${assets.assetResponses}"
@@ -148,7 +147,7 @@
                                 <td class="text-multiline" th:title="${asset.describe}"
                                     th:text="${asset.describe}"></td>
                                 <td th:text="${#numbers.formatDecimal(asset.originalPrice, 0, 'COMMA', 0, 'POINT')}"></td>
-                                <td th:text="${asset.warrantyPeriod != null ? asset.warrantyPeriod + ' tháng' : '-'}"></td>
+                                <td th:text="${asset.warrantyPeriod != null ? asset.warrantyPeriod + ' months' : '-'}"></td>
                                 <td th:text="${#temporals.format(asset.receivedDate, 'yyyy-MM-dd')}"></td>
                                 <td th:text="${asset.locationName}"></td>
                                 <td>
@@ -164,10 +163,10 @@
 
             <div class="content-pagination" th:if="${assets.filters.totalItems > 0}">
                 <div class="pagination-info">
-                    Hiển thị
+                    Showing
                     <strong th:text="${(assets.filters.page - 1) * assets.filters.pageSize + 1}"></strong> –
                     <strong th:text="${(assets.filters.page - 1) * assets.filters.pageSize + assets.assetResponses.size()}"></strong>
-                    trên <strong th:text="${assets.filters.totalItems}"></strong>
+                    of <strong th:text="${assets.filters.totalItems}"></strong>
                 </div>
 
                 <ul class="pagination pagination-sm mb-0">
