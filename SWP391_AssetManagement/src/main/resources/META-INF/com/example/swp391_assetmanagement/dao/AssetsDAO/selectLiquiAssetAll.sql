@@ -21,7 +21,9 @@ FROM assets a
 /*%end */
 
 WHERE a.location_id = '05'
-AND a.asset_status_id IN ('01', '08')
+/*%if request.assetStatusId != null && request.assetStatusId != "" */
+AND a.asset_status_id = /* request.assetStatusId */''
+/*%end */
 /*%if request.assetRequestId != null */
   AND d.asset_request_id = /* request.assetRequestId */0
 /*%end */
