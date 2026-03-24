@@ -103,6 +103,7 @@ public class GetPurchaseOptionListUsecase {
 
         return OptionDetailListDTOResponse.builder()
                 .requestDetailId(requestDetailId)
+                .assetRequestId(requestId)
                 .plans(plans)
                 .status(selectedStatus)
                 .page(pageIndex)

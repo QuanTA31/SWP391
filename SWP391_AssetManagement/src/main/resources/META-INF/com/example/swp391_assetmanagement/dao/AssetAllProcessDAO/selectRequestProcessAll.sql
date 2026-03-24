@@ -1,10 +1,10 @@
 SELECT
     ar.id             AS request_id,
     ar.request_type_id,
-    ru.username       AS requested_by,
+    COALESCE(rd.name, ru.username) AS requested_by,
     ar.requested_date,
     ar.request_status_id,
-    au.username       AS approval_by,
+    COALESCE(ad.name, au.username) AS approval_by,
     ar.approved_date  AS approval_date,
     ar.handover_date,
     ar.note,
@@ -17,8 +17,12 @@ SELECT
 FROM asset_request ar
          LEFT JOIN users ru
                     ON ar.requested_by = ru.id
+         LEFT JOIN user_detail rd
+                    ON ru.id = rd.user_id
          LEFT JOIN users au
                    ON ar.approved_by = au.id
+         LEFT JOIN user_detail ad
+                   ON au.id = ad.user_id
          LEFT JOIN request_type rt
                     ON ar.request_type_id = rt.id
          LEFT JOIN request_status rs
