@@ -515,13 +515,13 @@
         createModal.show();
     </script>
     <script th:if="${editErrorMessage}">
-        var editModal = new bootstrap.Modal(
+        const editModal = new bootstrap.Modal(
             document.getElementById('editOptionModal')
         );
         editModal.show();
     </script>
     <script th:if="${openEditModal}">
-        var editModal = new bootstrap.Modal(
+        const editModal = new bootstrap.Modal(
             document.getElementById('editOptionModal')
         );
         editModal.show();
