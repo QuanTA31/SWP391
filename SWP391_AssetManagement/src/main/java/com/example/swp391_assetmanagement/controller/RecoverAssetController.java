@@ -44,9 +44,9 @@ public class RecoverAssetController {
 
         try {
             warehouseRecoverUsecase.execute(assetCodes, userCode);
-            ra.addFlashAttribute("message", "Thu hồi tài sản thành công!");
+            ra.addFlashAttribute("message", "Retrieval complete!");
         } catch (Exception e) {
-            ra.addFlashAttribute("error", "Lỗi: " + e.getMessage());
+            ra.addFlashAttribute("error", "Error: " + e.getMessage());
         }
 
         return "redirect:/viewRequest";
@@ -74,9 +74,9 @@ public class RecoverAssetController {
             // Chỉ gọi UseCase xử lý nghiệp vụ thu hồi và đóng request
             warehouseRecoverUsecase.executeRecovery(detailId, requestId);
 
-            ra.addFlashAttribute("message", "Xác nhận thu hồi tài sản thành công!");
+            ra.addFlashAttribute("message", "Confirm Retrieval Asset done!");
         } catch (Exception e) {
-            ra.addFlashAttribute("error", "Lỗi xử lý thu hồi: " + e.getMessage());
+            ra.addFlashAttribute("error", "Error Retrival: " + e.getMessage());
         }
 
         return "redirect:/recover-asset/warehouse/process?requestId=" + requestId;
