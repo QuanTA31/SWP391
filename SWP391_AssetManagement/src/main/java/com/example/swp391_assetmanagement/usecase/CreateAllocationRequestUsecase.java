@@ -30,13 +30,13 @@ public class CreateAllocationRequestUsecase {
         // Validate required fields when creating (not draft)
         if (!"draft".equalsIgnoreCase(dto.getAction())) {
             if (dto.getAssetTypeId() == null || dto.getAssetTypeId().trim().isEmpty()) {
-                throw new IllegalArgumentException("Vui lòng chọn loại tài sản.");
+                throw new IllegalArgumentException("Please select an asset type.");
             }
             if (dto.getQuantity() == null || dto.getQuantity() < 1) {
-                throw new IllegalArgumentException("Vui lòng nhập số lượng (tối thiểu 1).");
+                throw new IllegalArgumentException("Please enter a quantity (minimum 1).");
             }
             if (dto.getReason() == null || dto.getReason().trim().isEmpty()) {
-                throw new IllegalArgumentException("Vui lòng nhập lý do yêu cầu.");
+                throw new IllegalArgumentException("Please enter a reason for the request.");
             }
         }
 
@@ -66,7 +66,7 @@ public class CreateAllocationRequestUsecase {
         } else {
             // == UPDATE EXISTING DRAFT ==
             AssetRequest assetRequest = allocationService.getAssetRequestById(dto.getAssetRequestId()).orElse(null);
-            if (assetRequest == null) throw new IllegalArgumentException("Không tìm thấy Request");
+            if (assetRequest == null) throw new IllegalArgumentException("Request not found");
 
             assetRequest.requestStatusId = statusId;
             assetRequest.note = dto.getReason();

@@ -127,11 +127,11 @@ public class AllocationController {
 
         String statusMessage = null;
         if (RequestStatus.APPROVED.getValue().equals(req.requestStatusId)) {
-            statusMessage = "Yêu cầu này đã được duyệt.";
+            statusMessage = "This request has been approved.";
         } else if (RequestStatus.CANCELLED.getValue().equals(req.requestStatusId)) {
-            statusMessage = "Yêu cầu này đã bị hủy bỏ/từ chối.";
+            statusMessage = "This request has been cancelled/rejected.";
         } else if (RequestStatus.IN_PROGRESS.getValue().equals(req.requestStatusId)) {
-            statusMessage = "Yêu cầu đang trong quá trình cấp phát.";
+            statusMessage = "This request is currently being allocated.";
         }
 
         model.addAttribute("statusMessage", statusMessage);
@@ -187,11 +187,11 @@ public class AllocationController {
         try {
             createAllocationRequestUsecase.execute(dto, session);
             String msg = "draft".equalsIgnoreCase(dto.getAction())
-                    ? "Đã lưu nháp yêu cầu cấp phát."
-                    : "Yêu cầu cấp phát đã được gửi duyệt.";
+                    ? "Allocation request saved as draft."
+                    : "Allocation request submitted for approval.";
             redirectAttributes.addFlashAttribute("successMessage", msg);
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Error: " + e.getMessage());
             return dto.getAssetRequestId() == null
                     ? "redirect:/allocation/department/create"
                     : "redirect:/allocation/department/edit?id=" + dto.getAssetRequestId();
@@ -204,9 +204,9 @@ public class AllocationController {
     public String approveRequest(@RequestParam("id") Long id, HttpSession session, RedirectAttributes redirectAttributes) {
         try {
             approveAllocationRequestUsecase.approve(id, session);
-            redirectAttributes.addFlashAttribute("successMessage", "Yêu cầu cấp phát đã được duyệt.");
+            redirectAttributes.addFlashAttribute("successMessage", "Allocation request approved.");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi duyệt yêu cầu: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Error approving request: " + e.getMessage());
         }
         return "redirect:/viewRequest";
     }
@@ -215,9 +215,9 @@ public class AllocationController {
     public String rejectRequest(@RequestParam("id") Long id, HttpSession session, RedirectAttributes redirectAttributes) {
         try {
             approveAllocationRequestUsecase.reject(id, session);
-            redirectAttributes.addFlashAttribute("successMessage", "Yêu cầu cấp phát đã bị từ chối.");
+            redirectAttributes.addFlashAttribute("successMessage", "Allocation request rejected.");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi từ chối yêu cầu: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Error rejecting request: " + e.getMessage());
         }
         return "redirect:/viewRequest";
     }
@@ -268,7 +268,7 @@ public class AllocationController {
         String requestNote = req.get().note;
 
         Long toUserId = firstDetail.toUserId;
-        String toUserName = "Không chỉ định";
+        String toUserName = "Not specified";
         if (toUserId != null) {
             String uName = userService.getUserNameById(toUserId);
             if (uName != null) {
@@ -308,9 +308,9 @@ public class AllocationController {
                                     RedirectAttributes redirectAttributes) {
         try {
             processAllocationAssignmentUsecase.execute(requestId, selectedAssetIds);
-            redirectAttributes.addFlashAttribute("successMessage", "Cấp phát tài sản thành công!");
+            redirectAttributes.addFlashAttribute("successMessage", "Asset allocated successfully!");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi cấp phát: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Allocation error: " + e.getMessage());
         }
         return "redirect:/viewRequest";
     }
@@ -347,7 +347,7 @@ public class AllocationController {
         model.addAttribute("assignedAssets", assignedAssets);
 
         Long toUserId = firstDetail.toUserId;
-        String toUserName = "Không chỉ định";
+        String toUserName = "Not specified";
         if (toUserId != null) {
             String uName = userService.getUserNameById(toUserId);
             if (uName != null) {
@@ -365,9 +365,9 @@ public class AllocationController {
                                  RedirectAttributes redirectAttributes) {
         try {
             confirmAllocationReceiptUsecase.execute(requestId);
-            redirectAttributes.addFlashAttribute("successMessage", "Đã xác nhận nhận tài sản thành công!");
+            redirectAttributes.addFlashAttribute("successMessage", "Asset receipt confirmed successfully!");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi xác nhận: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Confirmation error: " + e.getMessage());
         }
         return "redirect:/viewRequest";
     }
@@ -404,7 +404,7 @@ public class AllocationController {
         model.addAttribute("canDispatch", canDispatch);
 
         Long toUserId = firstDetail.toUserId;
-        String toUserName = "Không chỉ định";
+        String toUserName = "Not specified";
         if (toUserId != null) {
             String uName = userService.getUserNameById(toUserId);
             if (uName != null) {
@@ -422,15 +422,15 @@ public class AllocationController {
                                     RedirectAttributes redirectAttributes) {
         try {
             List<AssetInternalRequestDetail> details = allocationService.getInternalDetailsByRequestId(requestId);
-            if (details.isEmpty()) throw new RuntimeException("Không tìm thấy chi tiết yêu cầu.");
+            if (details.isEmpty()) throw new RuntimeException("Request detail not found.");
             // Mark all detail records as dispatched (is_done = false = warehouse has sent)
             for (AssetInternalRequestDetail d : details) {
                 d.isDone = false;
                 allocationService.updateIsDone(d);
             }
-            redirectAttributes.addFlashAttribute("successMessage", "Đã xác nhận cấp phát! Phòng ban sẽ nhận tài sản.");
+            redirectAttributes.addFlashAttribute("successMessage", "Dispatch confirmed! Department will receive the assets.");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Error: " + e.getMessage());
         }
         return "redirect:/viewRequest";
     }
