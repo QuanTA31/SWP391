@@ -5,9 +5,11 @@ import com.example.swp391_assetmanagement.service.UserService;
 import com.example.swp391_assetmanagement.service.servicerequest.LoginServiceRequest;
 import com.example.swp391_assetmanagement.service.serviceresponse.LocationViewAssetServiceResponse;
 import com.example.swp391_assetmanagement.service.serviceresponse.LoginServiceResponse;
+import com.example.swp391_assetmanagement.service.serviceresponse.UserDropdownResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -40,5 +42,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public String getRoleIdByUserCode(String userCode) {
         return userDAO.findRoleCodesByUserCode(userCode);
+    }
+
+    @Override
+    public List<UserDropdownResponse> getActiveUsersByLocation(String locationId) {
+        return userDAO.findUsersByLocationId(locationId);
+    }
+
+    @Override
+    public String getUserNameById(Long id) {
+        return userDAO.findUserNameById(id);
     }
 }

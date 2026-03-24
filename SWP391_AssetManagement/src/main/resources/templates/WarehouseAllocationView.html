@@ -3,7 +3,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/MainLayout}">
 <head>
-    <title>Asset Tracker - Xác Nhận Giao Tài Sản</title>
+    <title>Asset Tracker - Confirm Asset Dispatch</title>
     <th:block layout:fragment="additional-css">
         <link rel="stylesheet" th:href="@{/css/AllocationScreens.css}">
     </th:block>
@@ -13,11 +13,11 @@
     <div class="content-right">
         <div class="header-section animate-fade mb-4">
             <a th:href="@{/viewRequest}" class="btn-back mb-3">
-                <i class="fas fa-arrow-left"></i> Quay lại danh sách
+                <i class="fas fa-arrow-left"></i> Back to list
             </a>
-            <h1 class="header-title">Xác Nhận Giao Tài Sản</h1>
-            <p class="text-secondary mb-0">Kiểm tra danh sách tài sản và bấm <strong>"Cấp phát"</strong> để xác nhận đã
-                giao cho phòng ban.</p>
+            <h1 class="header-title">Confirm Asset Dispatch</h1>
+            <p class="text-secondary mb-0">Check the asset list and click <strong>"Dispatch"</strong> to confirm dispatch
+                to the department.</p>
         </div>
 
         <!-- FLASH MESSAGES -->
@@ -27,37 +27,41 @@
         <!-- ALREADY DISPATCHED BANNER -->
         <div class="info-banner animate-fade" th:if="${detail.isDone != null}">
             <i class="fas fa-check-circle me-2"></i>
-            Tài sản đã được <strong>giao đi</strong>. Đang chờ phòng ban xác nhận nhận hàng.
+            Assets have been <strong>dispatched</strong>. Waiting for department to confirm receipt.
         </div>
 
         <!-- NOT YET DISPATCHED BANNER -->
         <div class="info-banner animate-fade" th:if="${detail.isDone == null}">
             <i class="fas fa-truck me-2"></i>
-            Tài sản chưa được giao. Bấm <strong>"Cấp phát"</strong> để xác nhận giao tài sản cho phòng ban.
+            Assets not dispatched yet. Click <strong>"Dispatch"</strong> to confirm dispatch to the department.
         </div>
 
         <!-- REQUEST SUMMARY -->
         <div class="summary-card animate-fade">
             <div class="fw-semibold mb-3"
                  style="font-size:0.8rem;text-transform:uppercase;letter-spacing:0.05em;">
-                Thông Tin Yêu Cầu
+                Request Information
             </div>
             <div class="summary-grid">
                 <div class="summary-item">
-                    <label>Loại tài sản</label>
+                    <label>Asset Type</label>
                     <span th:text="${detail.assetTypeId != null ? T(com.example.swp391_assetmanagement.enums.AssetType).of(detail.assetTypeId).getName() : 'N/A'}">Laptop</span>
                 </div>
                 <div class="summary-item">
-                    <label>Số lượng yêu cầu</label>
+                    <label>Requested Quantity</label>
                     <span th:text="${requestedQty}">5</span>
                 </div>
                 <div class="summary-item">
-                    <label>Số lượng cấp phát</label>
+                    <label>Allocated Quantity</label>
                     <span th:text="${warehouseAssets.size()}">0</span>
                 </div>
                 <div class="summary-item">
-                    <label>Địa điểm nhận</label>
+                    <label>Receiving Location</label>
                     <span th:text="${detail.toLocationId != null ? T(com.example.swp391_assetmanagement.enums.Location).of(detail.toLocationId).getName() : 'N/A'}">Phòng IT</span>
+                </div>
+                <div class="summary-item">
+                    <label>Receiver (Client)</label>
+                    <span th:text="${toUserName}">Not specified</span>
                 </div>
             </div>
         </div>
@@ -66,7 +70,7 @@
         <div class="asset-table-card animate-fade mb-5">
             <div class="px-4 py-3 border-bottom fw-semibold" style="font-size:0.875rem;">
                 <i class="fas fa-boxes me-2 text-primary"></i>
-                Tài Sản Manager Đã Phân Công
+                Assets Assigned by Manager
                 <span class="badge bg-primary ms-2" th:text="${warehouseAssets.size()}">0</span>
             </div>
 
@@ -74,10 +78,10 @@
                 <thead>
                 <tr>
                     <th>#</th>
-                    <th>Mã Tài Sản</th>
-                    <th>Mô Tả</th>
-                    <th>Vị Trí Hiện Tại</th>
-                    <th>Trạng Thái</th>
+                    <th>Asset Code</th>
+                    <th>Asset Name</th>
+                    <th>Current Location</th>
+                    <th>Status</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -86,25 +90,25 @@
                     <td>
                         <div class="fw-semibold" th:text="${asset.assetCode}">AS-001</div>
                     </td>
-                    <td th:text="${asset.description}">MacBook Pro</td>
+                    <td th:text="${asset.assetTypeId != null ? T(com.example.swp391_assetmanagement.enums.AssetType).of(asset.assetTypeId).getName() : ''}">Laptop</td>
                     <td th:text="${asset.locationId != null ? T(com.example.swp391_assetmanagement.enums.Location).of(asset.locationId).getName() : 'N/A'}">
-                        Kho
+                        Warehouse
                     </td>
                     <td>
                         <span th:if="${asset.assetStatusId == '02'}"
-                              class="badge bg-success-subtle text-success-emphasis">Đã cấp phát</span>
-                        <span th:if="${asset.assetStatusId == '03'}" class="badge bg-info-subtle text-info-emphasis">Chờ giao</span>
+                              class="badge bg-success-subtle text-success-emphasis">Assigned</span>
+                        <span th:if="${asset.assetStatusId == '03'}" class="badge bg-info-subtle text-info-emphasis">Waiting for dispatch</span>
                         <span th:if="${asset.assetStatusId == '01' or asset.assetStatusId == '08'}"
-                              class="badge bg-warning-subtle text-warning-emphasis">Chờ giao</span>
+                              class="badge bg-warning-subtle text-warning-emphasis">Waiting for dispatch</span>
                         <span th:if="${asset.assetStatusId != '01' and asset.assetStatusId != '02' and asset.assetStatusId != '03' and asset.assetStatusId != '08'}"
                               class="badge bg-secondary-subtle text-secondary-emphasis"
-                              th:text="${asset.assetStatusId}">Sẵn sàng</span>
+                              th:text="${asset.assetStatusId}">Ready</span>
                     </td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(warehouseAssets)}">
                     <td colspan="5" class="text-center py-4 text-muted">
                         <i class="fas fa-exclamation-circle me-1"></i>
-                        Chưa có tài sản nào được phân công.
+                        No assets have been assigned.
                     </td>
                 </tr>
                 </tbody>
@@ -114,7 +118,7 @@
         <!-- ACTION BAR -->
         <div class="action-bar animate-fade">
             <a th:href="@{/viewRequest}" class="btn-back">
-                <i class="fas fa-arrow-left"></i> Quay lại
+                <i class="fas fa-arrow-left"></i> Back
             </a>
 
             <!-- Not dispatched yet: show dispatch button -->
@@ -122,15 +126,15 @@
                   th:action="@{/allocation/warehouse/dispatch}" method="POST">
                 <input type="hidden" name="requestId" th:value="${request.id}">
                 <button type="submit" class="btn-dispatch"
-                        onclick="return confirm('Xác nhận đã giao tài sản cho phòng ban?')">
+                        onclick="return confirm('Confirm dispatch of assets to the department?')">
                     <i class="fas fa-truck me-2"></i>
-                    Cấp phát
+                    Dispatch
                 </button>
             </form>
 
             <!-- Already dispatched -->
             <span class="dispatched-badge" th:if="${!canDispatch}">
-                <i class="fas fa-check-circle me-1"></i> Đã giao — Chờ phòng ban xác nhận
+                <i class="fas fa-check-circle me-1"></i> Dispatched — Waiting for department confirmation
             </span>
         </div>
     </div>

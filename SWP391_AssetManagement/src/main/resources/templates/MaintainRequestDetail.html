@@ -3,7 +3,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/MainLayout}">
 <head>
-    <title>Chi Tiết Yêu Cầu Sửa Chữa | Asset Tracker</title>
+    <title>Maintain Request Details | Asset Tracker</title>
     <th:block layout:fragment="additional-css">
         <link rel="stylesheet" th:href="@{/css/createPurchaseRequest.css}">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -20,8 +20,8 @@
                 <div class="d-flex align-items-center">
                     <div class="icon-box"><i class="bi bi-tools"></i></div>
                     <div>
-                        <h4>Chi Tiết Yêu Cầu Sửa Chữa Tài Sản</h4>
-                        <small class="text-muted">Thông tin yêu cầu bảo trì/sửa chữa</small>
+                        <h4>Asset Maintain Request Details</h4>
+                        <small class="text-muted">Repair/Maintain Information's</small>
                     </div>
                 </div>
                 <div>
@@ -38,44 +38,44 @@
             <!-- ── Error message ── -->
             <div class="alert-error" th:if="${errorMessage}">
                 <i class="bi bi-exclamation-circle-fill"></i>
-                <span th:text="${errorMessage}">Có lỗi xảy ra!</span>
+                <span th:text="${errorMessage}">Error Happen!</span>
             </div>
 
             <!-- ── Scrollable Form Area ── -->
             <div style="overflow-y: auto; max-height: calc(100vh - 260px); overflow-x: hidden; padding-right: 10px;">
                 <form th:object="${request}">
                     <!-- Section 1: Thông tin tổng quan -->
-                    <div class="section-label"><i class="bi bi-info-square me-1"></i>1 — Thông tin tổng quan</div>
+                    <div class="section-label"><i class="bi bi-info-square me-1"></i>1 — General Information</div>
 
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
-                            <label class="form-label text-muted small mb-1">Mã tài sản</label>
+                            <label class="form-label text-muted small mb-1">Asset Code</label>
                             <input type="text" class="form-control" readonly
                                    th:value="${assetInfo != null ? assetInfo.assetCode : ''}">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label text-muted small mb-1">Loại tài sản</label>
+                            <label class="form-label text-muted small mb-1">Asset Type</label>
                             <input type="text" class="form-control" readonly
                                    th:value="${assetInfo != null ? assetInfo.assetTypeId : ''}">
                         </div>
                         <div class="col-md-12">
-                            <label class="form-label text-muted small mb-1">Tên / Cấu hình</label>
+                            <label class="form-label text-muted small mb-1">Name / Configuration</label>
                             <input type="text" class="form-control" readonly
                                    th:value="${assetInfo != null ? assetInfo.description : ''}">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label text-muted small mb-1">Trạng thái tài sản</label>
+                            <label class="form-label text-muted small mb-1">Asset Status</label>
                             <!-- Hardcode basic mapping or just show ID since we don't have the full enum mapping in template -->
                             <input type="text" class="form-control" readonly
                                    th:value="${assetInfo != null and assetInfo.assetStatusId == '04' ? 'MAINTENANCE' : (assetInfo != null and assetInfo.assetStatusId == '05' ? 'BROKEN' : (assetInfo != null ? assetInfo.assetStatusId : ''))}">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label text-muted small mb-1">Ngày yêu cầu</label>
+                            <label class="form-label text-muted small mb-1">Requested Date</label>
                             <input type="text" class="form-control" readonly
                                    th:value="${assetRequestInfo != null and assetRequestInfo.requestedDate != null ? #temporals.format(assetRequestInfo.requestedDate, 'dd/MM/yyyy') : ''}">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label text-muted small mb-1">Người yêu cầu</label>
+                            <label class="form-label text-muted small mb-1">Requested By</label>
                             <input type="text" class="form-control" readonly
                                    th:value="${requesterName != null ? requesterName : ''}">
                         </div>
@@ -84,13 +84,12 @@
                     <div class="section-divider"></div>
 
                     <!-- Section 2: Mô tả lỗi & Mức độ ưu tiên -->
-                    <div class="section-label"><i class="bi bi-clipboard2-pulse me-1"></i>2 — Mô tả lỗi &amp; Mức độ ưu
-                        tiên
+                    <div class="section-label"><i class="bi bi-clipboard2-pulse me-1"></i>2 — Error Description & Priority Level
                     </div>
 
                     <div class="mb-3">
                         <label for="issueDescription" class="form-label">
-                            Mô tả vấn đề / lỗi
+                            Describe the problem/error.
                         </label>
                         <textarea class="form-control"
                                   id="issueDescription"
@@ -101,28 +100,28 @@
 
                     <div class="mb-3 pe-none opacity-75">
                         <label class="form-label">
-                            Mức độ ưu tiên
+                            Priority
                         </label>
                         <div class="priority-group">
 
                             <div class="priority-option low">
                                 <input type="radio" id="priorityLow" th:field="*{priority}" value="LOW" disabled>
                                 <label for="priorityLow">
-                                    <i class="bi bi-arrow-down-circle"></i> Thấp
+                                    <i class="bi bi-arrow-down-circle"></i> Low
                                 </label>
                             </div>
 
                             <div class="priority-option medium">
                                 <input type="radio" id="priorityMedium" th:field="*{priority}" value="MEDIUM" disabled>
                                 <label for="priorityMedium">
-                                    <i class="bi bi-dash-circle"></i> Trung bình
+                                    <i class="bi bi-dash-circle"></i> Medium
                                 </label>
                             </div>
 
                             <div class="priority-option high">
                                 <input type="radio" id="priorityHigh" th:field="*{priority}" value="HIGH" disabled>
                                 <label for="priorityHigh">
-                                    <i class="bi bi-arrow-up-circle"></i> Cao
+                                    <i class="bi bi-arrow-up-circle"></i> High
                                 </label>
                             </div>
 
@@ -130,7 +129,7 @@
                                 <input type="radio" id="priorityCritical" th:field="*{priority}" value="CRITICAL"
                                        disabled>
                                 <label for="priorityCritical">
-                                    <i class="bi bi-exclamation-octagon"></i> Khẩn cấp
+                                    <i class="bi bi-exclamation-octagon"></i> Critical
                                 </label>
                             </div>
 
@@ -140,7 +139,7 @@
                     <div class="section-divider"></div>
 
                     <!-- Section 3: Ghi chú thêm -->
-                    <div class="section-label"><i class="bi bi-journal-text me-1"></i>3 — Ghi chú thêm</div>
+                    <div class="section-label"><i class="bi bi-journal-text me-1"></i>3 — Addition notes</div>
 
                     <div class="mb-4">
                             <textarea class="form-control"
@@ -156,7 +155,7 @@
             <div class="action-bar d-flex justify-content-end align-items-center mt-3 pt-3 border-top">
                 <a th:href="@{/viewRequest}" class="btn btn-sm btn-outline-secondary px-4 me-2"
                    style="border-radius:8px; font-weight:600;">
-                    <i class="bi bi-arrow-left me-1"></i>Quay Lại
+                    <i class="bi bi-arrow-left me-1"></i>Back
                 </a>
 
                 <!-- DEPARTMENT MANAGER: Xác nhận nhận lại tài sản (nếu Sửa OK) -->
@@ -165,7 +164,7 @@
                       method="POST" class="m-0">
                     <input type="hidden" name="requestId" th:value="${requestId}"/>
                     <button type="submit" class="btn btn-success" style="border-radius:8px; font-weight:600;">
-                        <i class="bi bi-box-arrow-in-down me-1"></i>Xác Nhận Nhận Lại Tài Sản
+                        <i class="bi bi-box-arrow-in-down me-1"></i>Confirmation of Property Receipt
                     </button>
                 </form>
 
@@ -174,7 +173,7 @@
                    th:href="@{/allocation/department/create}"
                    class="btn btn-warning text-dark m-0 d-flex align-items-center"
                    style="border-radius:8px; font-weight:600;">
-                    <i class="bi bi-plus-circle me-1"></i> Tạo Yêu Cầu Cấp Phát Thay Thế
+                    <i class="bi bi-plus-circle me-1"></i> Create a Replacement Allocation Request
                 </a>
 
                 <!-- WAREHOUSE: Xác nhận sửa (khi đang APPROVED) -->
@@ -183,24 +182,24 @@
                       method="POST" class="m-0 me-2">
                     <input type="hidden" name="requestId" th:value="${requestId}"/>
                     <button type="submit" class="btn btn-primary" style="border-radius:8px; font-weight:600;">
-                        <i class="bi bi-check-circle me-1"></i>Xác Nhận Sửa
+                        <i class="bi bi-check-circle me-1"></i>Confirm Repair
                     </button>
                 </form>
 
                 <!-- WAREHOUSE: Hoàn tất / Không sửa được (khi đang APPROVED hoặc IN_PROGRESS) -->
-                <form th:if="${role == '03' and (requestStatusId == '05' or requestStatusId == '03')}"
+                <form th:if="${role == '03' and requestStatusId == '05' }"
                       th:action="@{/maintenance-requests/warehouse/finish-repair}"
                       method="POST" class="m-0 d-flex">
                     <input type="hidden" name="requestId" th:value="${requestId}"/>
 
                     <button type="submit" name="action" value="FAIL" class="btn btn-danger me-2"
                             style="border-radius:8px; font-weight:600;">
-                        <i class="bi bi-x-circle me-1"></i>Không Sửa Được
+                        <i class="bi bi-x-circle me-1"></i>Unfixable
                     </button>
 
                     <button type="submit" name="action" value="OK" class="btn btn-success"
                             style="border-radius:8px; font-weight:600;">
-                        <i class="bi bi-check-all me-1"></i>Sửa OK
+                        <i class="bi bi-check-all me-1"></i> Repaired
                     </button>
                 </form>
             </div>

@@ -93,10 +93,13 @@ public class AssetRequestServiceImpl implements AssetRequestService {
     public void updateAssetsToDisposed(Long requestId, AssetStatus status) {
         if (requestId == null || status == null) return;
 
-        assetRequestDAO.updateAssetsByRequestId(
+        int updated = assetsDAO.updateStatusByRequestId(
                 requestId,
                 status.getValue()
         );
+        if (updated == 0) {
+            throw new RuntimeException("No asset updated");
+        }
     }
 
     //Retrival

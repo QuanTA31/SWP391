@@ -8,8 +8,12 @@ import com.example.swp391_assetmanagement.entity.Assets;
 import com.example.swp391_assetmanagement.enums.AssetType;
 import com.example.swp391_assetmanagement.enums.Location;
 import com.example.swp391_assetmanagement.enums.RequestStatus;
+import com.example.swp391_assetmanagement.enums.Location;
+import com.example.swp391_assetmanagement.enums.RequestStatus;
 import com.example.swp391_assetmanagement.service.AllocationService;
 import com.example.swp391_assetmanagement.service.AssetService;
+import com.example.swp391_assetmanagement.service.UserService;
+import com.example.swp391_assetmanagement.service.serviceresponse.UserDropdownResponse;
 import com.example.swp391_assetmanagement.usecase.ApproveAllocationRequestUsecase;
 import com.example.swp391_assetmanagement.usecase.ConfirmAllocationReceiptUsecase;
 import com.example.swp391_assetmanagement.usecase.CreateAllocationRequestUsecase;
@@ -32,6 +36,7 @@ public class AllocationController {
     private final AllocationService allocationService;
     private final ApproveAllocationRequestUsecase approveAllocationRequestUsecase;
     private final AssetService assetService;
+    private final UserService userService;
     private final ProcessAllocationAssignmentUsecase processAllocationAssignmentUsecase;
     private final ConfirmAllocationReceiptUsecase confirmAllocationReceiptUsecase;
 
@@ -54,6 +59,12 @@ public class AllocationController {
             locationName = Location.of(locationId).getName();
         }
         model.addAttribute("locationName", locationName);
+
+        List<UserDropdownResponse> departmentUsers = new ArrayList<>();
+        if (locationId != null) {
+            departmentUsers = userService.getActiveUsersByLocation(locationId);
+        }
+        model.addAttribute("departmentUsers", departmentUsers);
 
         populateEnums(model);
         return "NewAllocationRequest";
@@ -79,6 +90,10 @@ public class AllocationController {
                 ? firstDetail.toLocationId
                 : null;
 
+        Long toUserId = Objects.nonNull(firstDetail)
+                ? firstDetail.toUserId
+                : null;
+
         int quantity = details.size(); // 1 record per unit
 
         // Collect assets already assigned and RECEIVED by department
@@ -100,6 +115,7 @@ public class AllocationController {
                 .locationId(toLocationId)
                 .quantity(quantity)
                 .assignedAssets(assignedAssets)
+                .toUserId(toUserId)
                 .build();
 
         boolean isReadOnlyVal = !RequestStatus.DRAFT.getValue().equals(req.requestStatusId);
@@ -111,11 +127,11 @@ public class AllocationController {
 
         String statusMessage = null;
         if (RequestStatus.APPROVED.getValue().equals(req.requestStatusId)) {
-            statusMessage = "Yêu cầu này đã được duyệt.";
+            statusMessage = "This request has been approved.";
         } else if (RequestStatus.CANCELLED.getValue().equals(req.requestStatusId)) {
-            statusMessage = "Yêu cầu này đã bị hủy bỏ/từ chối.";
+            statusMessage = "This request has been cancelled/rejected.";
         } else if (RequestStatus.IN_PROGRESS.getValue().equals(req.requestStatusId)) {
-            statusMessage = "Yêu cầu đang trong quá trình cấp phát.";
+            statusMessage = "This request is currently being allocated.";
         }
 
         model.addAttribute("statusMessage", statusMessage);
@@ -133,6 +149,12 @@ public class AllocationController {
         }
         model.addAttribute("locationName", locationName);
 
+        List<UserDropdownResponse> departmentUsers = new ArrayList<>();
+        if (locId != null) {
+            departmentUsers = userService.getActiveUsersByLocation(locId);
+        }
+        model.addAttribute("departmentUsers", departmentUsers);
+
         populateEnums(model);
         return "NewAllocationRequest";
     }
@@ -146,6 +168,7 @@ public class AllocationController {
             @RequestParam(required = false) String locationId,
             @RequestParam(required = false) Integer quantity,
             @RequestParam(required = false) String reason,
+            @RequestParam(required = false) Long toUserId,
             @RequestParam String action,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
@@ -158,16 +181,17 @@ public class AllocationController {
                 .quantity(quantity)
                 .reason(reason)
                 .action(action)
+                .toUserId(toUserId)
                 .build();
 
         try {
             createAllocationRequestUsecase.execute(dto, session);
             String msg = "draft".equalsIgnoreCase(dto.getAction())
-                    ? "Đã lưu nháp yêu cầu cấp phát."
-                    : "Yêu cầu cấp phát đã được gửi duyệt.";
+                    ? "Allocation request saved as draft."
+                    : "Allocation request submitted for approval.";
             redirectAttributes.addFlashAttribute("successMessage", msg);
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Error: " + e.getMessage());
             return dto.getAssetRequestId() == null
                     ? "redirect:/allocation/department/create"
                     : "redirect:/allocation/department/edit?id=" + dto.getAssetRequestId();
@@ -180,9 +204,9 @@ public class AllocationController {
     public String approveRequest(@RequestParam("id") Long id, HttpSession session, RedirectAttributes redirectAttributes) {
         try {
             approveAllocationRequestUsecase.approve(id, session);
-            redirectAttributes.addFlashAttribute("successMessage", "Yêu cầu cấp phát đã được duyệt.");
+            redirectAttributes.addFlashAttribute("successMessage", "Allocation request approved.");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi duyệt yêu cầu: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Error approving request: " + e.getMessage());
         }
         return "redirect:/viewRequest";
     }
@@ -191,9 +215,9 @@ public class AllocationController {
     public String rejectRequest(@RequestParam("id") Long id, HttpSession session, RedirectAttributes redirectAttributes) {
         try {
             approveAllocationRequestUsecase.reject(id, session);
-            redirectAttributes.addFlashAttribute("successMessage", "Yêu cầu cấp phát đã bị từ chối.");
+            redirectAttributes.addFlashAttribute("successMessage", "Allocation request rejected.");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi từ chối yêu cầu: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Error rejecting request: " + e.getMessage());
         }
         return "redirect:/viewRequest";
     }
@@ -243,6 +267,15 @@ public class AllocationController {
 
         String requestNote = req.get().note;
 
+        Long toUserId = firstDetail.toUserId;
+        String toUserName = "Not specified";
+        if (toUserId != null) {
+            String uName = userService.getUserNameById(toUserId);
+            if (uName != null) {
+                toUserName = uName;
+            }
+        }
+
         // Fetch available assets
         // Stock: status 01 (NEW) or 08 (STOCKED)
         List<Assets> stockAssets = new ArrayList<>(assetService.findStockByType(assetTypeId));
@@ -263,6 +296,7 @@ public class AllocationController {
         model.addAttribute("alreadyReceivedIds", alreadyReceivedIds);
         model.addAttribute("stockAssets", stockAssets);
         model.addAttribute("recoveredAssets", recoveredAssets);
+        model.addAttribute("toUserName", toUserName);
 
         return "ProcessingAllocation";
     }
@@ -274,9 +308,9 @@ public class AllocationController {
                                     RedirectAttributes redirectAttributes) {
         try {
             processAllocationAssignmentUsecase.execute(requestId, selectedAssetIds);
-            redirectAttributes.addFlashAttribute("successMessage", "Cấp phát tài sản thành công!");
+            redirectAttributes.addFlashAttribute("successMessage", "Asset allocated successfully!");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi cấp phát: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Allocation error: " + e.getMessage());
         }
         return "redirect:/viewRequest";
     }
@@ -311,6 +345,17 @@ public class AllocationController {
         model.addAttribute("detail", firstDetail);
         model.addAttribute("requestedQty", details.size()); // total N units originally requested
         model.addAttribute("assignedAssets", assignedAssets);
+
+        Long toUserId = firstDetail.toUserId;
+        String toUserName = "Not specified";
+        if (toUserId != null) {
+            String uName = userService.getUserNameById(toUserId);
+            if (uName != null) {
+                toUserName = uName;
+            }
+        }
+        model.addAttribute("toUserName", toUserName);
+
         return "ConfirmAllocationReceipt";
     }
 
@@ -320,9 +365,9 @@ public class AllocationController {
                                  RedirectAttributes redirectAttributes) {
         try {
             confirmAllocationReceiptUsecase.execute(requestId);
-            redirectAttributes.addFlashAttribute("successMessage", "Đã xác nhận nhận tài sản thành công!");
+            redirectAttributes.addFlashAttribute("successMessage", "Asset receipt confirmed successfully!");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi xác nhận: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Confirmation error: " + e.getMessage());
         }
         return "redirect:/viewRequest";
     }
@@ -357,6 +402,17 @@ public class AllocationController {
         model.addAttribute("requestedQty", details.size()); // total N units originally requested
         model.addAttribute("warehouseAssets", warehouseAssets);
         model.addAttribute("canDispatch", canDispatch);
+
+        Long toUserId = firstDetail.toUserId;
+        String toUserName = "Not specified";
+        if (toUserId != null) {
+            String uName = userService.getUserNameById(toUserId);
+            if (uName != null) {
+                toUserName = uName;
+            }
+        }
+        model.addAttribute("toUserName", toUserName);
+
         return "WarehouseAllocationView";
     }
 
@@ -366,15 +422,15 @@ public class AllocationController {
                                     RedirectAttributes redirectAttributes) {
         try {
             List<AssetInternalRequestDetail> details = allocationService.getInternalDetailsByRequestId(requestId);
-            if (details.isEmpty()) throw new RuntimeException("Không tìm thấy chi tiết yêu cầu.");
+            if (details.isEmpty()) throw new RuntimeException("Request detail not found.");
             // Mark all detail records as dispatched (is_done = false = warehouse has sent)
             for (AssetInternalRequestDetail d : details) {
                 d.isDone = false;
                 allocationService.updateIsDone(d);
             }
-            redirectAttributes.addFlashAttribute("successMessage", "Đã xác nhận cấp phát! Phòng ban sẽ nhận tài sản.");
+            redirectAttributes.addFlashAttribute("successMessage", "Dispatch confirmed! Department will receive the assets.");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Error: " + e.getMessage());
         }
         return "redirect:/viewRequest";
     }

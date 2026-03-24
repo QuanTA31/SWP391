@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,35 +29,36 @@ public class ConfirmAllocationReceiptUsecase {
         // 1. Load all detail records for this request (N records = N units)
         List<AssetInternalRequestDetail> details = allocationService.getInternalDetailsByRequestId(requestId);
         if (details.isEmpty()) {
-            throw new RuntimeException("Không tìm thấy chi tiết cấp phát cho Request ID: " + requestId);
+            throw new RuntimeException("Allocation details not found for Request ID: " + requestId);
         }
 
         // 2. Collect assigned asset IDs from detail records (asset_id field)
+        // 3. Mark each assigned asset as ASSIGNED (status="02") and move to destination location & user
         List<Long> assignedAssetIds = new ArrayList<>();
+        List<Assets> toUpdate = new ArrayList<>();
+
         for (AssetInternalRequestDetail d : details) {
             if (d.assetId != null) {
                 assignedAssetIds.add(d.assetId);
+
+                Assets asset = assetService.findById(d.assetId);
+                if (asset != null) {
+                    asset.assetStatusId = AssetStatus.ASSIGNED.getValue();
+                    if (d.toLocationId != null) {
+                        asset.locationId = d.toLocationId;
+                    }
+                    if (d.toUserId != null) {
+                        asset.currentUserId = d.toUserId;
+                    }
+                    toUpdate.add(asset);
+                }
             }
         }
 
         if (assignedAssetIds.isEmpty()) {
-            throw new RuntimeException("Không có tài sản nào được cấp phát trong yêu cầu này.");
+            throw new RuntimeException("No assets have been allocated in this request.");
         }
 
-        String toLocationId = details.get(0).toLocationId;
-
-        // 3. Mark each assigned asset as ASSIGNED (status="02") and move to destination location
-        List<Assets> toUpdate = new ArrayList<>();
-        for (Long assetId : assignedAssetIds) {
-            Assets asset = assetService.findById(assetId);
-            if (asset != null) {
-                asset.assetStatusId = AssetStatus.ASSIGNED.getValue();
-                if (toLocationId != null) {
-                    asset.locationId = toLocationId;
-                }
-                toUpdate.add(asset);
-            }
-        }
         if (!toUpdate.isEmpty()) {
             allocationService.batchUpdateAllocation(toUpdate);
         }
@@ -78,6 +80,7 @@ public class ConfirmAllocationReceiptUsecase {
             AssetRequest request = allocationService.getAssetRequestById(requestId).orElse(null);
             if (request != null) {
                 request.requestStatusId = RequestStatus.COMPLETED.getValue();
+                request.handoverDate = LocalDate.now();
                 assetRequestService.updatePurchaseRequestStatus(request);
             }
         }

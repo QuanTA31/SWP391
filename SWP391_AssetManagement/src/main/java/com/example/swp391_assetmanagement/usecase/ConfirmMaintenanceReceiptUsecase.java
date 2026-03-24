@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
+
 @Service
 @RequiredArgsConstructor
 public class ConfirmMaintenanceReceiptUsecase {
@@ -46,6 +48,7 @@ public class ConfirmMaintenanceReceiptUsecase {
         assetsDAO.update(asset);
 
         assetRequest.requestStatusId = RequestStatus.COMPLETED.getValue();
+        assetRequest.handoverDate = LocalDate.now();
         assetRequestDAO.updateStatus(assetRequest);
     }
 }

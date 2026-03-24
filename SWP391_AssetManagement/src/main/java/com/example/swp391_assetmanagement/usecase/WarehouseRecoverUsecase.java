@@ -1,6 +1,7 @@
 package com.example.swp391_assetmanagement.usecase;
 
 import com.example.swp391_assetmanagement.dto.request.ViewAssetByUserDisabledDTORequest;
+import com.example.swp391_assetmanagement.dto.response.RecoverItemDetailDTO;
 import com.example.swp391_assetmanagement.dto.response.RecoverProcessDTOResponse;
 import com.example.swp391_assetmanagement.dto.response.ViewAssetByUserDisabledDTOResponse;
 import com.example.swp391_assetmanagement.entity.AssetInternalRequestDetail;
@@ -66,13 +67,14 @@ public class WarehouseRecoverUsecase {
                 .requestedBy(String.valueOf(request.requestedBy))
                 .requestedDate(request.requestedDate != null ? request.requestedDate.toString() : "")
                 .note(request.note != null ? request.note : "N/A")
-                .items(details.stream().map(d -> RecoverProcessDTOResponse.RecoverItemDetailDTO.builder()
+                .items(details.stream().map(d -> RecoverItemDetailDTO.builder()
                         .detailId(d.id)
                         .assetId(d.assetId)
+                        .assetTypeName(AssetType.of(d.assetTypeId).getName())
                         .isDone(d.isDone)
                         // Ở đây tạm thời để ID, nếu muốn hiện Name bạn cần Service Join bảng
                         .fromUserName(String.valueOf(d.fromUserId))
-                        .fromLocationName(d.fromLocationId)
+                        .fromLocationName(Location.of(d.fromLocationId).getName())
                         .build()).toList())
                 .build();
     }
@@ -111,7 +113,6 @@ public class WarehouseRecoverUsecase {
 
         // 2. Map request sang ServiceRequest
         ViewAssetByUserDisabledServiceRequest serviceRequest = ViewAssetByUserDisabledServiceRequest.builder()
-                .userStatus("03") // Trạng thái Disable
                 .assetStatusId("02") //Trạng thái đang sử dụng
                 .assetCode(request.getAssetCode())
                 .locationId(request.getLocationId())

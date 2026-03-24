@@ -44,6 +44,12 @@
                 </a>
             </th:block>
 
+            <th:block th:if="${session.ROLE == '02'}">
+                <a th:href="@{/liquidate/manager/viewAsset}" class="menu-item"
+                   th:classappend="${activePage == 'viewAsset'} ? 'active' : ''">Create Liquidation Request
+                </a>
+            </th:block>
+
             <th:block th:if="${session.ROLE == '05'}">
                 <a th:href="@{/allocation/department/create}" class="menu-item"
                    th:classappend="${activePage == 'createAllocation'} ? 'active' : ''">Create Allocation
@@ -55,6 +61,17 @@
             <a th:if="${session.ROLE == '03'}"
                th:href="@{/purchase-requests/warehouse/view}" class="menu-item"
                th:classappend="${activePage == 'createPurchase'} ? 'active' : ''">Create Purchase Request
+            </a>
+            <th:block th:if="${session.ROLE == '02'}">
+                <a th:href="@{/recover-asset/manager/recoverAsset}" class="menu-item"
+                   th:classappend="${activePage == 'createUser'} ? 'active' : ''">Create Retrieval Request
+                </a>
+            </th:block>
+
+            <div style="flex-grow: 1;"></div>
+            <hr class="my-3">
+            <a th:href="@{/logout}" class="menu-item text-danger fw-semibold">
+                <i class="fas fa-sign-out-alt me-2"></i>Logout
             </a>
         </div>
 

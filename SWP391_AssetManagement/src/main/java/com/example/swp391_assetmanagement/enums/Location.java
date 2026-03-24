@@ -14,8 +14,7 @@ public enum Location implements EnumBase<Location> {
     MEETING_ROOM("03", "MEETING_ROOM"),
     IT_ROOM("04", "IT_ROOM"),
 
-    WAREHOUSE("05", "WAREHOUSE"),
-    OUTSIDE_COMPANY("06", "OUTSIDE_COMPANY");
+    WAREHOUSE("05", "WAREHOUSE");
 
     private final String value;
     private final String name;

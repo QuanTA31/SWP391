@@ -3,7 +3,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/MainLayout}">
 <head>
-    <title>Asset Tracker - Xác Nhận Nhận Tài Sản</title>
+    <title>Asset Tracker - Confirm Asset Receipt</title>
     <th:block layout:fragment="additional-css">
         <link rel="stylesheet" th:href="@{/css/OptionDetail.css}">
         <link rel="stylesheet" th:href="@{/css/AllocationScreens.css}">
@@ -15,10 +15,10 @@
         <div class="header-section animate-fade">
             <div class="header-section animate-fade">
                 <a th:href="@{/viewRequest}" class="btn-back mb-3">
-                    <i class="fas fa-arrow-left"></i> Quay lại danh sách
+                    <i class="fas fa-arrow-left"></i> Back to list
                 </a>
-                <h1 class="header-title">Xác Nhận Nhận Tài Sản Cấp Phát</h1>
-                <p class="text-secondary mb-0">Kiểm tra danh sách tài sản đã được Kho cấp phát và xác nhận đã nhận.</p>
+                <h1 class="header-title">Confirm Allocated Asset Receipt</h1>
+                <p class="text-secondary mb-0">Check the list of assets allocated by the Warehouse and confirm receipt.</p>
             </div>
 
             <!-- FLASH MESSAGES -->
@@ -28,38 +28,40 @@
             <!-- INFO BANNER -->
             <div class="info-banner animate-fade">
                 <i class="fas fa-info-circle me-2"></i>
-                Sau khi bấm <strong>"Xác nhận đã nhận"</strong>, trạng thái tài sản sẽ được cập nhật thành <strong>Đã
-                cấp
-                phát (ASSIGNED)</strong>.
-                Nếu số lượng nhận đủ theo yêu cầu, yêu cầu sẽ chuyển sang <strong>COMPLETED</strong>.
+                After clicking <strong>"Confirm receipt"</strong>, the asset status will be updated to <strong>ASSIGNED</strong>.
+                If the received quantity meets the request, the request will change to <strong>COMPLETED</strong>.
             </div>
 
             <!-- REQUEST SUMMARY -->
             <div class="summary-card animate-fade">
                 <div class="fw-semibold mb-3"
                      style="font-size:0.8rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-secondary);">
-                    Thông Tin Yêu Cầu
+                    Request Information
                 </div>
                 <div class="summary-grid">
                     <div class="summary-item">
-                        <label>Loại tài sản</label>
+                        <label>Asset Type</label>
                         <span th:text="${detail.assetTypeId != null ? T(com.example.swp391_assetmanagement.enums.AssetType).of(detail.assetTypeId).getName() : 'N/A'}">Laptop</span>
                     </div>
                     <div class="summary-item">
-                        <label>Số lượng yêu cầu</label>
+                        <label>Requested Quantity</label>
                         <span th:text="${requestedQty}">5</span>
                     </div>
                     <div class="summary-item">
-                        <label>Số lượng được cấp</label>
+                        <label>Allocated Quantity</label>
                         <span th:text="${assignedAssets.size()}">3</span>
                     </div>
                     <div class="summary-item">
-                        <label>Địa điểm nhận</label>
+                        <label>Receiving Location</label>
                         <span th:text="${detail.toLocationId != null ? T(com.example.swp391_assetmanagement.enums.Location).of(detail.toLocationId).getName() : 'N/A'}">Phòng IT</span>
                     </div>
                     <div class="summary-item">
-                        <label>Lý do</label>
-                        <span th:text="${request.note != null ? request.note : '-'}">Ghi chú</span>
+                        <label>Receiver (Client)</label>
+                        <span th:text="${toUserName}">Not specified</span>
+                    </div>
+                    <div class="summary-item">
+                        <label>Reason</label>
+                        <span th:text="${request.note != null ? request.note : '-'}">Note</span>
                     </div>
                 </div>
             </div>
@@ -68,17 +70,17 @@
             <div class="asset-table-card animate-fade mb-5">
                 <div class="px-4 py-3 border-bottom fw-semibold" style="font-size:0.875rem;">
                     <i class="fas fa-boxes me-2 text-primary"></i>
-                    Danh Sách Tài Sản Được Cấp Phát
+                    List of Allocated Assets
                     <span class="badge bg-primary ms-2" th:text="${assignedAssets.size()}">0</span>
                 </div>
                 <table class="asset-table">
                     <thead>
                     <tr>
                         <th>#</th>
-                        <th>Mã Tài Sản</th>
-                        <th>Mô Tả</th>
-                        <th>Vị Trí Hiện Tại</th>
-                        <th>Trạng Thái</th>
+                        <th>Asset Code</th>
+                        <th>Asset Name</th>
+                        <th>Current Location</th>
+                        <th>Status</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -87,24 +89,24 @@
                         <td>
                             <span class="fw-semibold" th:text="${asset.assetCode}">AS-001</span>
                         </td>
-                        <td th:text="${asset.description}">MacBook Pro</td>
+                        <td th:text="${asset.assetTypeId != null ? T(com.example.swp391_assetmanagement.enums.AssetType).of(asset.assetTypeId).getName() : ''}">Laptop</td>
                         <td th:text="${asset.locationId != null ? T(com.example.swp391_assetmanagement.enums.Location).of(asset.locationId).getName() : 'N/A'}">
-                            Kho
+                            Warehouse
                         </td>
                         <td>
                         <span th:if="${asset.assetStatusId == '02'}"
-                              class="badge bg-success text-white">Đã cấp phát</span>
-                            <span th:if="${asset.assetStatusId == '03'}" class="badge bg-info text-dark">Chờ nhận</span>
+                              class="badge bg-success text-white">Assigned</span>
+                            <span th:if="${asset.assetStatusId == '03'}" class="badge bg-info text-dark">Waiting for receipt</span>
                             <span th:if="${asset.assetStatusId == '01' or asset.assetStatusId == '08'}"
-                                  class="badge bg-warning text-dark">Chờ nhận</span>
+                                  class="badge bg-warning text-dark">Waiting for receipt</span>
                             <span th:if="${asset.assetStatusId != '01' and asset.assetStatusId != '02' and asset.assetStatusId != '03' and asset.assetStatusId != '08'}"
-                                  class="badge bg-secondary text-white" th:text="${asset.assetStatusId}">Sẵn sàng</span>
+                                  class="badge bg-secondary text-white" th:text="${asset.assetStatusId}">Ready</span>
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(assignedAssets)}">
                         <td colspan="5" class="text-center py-4 text-muted">
                             <i class="fas fa-exclamation-circle me-1"></i>
-                            Chưa có tài sản nào được cấp phát cho yêu cầu này.
+                            No assets have been allocated for this request yet.
                         </td>
                     </tr>
                     </tbody>
@@ -114,14 +116,14 @@
             <!-- ACTION BAR -->
             <div class="action-bar animate-fade" th:if="${!#lists.isEmpty(assignedAssets)}">
                 <a th:href="@{/viewRequest}" class="btn-back">
-                    <i class="fas fa-arrow-left"></i> Hủy bỏ
+                    <i class="fas fa-arrow-left"></i> Cancel
                 </a>
                 <form th:action="@{/allocation/department/confirm-receipt}" method="POST">
                     <input type="hidden" name="requestId" th:value="${request.id}">
                     <button type="submit" class="btn-confirm-receipt"
-                            onclick="return confirm('Bạn có chắc chắn đã nhận những tài sản được liệt kê?')">
+                            onclick="return confirm('Are you sure you have received the listed assets?')">
                         <i class="fas fa-check-circle me-2"></i>
-                        Xác Nhận Đã Nhận
+                        Confirm Receipt
                     </button>
                 </form>
             </div>
@@ -129,9 +131,9 @@
             <!-- No assets warning -->
             <div class="action-bar animate-fade" th:if="${#lists.isEmpty(assignedAssets)}">
                 <a th:href="@{/viewRequest}" class="btn-back">
-                    <i class="fas fa-arrow-left"></i> Quay lại danh sách
+                    <i class="fas fa-arrow-left"></i> Back to list
                 </a>
-                <span class="text-muted small">Không có tài sản để xác nhận.</span>
+                <span class="text-muted small">No assets to confirm.</span>
             </div>
         </div>
     </div>

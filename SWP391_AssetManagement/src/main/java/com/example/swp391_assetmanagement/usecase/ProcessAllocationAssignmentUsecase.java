@@ -54,20 +54,23 @@ public class ProcessAllocationAssignmentUsecase {
                 Long assetId = selectedAssetIds.get(i);
                 AssetInternalRequestDetail detail = unassigned.get(i);
 
-                detail.setAssetId(assetId);
-                // Reset is_done = null so Warehouse can dispatch this batch
-                detail.setIsDone(null);
-                allocationService.updateInternalDetail(detail);
-
-                // Mark asset as TRANSFERRING
                 Assets asset = assetService.findById(assetId);
-                if (asset != null &&
-                    (AssetStatus.NEW.getValue().equals(asset.assetStatusId)
-                     || AssetStatus.STOCK_IN.getValue().equals(asset.assetStatusId)
-                     || AssetStatus.STOCKED.getValue().equals(asset.assetStatusId)
-                     || AssetStatus.ASSIGNED.getValue().equals(asset.assetStatusId))) {
-                    asset.assetStatusId = AssetStatus.TRANSFERRING.getValue(); // "03"
-                    toLock.add(asset);
+                if (asset != null) {
+                    detail.setAssetId(assetId);
+                    detail.setFromLocationId(asset.locationId);
+                    detail.setFromUserId(asset.currentUserId);
+                    // Reset is_done = null so Warehouse can dispatch this batch
+                    detail.setIsDone(null);
+                    allocationService.updateInternalDetail(detail);
+
+                    // Mark asset as TRANSFERRING
+                    if (AssetStatus.NEW.getValue().equals(asset.assetStatusId)
+                         || AssetStatus.STOCK_IN.getValue().equals(asset.assetStatusId)
+                         || AssetStatus.STOCKED.getValue().equals(asset.assetStatusId)
+                         || AssetStatus.ASSIGNED.getValue().equals(asset.assetStatusId)) {
+                        asset.assetStatusId = AssetStatus.TRANSFERRING.getValue(); // "03"
+                        toLock.add(asset);
+                    }
                 }
             }
 
