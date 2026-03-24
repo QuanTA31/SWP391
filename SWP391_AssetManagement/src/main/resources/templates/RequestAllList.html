@@ -124,8 +124,9 @@
                                class="btn btn-sm btn-success text-white"
                                th:href="@{/allocation/department/receipt(requestId=${item.id})}">Confirm Receipt</a>
 
+<!--                            <a th:if="${item.requestTypeName == 'RETRIEVAL' and session.ROLE == '03'}"-->
                             <a th:if="${item.requestTypeName == 'RETRIEVAL' and session.ROLE == '03' and (item.requestStatusId == '03' or item.requestStatusId == '05')}"
-                               class="btn btn-sm btn-primary text-white"
+                                class="btn btn-sm btn-primary text-white"
                                th:href="@{/recover-asset/warehouse/process(requestId=${item.id})}">Process Recovery</a>
 
 

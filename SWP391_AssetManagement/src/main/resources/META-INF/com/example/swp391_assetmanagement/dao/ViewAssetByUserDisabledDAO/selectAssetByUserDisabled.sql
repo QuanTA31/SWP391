@@ -12,7 +12,7 @@ SELECT a.asset_code,
 FROM users AS u
 INNER JOIN assets AS a ON u.id = a.current_user_id
 INNER JOIN user_detail AS ud ON u.id = ud.user_id
-WHERE u.status_id = /* request.userStatus */'03'
+WHERE u.status_id IN ('03','02')
    AND a.asset_status_id = /* request.assetStatusId */'02'
   /*%if @isNotEmpty(request.locationId) */
   AND a.location_id = /* request.locationId */'01'

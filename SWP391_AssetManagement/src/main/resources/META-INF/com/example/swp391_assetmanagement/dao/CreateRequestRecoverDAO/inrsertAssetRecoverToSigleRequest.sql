@@ -15,5 +15,5 @@ INSERT INTO asset_internal_request_detail (
     /* request.fromLocationId */'01',
     /* request.toLocationId */'01',
     /* request.fromUserId */1,
-    /* request.isDone */false
+    /* request.isDone */0
 )
