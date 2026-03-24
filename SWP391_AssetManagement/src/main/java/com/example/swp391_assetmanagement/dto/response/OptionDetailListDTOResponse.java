@@ -13,6 +13,7 @@ import java.util.Map;
 public class OptionDetailListDTOResponse {
 
     private Long requestDetailId;
+    private Long assetRequestId;
     private List<OptionDetailServiceResponse> plans;
 
     private String status;
@@ -30,6 +31,7 @@ public class OptionDetailListDTOResponse {
     public Map<String, Object> toModel() {
         Map<String, Object> model = new HashMap<>();
         model.put("asset_external_request_detail_id", requestDetailId);
+        model.put("assetRequestId", assetRequestId);
         model.put("plans", plans);
         model.put("status", status);
         model.put("page", page);
