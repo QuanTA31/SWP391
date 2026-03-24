@@ -33,7 +33,7 @@ public class ApproveAllocationRequestUsecase {
     private void updateStatus(Long requestId, RequestStatus newStatus, HttpSession session) {
         Optional<AssetRequest> assetRequest = allocationService.getAssetRequestById(requestId);
         if (assetRequest.isEmpty()) {
-            throw new IllegalArgumentException("Không tìm thấy yêu cầu cấp phát.");
+            throw new IllegalArgumentException("Allocation request not found.");
         }
 
         String userCode = (String) session.getAttribute("USER_CODE");

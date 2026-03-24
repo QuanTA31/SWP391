@@ -29,7 +29,7 @@ public class ConfirmAllocationReceiptUsecase {
         // 1. Load all detail records for this request (N records = N units)
         List<AssetInternalRequestDetail> details = allocationService.getInternalDetailsByRequestId(requestId);
         if (details.isEmpty()) {
-            throw new RuntimeException("Không tìm thấy chi tiết cấp phát cho Request ID: " + requestId);
+            throw new RuntimeException("Allocation details not found for Request ID: " + requestId);
         }
 
         // 2. Collect assigned asset IDs from detail records (asset_id field)
@@ -56,7 +56,7 @@ public class ConfirmAllocationReceiptUsecase {
         }
 
         if (assignedAssetIds.isEmpty()) {
-            throw new RuntimeException("Không có tài sản nào được cấp phát trong yêu cầu này.");
+            throw new RuntimeException("No assets have been allocated in this request.");
         }
 
         if (!toUpdate.isEmpty()) {
