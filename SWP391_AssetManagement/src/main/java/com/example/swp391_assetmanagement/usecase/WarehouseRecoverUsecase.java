@@ -70,10 +70,11 @@ public class WarehouseRecoverUsecase {
                 .items(details.stream().map(d -> RecoverItemDetailDTO.builder()
                         .detailId(d.id)
                         .assetId(d.assetId)
+                        .assetTypeName(AssetType.of(d.assetTypeId).getName())
                         .isDone(d.isDone)
                         // Ở đây tạm thời để ID, nếu muốn hiện Name bạn cần Service Join bảng
                         .fromUserName(String.valueOf(d.fromUserId))
-                        .fromLocationName(d.fromLocationId)
+                        .fromLocationName(Location.of(d.fromLocationId).getName())
                         .build()).toList())
                 .build();
     }
