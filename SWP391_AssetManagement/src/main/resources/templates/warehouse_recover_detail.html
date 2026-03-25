@@ -101,10 +101,10 @@
                             <span th:unless="${item.isDone}" class="badge bg-warning text-dark">Pending</span>
                         </td>
                         <td class="text-center">
-                            <form th:if="${!item.isDone}"
+                            <form th:if="${session.ROLE == '03' and !item.isDone}"
                                   th:action="@{/recover-asset/warehouse/confirm-item}"
                                   method="post"
-                                  onsubmit="return confirm('Xác nhận đã thu hồi tài sản này về kho?')">
+                                  onsubmit="return confirm('Confirm that asset is return to warehouse?')">
 
                                 <input type="hidden" name="detailId" th:value="${item.detailId}"/>
                                 <input type="hidden" name="requestId" th:value="${request.requestId}"/>
@@ -113,7 +113,9 @@
                                     Confirm
                                 </button>
                             </form>
+
                             <span th:if="${item.isDone}" class="text-muted small italic">Completed</span>
+                            <span th:if="${session.ROLE == '02' and !item.isDone}" class="text-muted small">View Only</span>
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(request.items)}">

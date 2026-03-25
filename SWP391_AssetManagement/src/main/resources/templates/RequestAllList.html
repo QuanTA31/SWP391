@@ -129,7 +129,7 @@
                                 class="btn btn-sm btn-primary text-white"
                                th:href="@{/recover-asset/warehouse/process(requestId=${item.id})}">Recovery</a>
 
-                            <th:block th:if="${item.requestTypeName == 'INVENTORY'}">
+                            <th:block th:if="${item.requestTypeName == 'INVENTORY' and session.ROLE == '03'}">
                                 <a class="btn btn-sm btn-warning text-dark fw-bold"
                                    th:href="@{/inventory/process(requestId=${item.id})}">
                                     Inventory
@@ -155,6 +155,8 @@
                                     session.ROLE == '05' ? '/maintenance-requests/department_manager/view' :
                                     session.ROLE == '03' ? '/maintenance-requests/warehouse/view' : '/maintenance-requests/other/view'
                                 ) :
+                                item.requestTypeName == 'RETRIEVAL' ? '/recover-asset/warehouse/process':
+                                item.requestTypeName == 'INVENTORY' ? '/inventory/process':
                                 item.requestTypeName == 'EXTERNAL' ? '/viewExternalRequest/detail' :
                                 '/viewInternalRequest/detail'
                             }">
