@@ -132,7 +132,7 @@
                                  class="list-group-item d-flex justify-content-between align-items-center">
                                 <div>
                                     <span class="badge bg-primary me-2" th:text="${asset.assetCode}">AS-001</span>
-                                    <span class="text-dark fw-medium" th:text="${asset.description}">Asset Name</span>
+                                    <span class="text-dark fw-medium" th:text="${asset.assetTypeId != null ? T(com.example.swp391_assetmanagement.enums.AssetType).of(asset.assetTypeId).getName() : (asset.description != null ? asset.description : '')}">Asset Name</span>
                                 </div>
                                 <span class="small text-muted" th:text="${asset.locationId}">Location</span>
                             </div>
@@ -144,7 +144,7 @@
                     <!-- ACTION BUTTONS -->
                     <div class="d-flex justify-content-end gap-2">
                         <a th:href="@{/viewRequest}" class="btn btn-sm btn-outline-secondary px-4">
-                            Cancel
+                            Back
                         </a>
                         <button th:if="${!isReadOnly && !canApprove}" type="button" class="btn-save-draft"
                                 onclick="submitForm('draft')">

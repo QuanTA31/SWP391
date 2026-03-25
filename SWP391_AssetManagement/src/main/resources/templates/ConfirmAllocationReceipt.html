@@ -116,7 +116,7 @@
             <!-- ACTION BAR -->
             <div class="action-bar animate-fade" th:if="${!#lists.isEmpty(assignedAssets)}">
                 <a th:href="@{/viewRequest}" class="btn-back">
-                    <i class="fas fa-arrow-left"></i> Cancel
+                    <i class="fas fa-arrow-left"></i> Back
                 </a>
                 <form th:action="@{/allocation/department/confirm-receipt}" method="POST">
                     <input type="hidden" name="requestId" th:value="${request.id}">
