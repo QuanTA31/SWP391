@@ -53,14 +53,14 @@ public class RecoverAssetController {
     }
 
     @GetMapping("/warehouse/process")
-    public String viewProcess(@RequestParam Long requestId, Model model) {
-        // 1. Chuyển trạng thái sang IN_PROGRESS
-        warehouseRecoverUsecase.prepareProcessing(requestId);
+    public String viewProcess(@RequestParam Long requestId, HttpSession session, Model model) {
+        String role = (String) session.getAttribute("ROLE");
 
-        // 2. Lấy "gói dữ liệu" DTO
+        if ("03".equals(role)) {
+            warehouseRecoverUsecase.prepareProcessing(requestId);
+        }
+
         RecoverProcessDTOResponse data = warehouseRecoverUsecase.getRecoverProcessData(requestId);
-
-        // 3. Đưa vào model (Dùng tên "request" để bạn không phải sửa quá nhiều code HTML cũ)
         model.addAttribute("request", data);
 
         return "warehouse_recover_detail";
