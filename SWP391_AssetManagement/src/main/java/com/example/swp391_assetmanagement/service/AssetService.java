@@ -33,4 +33,8 @@ public interface AssetService {
     Assets findById(Long id);
 
     void updateStatusByIds(List<Long> assetIds, AssetStatus status);
+
+    List<Assets> findByLocationAndStatus(String locationId, String status);
+
+    Assets findByIdInventory(Long id);
 }

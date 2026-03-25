@@ -13,7 +13,8 @@ public enum RequestType implements EnumBase<RequestType> {
     RETRIEVAL("02", "RETRIEVAL"),
     PROCUREMENT("03", "PROCUREMENT"),
     MAINTENANCE("04", "MAINTENANCE"),
-    LIQUIDATION("05", "LIQUIDATION");
+    LIQUIDATION("05", "LIQUIDATION"),
+    INVENTORY("06", "INVENTORY");
 
     private final String value;
     private final String name;

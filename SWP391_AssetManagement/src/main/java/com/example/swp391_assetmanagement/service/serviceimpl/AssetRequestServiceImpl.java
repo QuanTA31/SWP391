@@ -3,6 +3,7 @@ package com.example.swp391_assetmanagement.service.serviceimpl;
 import com.example.swp391_assetmanagement.dao.AssetInternalRequestDetailDAO;
 import com.example.swp391_assetmanagement.dao.AssetRequestDAO;
 import com.example.swp391_assetmanagement.dao.AssetsDAO;
+import com.example.swp391_assetmanagement.dao.InventoryDAO;
 import com.example.swp391_assetmanagement.entity.AssetInternalRequestDetail;
 import com.example.swp391_assetmanagement.entity.AssetRequest;
 import com.example.swp391_assetmanagement.entity.Assets;
@@ -25,6 +26,7 @@ public class AssetRequestServiceImpl implements AssetRequestService {
     private final AssetRequestDAO assetRequestDAO;
     private final AssetInternalRequestDetailDAO detailDAO;
     private final AssetsDAO assetsDAO;
+    private final InventoryDAO inventoryDAO;
 
     @Override
     public String findRequestTypeById(Long assetRequestId) {
@@ -153,5 +155,10 @@ public class AssetRequestServiceImpl implements AssetRequestService {
     public void updateHandoverDate(Long requestId, LocalDate handoverDate) {
         // Thực thi cập nhật ngày bàn giao vào DB
         assetRequestDAO.updateHandoverDate(requestId, handoverDate);
+    }
+
+    @Override
+    public AssetInternalRequestDetail findDetailById(Long detailId) {
+        return inventoryDAO.selectDetailById(detailId);
     }
 }

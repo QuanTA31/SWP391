@@ -127,7 +127,14 @@
 <!--                            <a th:if="${item.requestTypeName == 'RETRIEVAL' and session.ROLE == '03'}"-->
                             <a th:if="${item.requestTypeName == 'RETRIEVAL' and session.ROLE == '03' and (item.requestStatusId == '03' or item.requestStatusId == '05')}"
                                 class="btn btn-sm btn-primary text-white"
-                               th:href="@{/recover-asset/warehouse/process(requestId=${item.id})}">Process Recovery</a>
+                               th:href="@{/recover-asset/warehouse/process(requestId=${item.id})}">Recovery</a>
+
+                            <th:block th:if="${item.requestTypeName == 'INVENTORY'}">
+                                <a class="btn btn-sm btn-warning text-dark fw-bold"
+                                   th:href="@{/inventory/process(requestId=${item.id})}">
+                                    Inventory
+                                </a>
+                            </th:block>
 
 
                             <th:block th:with="viewUrl=${
