@@ -56,7 +56,7 @@ public class ManageAssetRequestProcessUsecase {
 
 // MANAGER (02): xem tất cả request (trừ Draft)
         if (Objects.equals(role, "02")) {
-            requestTypeIdList.addAll(List.of("01", "02", "03", "04", "05"));
+            requestTypeIdList.addAll(List.of("01", "02", "03", "04", "05", "06"));
             excludeStatusIdList.add("01"); // DRAFT
         }
 // WAREHOUSE
@@ -66,7 +66,8 @@ public class ManageAssetRequestProcessUsecase {
                     RequestType.PROCUREMENT.getValue(),
                     RequestType.RETRIEVAL.getValue(),
                     RequestType.ALLOCATION.getValue(),
-                    RequestType.MAINTENANCE.getValue()
+                    RequestType.MAINTENANCE.getValue(),
+                    RequestType.INVENTORY.getValue()
             ));
         }
 // WAREHOUSE (03): xem yêu cầu internal (Cấp phát, Mua sắm, Bảo trì) - Trừ Draft

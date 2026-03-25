@@ -52,4 +52,6 @@ public interface AssetRequestService {
     int moveCompleted(Long requestId);
 
     void updateAssetsToDisposed(Long requestId, AssetStatus status);
+
+    AssetInternalRequestDetail findDetailById(Long detailId);
 }

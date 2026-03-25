@@ -1,5 +1,6 @@
 package com.example.swp391_assetmanagement.service.serviceimpl;
 
+import com.example.swp391_assetmanagement.dao.InventoryDAO;
 import com.example.swp391_assetmanagement.entity.Assets;
 import com.example.swp391_assetmanagement.enums.AssetStatus;
 import com.example.swp391_assetmanagement.service.AssetService;
@@ -20,7 +21,7 @@ import java.util.List;
 public class AssetServiceImpl implements AssetService {
 
     private final AssetsDAO assetsDAO;
-
+    private final InventoryDAO inventoryDAO;
     @Override
     public List<AssetViewAllServiceResponse> viewAllAsset(AssetViewAllServiceRequest assetRequest) {
 
@@ -91,4 +92,13 @@ public class AssetServiceImpl implements AssetService {
         assetsDAO.updateStatusByIds(assetIds, status.getValue());
     }
 
+    @Override
+    public List<Assets> findByLocationAndStatus(String locationId, String status) {
+        return inventoryDAO.selectAssetsByLocationAndStatus(locationId, status);
+    }
+
+    @Override
+    public Assets findByIdInventory(Long id) {
+        return inventoryDAO.selectAssetById(id);
+    }
 }

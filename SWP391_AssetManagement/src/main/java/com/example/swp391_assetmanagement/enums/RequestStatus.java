@@ -19,7 +19,8 @@ public enum RequestStatus implements EnumBase<RequestStatus> {
     CANCELLED("07", "CANCELLED"),
     RESEARCH_DONE("08", "RESEARCH_DONE"),
     STOCK_IN("09", "STOCK_IN"),
-    MAINTAIN_DONE("10","MAINTAIN_DONE");
+    MAINTAIN_DONE("10","MAINTAIN_DONE"),
+    INVENTORY("11", "INVENTORY");
 
 
     private final String value;

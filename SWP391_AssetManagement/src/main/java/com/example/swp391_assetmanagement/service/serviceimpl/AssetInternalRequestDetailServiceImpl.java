@@ -1,6 +1,7 @@
 package com.example.swp391_assetmanagement.service.serviceimpl;
 
 import com.example.swp391_assetmanagement.dao.AssetInternalRequestDetailDAO;
+import com.example.swp391_assetmanagement.dao.InventoryDAO;
 import com.example.swp391_assetmanagement.entity.AssetInternalRequestDetail;
 import com.example.swp391_assetmanagement.service.AssetInternalRequestDetailService;
 import com.example.swp391_assetmanagement.service.serviceresponse.AssetForRepairServiceResponse;
