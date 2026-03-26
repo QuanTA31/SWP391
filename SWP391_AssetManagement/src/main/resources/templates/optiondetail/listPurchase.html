@@ -62,7 +62,7 @@
                         <col style="width: 120px;">
                         <col style="width: 140px;">
                         <col style="width: 120px;">
-                        <col style="width: 60px;">
+                        <col style="width: 120px;">
                     </colgroup>
                     <thead>
                     <tr>
@@ -73,7 +73,7 @@
                         <th class="col-price">Status</th>
                         <th class="col-price">Approver</th>
                         <th class="col-price">Approved At</th>
-                        <th style="width: 60px;" class="text-center"></th>
+                        <th style="width: 120px;" class="text-center"></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -106,57 +106,56 @@
                         <td th:text="${p.approverName}"></td>
                         <td th:text="${p.approvedDate != null ? #temporals.format(p.approvedDate, 'yyyy-MM-dd') : ''}"></td>
                         <td class="text-center">
-                            <div class="dropdown">
-                                <button class="btn btn-sm btn-light p-1 border-0"
-                                        type="button"
-                                        data-bs-toggle="dropdown">
-                                    ⋮
-                                </button>
+                            <div class="d-flex justify-content-center align-items-center gap-2">
+                                <!--MANAGER-->
+                                <th:block th:if="${canApprove}">
+                                    <form method="post" th:action="@{/purchase-requests/option-detail/approval}" class="mb-0">
+                                        <input type="hidden" name="id" th:value="${p.id}">
+                                        <input type="hidden"
+                                               name="asset_external_request_detail_id"
+                                               th:value="${asset_external_request_detail_id}">
+                                        <input type="hidden" name="selected" value="true">
+                                        <button class="btn btn-sm btn-outline-primary py-1 px-2" type="submit">
+                                            Select
+                                        </button>
+                                    </form>
+                                </th:block>
 
-                                <ul class="dropdown-menu">
+                                <div class="dropdown" th:if="${canManage}">
+                                    <button class="btn btn-sm btn-light p-1 border-0"
+                                            type="button"
+                                            data-bs-toggle="dropdown">
+                                        ⋮
+                                    </button>
 
-                                    <!--MANAGER-->
-                                    <li th:if="${canApprove}">
-                                        <form method="post" th:action="@{/purchase-requests/option-detail/approval}">
-                                            <input type="hidden" name="id" th:value="${p.id}">
-                                            <input type="hidden"
-                                                   name="asset_external_request_detail_id"
-                                                   th:value="${asset_external_request_detail_id}">
-                                            <input type="hidden" name="selected" value="true">
-
-                                            <button class="dropdown-item" type="submit">
-                                                Select
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <!--PURCHASING-->
+                                        <li>
+                                            <button class="dropdown-item"
+                                                    type="button"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#editOptionModal"
+                                                    th:attr="data-id=${p.id},
+                                                        data-merchant=${p.merchant},
+                                                        data-description=${p.description},
+                                                        data-unit-price=${p.unitPrice},
+                                                        data-warranty-period=${p.warrantyPeriod != null ? #temporals.format(p.warrantyPeriod, 'yyyy-MM-dd') : ''}">
+                                                Edit
                                             </button>
-                                        </form>
-                                    </li>
+                                        </li>
 
-                                    <!--PURCHASING-->
-                                    <li th:if="${canManage}">
-                                        <button class="dropdown-item"
-                                                type="button"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#editOptionModal"
-                                                th:attr="data-id=${p.id},
-                                                    data-merchant=${p.merchant},
-                                                    data-description=${p.description},
-                                                    data-unit-price=${p.unitPrice},
-                                                    data-warranty-period=${p.warrantyPeriod != null ? #temporals.format(p.warrantyPeriod, 'yyyy-MM-dd') : ''}">
-                                            Edit
-                                        </button>
-                                    </li>
-
-                                    <li th:if="${canManage}">
-                                        <button class="dropdown-item text-danger"
-                                                type="button"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#deleteOptionModal"
-                                                th:attr="data-id=${p.id},
-                                 data-request-detail-id=${asset_external_request_detail_id}">
-                                            Delete
-                                        </button>
-                                    </li>
-
-                                </ul>
+                                        <li>
+                                            <button class="dropdown-item text-danger"
+                                                    type="button"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#deleteOptionModal"
+                                                    th:attr="data-id=${p.id},
+                                     data-request-detail-id=${asset_external_request_detail_id}">
+                                                Delete
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </td>
                     </tr>
