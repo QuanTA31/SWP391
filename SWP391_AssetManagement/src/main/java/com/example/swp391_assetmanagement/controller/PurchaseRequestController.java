@@ -44,6 +44,8 @@ public class PurchaseRequestController {
     public String viewPurchaseRequestForm(
             @RequestParam(required = false) Long assetRequestId, Model model, HttpSession session) {
 
+        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.WAREHOUSE);
+
         CreatePurchaseRequestDTORequest createPurchaseRequestDTORequest =
                 getPurchaseRequestWarehouseUsecase.execute(assetRequestId);
 
@@ -79,6 +81,8 @@ public class PurchaseRequestController {
     // Author : PhatNV
     @GetMapping("/manager/view")
     public String managerViewPurchaseRequest(@RequestParam Long assetRequestId, Model model, HttpSession session) {
+
+        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.MANAGER);
 
         CreatePurchaseRequestDTORequest createPurchaseRequestDTORequest =
                 getPurchaseRequestManagerUsecase.execute(assetRequestId);
@@ -121,6 +125,7 @@ public class PurchaseRequestController {
                          @ModelAttribute("createForm") OptionDetailFormDTORequest form,
                          HttpSession session,
                          Model model) {
+
         try {
             createUseCase.execute(requestDetailId, form, session);
             model.addAttribute("createForm", new OptionDetailFormDTORequest());
@@ -203,6 +208,8 @@ public class PurchaseRequestController {
     @PostMapping("/purchasing/research")
     public String delete(@RequestParam Long assetRequestId, HttpSession session) {
 
+        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.PURCHASING);
+
         updateAssetRequestUsecase.execute(assetRequestId, session);
 
         return "redirect:/viewRequest";
@@ -215,6 +222,8 @@ public class PurchaseRequestController {
     public String approve(@RequestParam("id") Long optionId,
                           @RequestParam("asset_external_request_detail_id") Long requestDetailId,
                           HttpSession session) {
+
+        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.MANAGER);
 
         approveUseCase.execute(optionId, requestDetailId, true, session);
 
