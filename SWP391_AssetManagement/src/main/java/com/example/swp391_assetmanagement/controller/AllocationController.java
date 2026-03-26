@@ -18,6 +18,8 @@ import com.example.swp391_assetmanagement.usecase.ApproveAllocationRequestUsecas
 import com.example.swp391_assetmanagement.usecase.ConfirmAllocationReceiptUsecase;
 import com.example.swp391_assetmanagement.usecase.CreateAllocationRequestUsecase;
 import com.example.swp391_assetmanagement.usecase.ProcessAllocationAssignmentUsecase;
+import com.example.swp391_assetmanagement.usecase.GetAllocationSummaryUsecase;
+import com.example.swp391_assetmanagement.dto.response.AllocationSummaryResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -39,6 +41,7 @@ public class AllocationController {
     private final UserService userService;
     private final ProcessAllocationAssignmentUsecase processAllocationAssignmentUsecase;
     private final ConfirmAllocationReceiptUsecase confirmAllocationReceiptUsecase;
+    private final GetAllocationSummaryUsecase getAllocationSummaryUsecase;
 
     //1
     //select 1 list từ bảng assetInternalDetail theo assetRequestID
@@ -451,4 +454,12 @@ public class AllocationController {
                                 .build())
                         .toList());
     }
+
+    @GetMapping("/department/summary")
+    public String showSummary(Model model, HttpSession session) {
+        AllocationSummaryResponse summary = getAllocationSummaryUsecase.execute(session);
+        model.addAttribute("summary", summary);
+        return "AllocationSummary";
+    }
+    
 }
