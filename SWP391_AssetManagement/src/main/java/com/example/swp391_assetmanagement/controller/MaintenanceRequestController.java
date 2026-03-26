@@ -96,6 +96,7 @@ public class MaintenanceRequestController {
         model.addAttribute("role", session.getAttribute("ROLE"));
         model.addAttribute("rolePath", rolePath);
         model.addAttribute("assetInfo", result.getAsset());
+        model.addAttribute("assetTypeName", result.getAssetTypeName());
         model.addAttribute("assetRequestInfo", result.getAssetRequest());
         model.addAttribute("requesterName", result.getRequesterName());
 

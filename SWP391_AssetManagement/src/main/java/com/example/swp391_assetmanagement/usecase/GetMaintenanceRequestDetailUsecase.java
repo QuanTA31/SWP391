@@ -8,6 +8,7 @@ import com.example.swp391_assetmanagement.entity.Assets;
 import com.example.swp391_assetmanagement.dao.AssetsDAO;
 import com.example.swp391_assetmanagement.dao.UserDAO;
 import com.example.swp391_assetmanagement.service.AssetInternalRequestDetailService;
+import com.example.swp391_assetmanagement.dao.AssetTypeDAO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ public class GetMaintenanceRequestDetailUsecase {
     private final com.example.swp391_assetmanagement.service.UserService userService;
     private final AssetsDAO assetsDAO;
     private final UserDAO userDAO;
+    private final AssetTypeDAO assetTypeDAO;
 
     public MaintenanceRequestDetailResult execute(Long assetRequestId, String userCode) {
         
@@ -64,9 +66,14 @@ public class GetMaintenanceRequestDetailUsecase {
         }
 
         Assets asset = detail.assetId != null ? assetsDAO.findById(detail.assetId) : null;
+        String assetTypeName = null;
+        if (asset != null && asset.assetTypeId != null) {
+            assetTypeName = assetTypeDAO.findById(asset.assetTypeId).map(at -> at.name).orElse(null);
+        }
+
         String requesterName = assetRequest.requestedBy != null ? userDAO.findUserNameById(assetRequest.requestedBy) : null;
 
-        return new MaintenanceRequestDetailResult(assetRequest.requestStatusId, dto, isOwner, assetRequest, asset, requesterName);
+        return new MaintenanceRequestDetailResult(assetRequest.requestStatusId, dto, isOwner, assetRequest, asset, requesterName, assetTypeName);
     }
 
     public static class MaintenanceRequestDetailResult {
@@ -76,14 +83,16 @@ public class GetMaintenanceRequestDetailUsecase {
         private AssetRequest assetRequest;
         private Assets asset;
         private String requesterName;
+        private String assetTypeName;
 
-        public MaintenanceRequestDetailResult(String requestStatusId, CreateMaintenanceRequestDTORequest dto, boolean isOwner, AssetRequest assetRequest, Assets asset, String requesterName) {
+        public MaintenanceRequestDetailResult(String requestStatusId, CreateMaintenanceRequestDTORequest dto, boolean isOwner, AssetRequest assetRequest, Assets asset, String requesterName, String assetTypeName) {
             this.requestStatusId = requestStatusId;
             this.dto = dto;
             this.isOwner = isOwner;
             this.assetRequest = assetRequest;
             this.asset = asset;
             this.requesterName = requesterName;
+            this.assetTypeName = assetTypeName;
         }
 
         public String getRequestStatusId() { return requestStatusId; }
@@ -92,5 +101,6 @@ public class GetMaintenanceRequestDetailUsecase {
         public AssetRequest getAssetRequest() { return assetRequest; }
         public Assets getAsset() { return asset; }
         public String getRequesterName() { return requesterName; }
+        public String getAssetTypeName() { return assetTypeName; }
     }
 }
