@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/MainLayout}">
+<head>
+    <meta charset="utf-8">
+    <title>Asset Lifecycle</title>
+
+    <th:block layout:fragment="additional-css">
+        <link rel="stylesheet" th:href="@{/css/OptionDetail.css}">
+        <link rel="stylesheet" th:href="@{/css/AllocationScreens.css}">
+        <link rel="stylesheet" th:href="@{/css/custom-style.css}">
+        <style>
+            .asset-info-card {
+                background: #f8f9fa;
+                border: 1px solid #dee2e6;
+                border-radius: 8px;
+                padding: 16px 20px;
+                margin-bottom: 16px;
+            }
+            .asset-info-card .info-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px 24px;
+            }
+            .asset-info-card .info-item label {
+                font-size: 11px;
+                text-transform: uppercase;
+                color: #6c757d;
+                font-weight: 600;
+                letter-spacing: 0.5px;
+                margin-bottom: 2px;
+                display: block;
+            }
+            .asset-info-card .info-item span {
+                font-size: 13px;
+                font-weight: 500;
+                color: #212529;
+            }
+            .badge-type {
+                background: #e3f2fd;
+                color: #0d47a1;
+                padding: 2px 8px;
+                border-radius: 12px;
+                font-size: 11px;
+                font-weight: 600;
+            }
+            .badge-status {
+                background: #e8f5e9;
+                color: #1b5e20;
+                padding: 2px 8px;
+                border-radius: 12px;
+                font-size: 11px;
+                font-weight: 600;
+            }
+            /* Lifecycle table column widths spreading evenly */
+            .col-lc-type    { width: 14%; }
+            .col-lc-status  { width: 13%; }
+            .col-lc-date    { width: 13%; }
+            .col-lc-user    { width: 12%; }
+            .col-lc-note    { width: auto; }
+            
+            .lifecycle-table th, .lifecycle-table td {
+                text-align: center !important;
+                vertical-align: middle !important;
+                font-size: 13px;
+                padding: 8px 10px;
+            }
+            .lifecycle-table th.col-lc-note,
+            .lifecycle-table td.col-lc-note {
+                text-align: left !important;
+            }
+            .cell-nowrap    { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .cell-note      {
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 2;
+                line-clamp: 2;
+                overflow: hidden;
+                text-align: left;
+            }
+        </style>
+    </th:block>
+</head>
+
+<body>
+<th:block layout:fragment="content">
+    <div class="content-right">
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <a th:href="@{/viewAsset}" class="btn btn-sm btn-outline-secondary me-2">← Back</a>
+                <span class="fw-semibold">Asset Lifecycle – <span th:text="${lifecycle.assetCode}"></span></span>
+            </div>
+
+            <form method="get" th:action="@{/viewAsset/lifecycle}">
+                <input type="hidden" name="assetCode" th:value="${lifecycle.filters.assetCode}">
+                <div class="toolbar-right">
+
+                    <select name="requestTypeId" class="form-select form-select-sm">
+                        <option value="">All Request Types</option>
+                        <option th:each="type : ${T(com.example.swp391_assetmanagement.enums.RequestType).values()}"
+                                th:value="${type.value}"
+                                th:text="${type.name}"
+                                th:selected="${lifecycle.filters.requestTypeId != null
+                          and lifecycle.filters.requestTypeId == type.value}">
+                        </option>
+                    </select>
+
+                    <button class="btn btn-sm btn-save-draft" type="submit">
+                        Apply Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Asset Info Card -->
+        <div class="asset-info-card">
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>Asset Code</label>
+                    <span th:text="${lifecycle.assetCode}">-</span>
+                </div>
+                <div class="info-item">
+                    <label>Description</label>
+                    <span th:text="${lifecycle.description}">-</span>
+                </div>
+                <div class="info-item">
+                    <label>Asset Type</label>
+                    <span class="badge-type" th:text="${lifecycle.assetTypeName}">-</span>
+                </div>
+                <div class="info-item">
+                    <label>Purchase / Received Date</label>
+                    <span th:text="${lifecycle.receivedDate != null ? #temporals.format(lifecycle.receivedDate, 'dd/MM/yyyy') : '—'}">-</span>
+                </div>
+                <div class="info-item">
+                    <label>Original Price</label>
+                    <span th:text="${lifecycle.originalPrice != null ? #numbers.formatDecimal(lifecycle.originalPrice, 0, 'COMMA', 0, 'POINT') : '—'}">-</span>
+                </div>
+                <div class="info-item">
+                    <label>Current Status</label>
+                    <span class="badge-status" th:text="${lifecycle.assetStatusName}">-</span>
+                </div>
+                <div class="info-item">
+                    <label>Location</label>
+                    <span th:text="${lifecycle.locationName}">-</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Requests Table -->
+        <div class="table-container">
+            <div class="table-responsive">
+                <table class="table table-sm table-hover table-fixed">
+                    <thead>
+                    <tr class="lifecycle-table">
+                        <th class="col-lc-type">Request Type</th>
+                        <th class="col-lc-status">Status</th>
+                        <th class="col-lc-date">Requested Date</th>
+                        <th class="col-lc-user">Requested By</th>
+                        <th class="col-lc-date">Approved Date</th>
+                        <th class="col-lc-user">Approved By</th>
+                        <th class="col-lc-date">Handover Date</th>
+                        <th class="col-lc-note">Note</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:if="${lifecycle.requests == null || lifecycle.requests.isEmpty()}">
+                        <td colspan="8" class="text-center text-muted">
+                            No related requests found for this asset.
+                        </td>
+                    </tr>
+
+                    <tr th:each="req : ${lifecycle.requests}" class="lifecycle-table">
+                        <td class="cell-nowrap" th:text="${req.requestTypeName}"></td>
+                        <td class="cell-nowrap" th:text="${req.requestStatusName}"></td>
+                        <td class="cell-nowrap" th:text="${req.requestedDate != null ? #temporals.format(req.requestedDate, 'dd/MM/yyyy') : '—'}"></td>
+                        <td class="cell-nowrap" th:text="${req.requestedBy}"></td>
+                        <td class="cell-nowrap" th:text="${req.approvedDate != null ? #temporals.format(req.approvedDate, 'dd/MM/yyyy') : '—'}"></td>
+                        <td class="cell-nowrap" th:text="${req.approvedBy}"></td>
+                        <td class="cell-nowrap" th:text="${req.handoverDate != null ? #temporals.format(req.handoverDate, 'dd/MM/yyyy') : '—'}"></td>
+                        <td class="col-lc-note">
+                            <div class="cell-note" th:text="${req.note}" th:title="${req.note}"></div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="content-pagination">
+            <div class="pagination-info">
+                Showing
+                <strong th:text="${(lifecycle.filters.page - 1) * lifecycle.filters.pageSize + 1}">1</strong>
+                –
+                <strong th:text="${(lifecycle.filters.page - 1) * lifecycle.filters.pageSize + lifecycle.requests.size()}">15</strong>
+                of
+                <strong th:text="${lifecycle.filters.totalItems}">0</strong>
+            </div>
+
+            <ul class="pagination pagination-sm mb-0">
+                <li class="page-item"
+                    th:classappend="${!lifecycle.filters.hasPreviousPage} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/viewAsset/lifecycle(
+                       pageIndex=${lifecycle.filters.page - 1},
+                       assetCode=${lifecycle.filters.assetCode},
+                       requestTypeId=${lifecycle.filters.requestTypeId}
+                   )}">«</a>
+                </li>
+
+                <th:block th:if="${lifecycle.filters.totalPages != null}">
+                    <li class="page-item"
+                        th:each="i : ${#numbers.sequence(0, lifecycle.filters.totalPages - 1)}"
+                        th:classappend="${i + 1 == lifecycle.filters.page} ? 'active'">
+                        <a class="page-link"
+                           th:text="${i + 1}"
+                           th:href="@{/viewAsset/lifecycle(
+                           pageIndex=${i + 1},
+                           assetCode=${lifecycle.filters.assetCode},
+                           requestTypeId=${lifecycle.filters.requestTypeId}
+                       )}"></a>
+                    </li>
+                </th:block>
+
+                <li class="page-item"
+                    th:classappend="${!lifecycle.filters.hasNextPage} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/viewAsset/lifecycle(
+                       pageIndex=${lifecycle.filters.page + 1},
+                       assetCode=${lifecycle.filters.assetCode},
+                       requestTypeId=${lifecycle.filters.requestTypeId}
+                   )}">»</a>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+</th:block>
+
+<th:block layout:fragment="additional-scripts">
+    <script th:src="@{/js/Template.js}"></script>
+</th:block>
+</body>
+</html>

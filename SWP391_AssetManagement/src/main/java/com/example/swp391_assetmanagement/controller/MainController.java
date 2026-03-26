@@ -4,6 +4,7 @@ import com.example.swp391_assetmanagement.dto.request.*;
 import com.example.swp391_assetmanagement.dto.response.*;
 import com.example.swp391_assetmanagement.enums.Roles;
 import com.example.swp391_assetmanagement.usecase.*;
+import com.example.swp391_assetmanagement.usecase.ViewAssetLifecycleUsecase;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -21,6 +22,8 @@ public class MainController {
     private final ManageAssetRequestProcessUsecase manageAssetRequestProcessUseCase;
 
     private final LoginUsecase loginUsecase;
+
+    private final ViewAssetLifecycleUsecase viewAssetLifecycleUsecase;
 
     @GetMapping({"/", "/login"})
     public String showLoginPage() {
@@ -74,5 +77,14 @@ public class MainController {
 
         // Điều hướng về trang login
         return "redirect:/";
+    }
+
+    @GetMapping("/viewAsset/lifecycle")
+    public String viewAssetLifecycle(@ModelAttribute ViewAssetLifecycleDTORequest request, HttpSession session, Model model) {
+
+        ViewAssetLifecycleDTOResponse response = viewAssetLifecycleUsecase.viewAssetLifecycle(request, session);
+        model.addAttribute("lifecycle", response);
+
+        return "AssetLifecycle";
     }
 }
