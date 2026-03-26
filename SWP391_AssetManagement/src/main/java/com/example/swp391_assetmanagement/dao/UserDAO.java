@@ -12,6 +12,7 @@ import java.util.Optional;
 
 import com.example.swp391_assetmanagement.service.serviceresponse.UserDropdownResponse;
 import com.example.swp391_assetmanagement.entity.UserDetail;
+import com.example.swp391_assetmanagement.entity.Users;
 import org.seasar.doma.Update;
 
 @Dao
@@ -41,4 +42,10 @@ public interface UserDAO {
 
     @Update(sqlFile = true)
     int updateUserDetail(UserDetail userDetail);
+
+    @Select
+    Users findUserById(Long userId);
+
+    @Update(sqlFile = true)
+    int updateUserPassword(Users user);
 }

@@ -5,8 +5,10 @@ import lombok.*;
 import java.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 
-@Getter
+@Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 
 public class ViewProfileDTOResponse {
     private Long userId;
