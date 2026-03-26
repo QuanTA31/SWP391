@@ -55,6 +55,9 @@
             </th:block>
 
             <th:block th:if="${session.ROLE == '05'}">
+                <a th:href="@{/allocation/department/summary}" class="menu-item"
+                   th:classappend="${activePage == 'allocationSummary'} ? 'active' : ''">Allocation Summary
+                </a>
                 <a th:href="@{/allocation/department/create}" class="menu-item"
                    th:classappend="${activePage == 'createAllocation'} ? 'active' : ''">Create Allocation
                     Request
