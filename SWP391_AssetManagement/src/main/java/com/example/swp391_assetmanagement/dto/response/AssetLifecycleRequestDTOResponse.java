@@ -17,11 +17,11 @@ public class AssetLifecycleRequestDTOResponse {
 
     private final LocalDate requestedDate;
 
-    private final Long requestedBy;
+    private final String requestedByName;
 
     private final LocalDate approvedDate;
 
-    private final Long approvedBy;
+    private final String approvedByName;
 
     private final LocalDate handoverDate;
 

@@ -35,6 +35,9 @@ public class AssetViewAllServiceResponse {
     @Column(name = "current_user_id")
     public Long currentUserId;
 
+    @Column(name = "current_user_name")
+    public String currentUserName;
+
     @Column(name = "asset_type_id")
     public String assetTypeId;
 

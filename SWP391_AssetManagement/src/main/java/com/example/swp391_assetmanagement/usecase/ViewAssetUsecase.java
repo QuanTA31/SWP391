@@ -112,6 +112,7 @@ public class ViewAssetUsecase {
                                                 .locationName(Location.of(entity.locationId).getName())
                                                 .assetStatusName(AssetStatus.of(entity.assetStatusId).getName())
                                                 .currentUserId(entity.currentUserId)
+                                                .currentUserName(entity.currentUserName)
                                                 .assetTypeName(AssetType.of(entity.assetTypeId).getName())
                                                 .build())
                                 .toList()
