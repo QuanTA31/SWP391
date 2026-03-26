@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Optional;
 
 import com.example.swp391_assetmanagement.service.serviceresponse.UserDropdownResponse;
+import com.example.swp391_assetmanagement.entity.UserDetail;
+import org.seasar.doma.Update;
 
 @Dao
 @ConfigAutowireable
@@ -33,4 +35,10 @@ public interface UserDAO {
 
     @Select
     List<UserDropdownResponse> findUsersByLocationId(String locationId);
+
+    @Select
+    UserDetail findUserDetailByUserId(Long userId);
+
+    @Update(sqlFile = true)
+    int updateUserDetail(UserDetail userDetail);
 }
