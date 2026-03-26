@@ -26,7 +26,19 @@
                 </select>
                 <button class="btn btn-sm btn-save-draft" type="submit">Filter</button>
             </form>
-            <div class="toolbar-right ms-2">
+            <div class="toolbar-right ms-2 d-flex align-items-center">
+
+               <th:block th:with="viewUrl=${
+                                session.ROLE == '02' ? '/liquidate/manager/view' :
+                                session.ROLE == '04' ? '/liquidate/purchasing/view' : null
+                            }">
+                    <a th:if="${viewUrl != null}"
+                       th:href="@{${viewUrl}(assetRequestId=${assetRequestId})}"
+                       class="btn btn-sm btn-outline-primary">
+                        Back
+                    </a>
+                </th:block>
+
                 <a class="btn btn-sm btn-save-draft"
                    data-bs-toggle="modal"
                    data-bs-target="#createOptionModal"
@@ -103,8 +115,6 @@
                                                    name="asset_external_request_detail_id"
                                                    th:value="${asset_external_request_detail_id}">
                                             <input type="hidden" name="selected" value="true">
-                                            <input type="hidden" name="assetRequestId"
-                                                   th:value="${assetRequestId}"/>
                                             <button class="dropdown-item" type="submit">
                                                 Select
                                             </button>
@@ -201,7 +211,6 @@
                 <input type="hidden"
                        name="assetRequestDetailId"
                        th:value="${asset_external_request_detail_id}"/>
-                <input type="hidden" name="assetRequestId" th:value="${assetRequestId}">
                 <button type="submit"
                         class="btn btn-danger">
                     Reject All
@@ -229,7 +238,6 @@
                         </div>
                         <input type="hidden" name="asset_external_request_detail_id"
                                th:value="${asset_external_request_detail_id}"/>
-                        <input type="hidden" name="assetRequestId" th:value="${assetRequestId}"/>
                         <div class="mb-2">
                             <label class="form-label">Merchant</label>
                             <input class="form-control form-control-sm"
@@ -290,8 +298,6 @@
                         <input type="hidden" name="asset_external_request_detail_id"
                                th:value="${asset_external_request_detail_id}"/>
                         <input type="hidden" th:field="*{id}"/>
-                        <input type="hidden" name="assetRequestId"
-                               th:value="${assetRequestId}"/>
                         <div class="mb-2">
                             <label class="form-label">Merchant</label>
                             <input class="form-control form-control-sm"

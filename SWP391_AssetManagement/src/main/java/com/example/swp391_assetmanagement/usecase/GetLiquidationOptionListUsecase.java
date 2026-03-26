@@ -104,6 +104,7 @@ public class GetLiquidationOptionListUsecase {
 
         return OptionDetailListDTOResponse.builder()
                 .requestDetailId(requestDetailId)
+                .assetRequestId(requestId)
                 .plans(plans)
                 .status(selectedStatus)
                 .page(pageIndex)

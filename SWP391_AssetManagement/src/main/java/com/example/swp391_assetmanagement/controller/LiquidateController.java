@@ -81,6 +81,7 @@ public class LiquidateController {
         model.addAttribute("approvalRequest",
                 ApprovalPurchaseRequestDTORequest.builder().build());
         model.addAttribute("role", session.getAttribute("ROLE"));
+        model.addAttribute("activePage", "viewLiquidation");
         return "viewLiquidationRequest";
     }
 
@@ -112,7 +113,6 @@ public class LiquidateController {
     @PostMapping("/option-detail/create")
     public String create(@RequestParam("asset_external_request_detail_id") Long requestDetailId,
                          @ModelAttribute("createForm") OptionDetailFormDTORequest form,
-                         @RequestParam("assetRequestId") Long assetRequestId,
                          HttpSession session,
                          Model model) {
         try {
@@ -125,8 +125,7 @@ public class LiquidateController {
         getOptionDetailListUseCase.loadToModel(requestDetailId, null, null, session, model);
         model.addAttribute("editForm", new OptionDetailFormDTORequest());
         return "redirect:/liquidate/option-detail/list"
-                + "?asset_external_request_detail_id=" + requestDetailId
-                + "&assetRequestId=" + assetRequestId;
+                + "?asset_external_request_detail_id=" + requestDetailId;
     }
 
     // ================= LIST =================
@@ -134,9 +133,8 @@ public class LiquidateController {
     public String list(@RequestParam("asset_external_request_detail_id") Long requestDetailId,
                        @RequestParam(value = "status", required = false) String status,
                        @RequestParam(value = "page", required = false) Integer page,
-                       @RequestParam("assetRequestId") Long assetRequestId,
                        HttpSession session, Model model) {
-        model.addAttribute("assetRequestId", assetRequestId);
+        model.addAttribute("activePage", "viewOptiondetail");
         model.addAllAttributes(getOptionDetailListUseCase.execute(requestDetailId, status, page, session).toModel());
         model.addAttribute("createForm", model.containsAttribute("createForm") ? model.getAttribute("createForm") : new OptionDetailFormDTORequest());
         model.addAttribute("editForm", model.containsAttribute("editForm") ? model.getAttribute("editForm") : new OptionDetailFormDTORequest());
@@ -147,7 +145,6 @@ public class LiquidateController {
     @PostMapping("/option-detail/edit/{id}")
     public String edit(@RequestParam("asset_external_request_detail_id") Long requestDetailId,
                        @ModelAttribute("editForm") OptionDetailFormDTORequest form,
-                       @RequestParam("assetRequestId") Long assetRequestId,
                        HttpSession session,
                        Model model) {
         try {
@@ -161,19 +158,16 @@ public class LiquidateController {
         getOptionDetailListUseCase.loadToModel(requestDetailId, null, null, session, model);
         model.addAttribute("createForm", new OptionDetailFormDTORequest());
         return "redirect:/liquidate/option-detail/list"
-                + "?asset_external_request_detail_id=" + requestDetailId
-                + "&assetRequestId=" + assetRequestId;
+                + "?asset_external_request_detail_id=" + requestDetailId;
     }
 
     // ================= DELETE =================
     @PostMapping("/option-detail/delete/{id}")
     public String delete(@PathVariable Long id, @RequestParam("asset_external_request_detail_id") Long requestDetailId,
-                         @RequestParam("assetRequestId") Long assetRequestId,
                          HttpSession session) {
         deleteUseCase.execute(requestDetailId, id, session);
         return "redirect:/liquidate/option-detail/list"
-                + "?asset_external_request_detail_id=" + requestDetailId
-                + "&assetRequestId=" + assetRequestId;
+                + "?asset_external_request_detail_id=" + requestDetailId;
     }
 
     @PostMapping("/purchasing/research")
@@ -188,21 +182,19 @@ public class LiquidateController {
     public String approve(
             @RequestParam("id") Long optionId,
             @RequestParam("asset_external_request_detail_id") Long requestDetailId,
-            @RequestParam("assetRequestId") Long assetRequestId,
             HttpSession session
     ) {
         approveUseCase.execute(optionId, requestDetailId, true, session);
 
         return "redirect:/liquidate/option-detail/list"
-                + "?asset_external_request_detail_id=" + requestDetailId
-                + "&assetRequestId=" + assetRequestId;
+                + "?asset_external_request_detail_id=" + requestDetailId;
     }
 
     // ==================== Purchasing View Liquidate ===============
 
     @GetMapping("/purchasing/view")
     public String viewPurchaseRequestForm(
-            @RequestParam Long assetRequestId,
+            @RequestParam(required = false) Long assetRequestId,
             Model model,
             HttpSession session) {
         roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.PURCHASING);
@@ -217,6 +209,7 @@ public class LiquidateController {
                                 .build())
                         .toList());
         model.addAttribute("role", session.getAttribute("ROLE"));
+        model.addAttribute("activePage", "viewLiquidation");
         return "viewLiquidationRequest";
     }
 
