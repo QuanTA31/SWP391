@@ -213,7 +213,7 @@ public class LiquidateController {
         return "viewLiquidationRequest";
     }
 
-    // ==================== IN_PROGRESS ===============
+    // ==================== IN_PROGRESS =============== // check lại xem đã bỏ được chưa
     @PostMapping("/purchasing/progress")
     public String progress(@RequestParam Long requestId,
                            HttpSession session) {
