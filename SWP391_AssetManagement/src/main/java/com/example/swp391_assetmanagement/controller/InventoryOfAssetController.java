@@ -1,6 +1,9 @@
 package com.example.swp391_assetmanagement.controller;
 
+import com.example.swp391_assetmanagement.common.RoleChecker;
 import com.example.swp391_assetmanagement.enums.AssetType;
+import com.example.swp391_assetmanagement.enums.Roles;
+import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
 import com.example.swp391_assetmanagement.dto.request.InventoryConfirmDTORequest;
 import com.example.swp391_assetmanagement.dto.request.InventoryCreateDTORequest;
@@ -23,9 +26,17 @@ import org.springframework.web.bind.annotation.*;
 public class InventoryOfAssetController {
 
     private final InventoryUsecase inventoryUsecase;
+    private final RoleChecker roleChecker;
 
     @GetMapping("/inventory/create")
-    public String showCreateForm(Model model) {
+    public String showCreateForm(Model model, HttpSession session) {
+
+        if (session.getAttribute("USER_CODE") == null) {
+            return "redirect:/login";
+        }
+
+        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.MANAGER);
+
         // Lấy danh sách Location (từ Enum hoặc DB) thông qua Usecase
         // Ở đây mình giả định Usecase đã có method prepareData() trả về List<Location>
         model.addAttribute("locations", inventoryUsecase.prepareData());
@@ -36,11 +47,16 @@ public class InventoryOfAssetController {
 
     @PostMapping("/inventory/create")
     public String createInventory(@ModelAttribute InventoryCreateDTORequest dtoRequest, HttpSession session) {
-        String userCode = (String) session.getAttribute("USER_CODE");
 
-        if (userCode == null) {
+        if (session.getAttribute("USER_CODE") == null) {
             return "redirect:/login";
         }
+
+        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.MANAGER);
+
+        String userCode = (String) session.getAttribute("USER_CODE");
+
+
         // Mapping DTO sang ServiceRequest
         InventoryCreateServiceRequest serviceRequest = InventoryCreateServiceRequest.builder()
                 .locationId(dtoRequest.getLocationId())
@@ -52,7 +68,14 @@ public class InventoryOfAssetController {
     }
 
     @GetMapping("/inventory/process")
-    public String processInventory(@ModelAttribute InventoryProcessDTORequest dtoRequest, Model model) {
+    public String processInventory(@ModelAttribute InventoryProcessDTORequest dtoRequest, Model model, HttpSession session) {
+
+        if (session.getAttribute("USER_CODE") == null) {
+            return "redirect:/login";
+        }
+
+        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.MANAGER,Roles.WAREHOUSE);
+
         // Mapping DTO sang ServiceRequest
         InventoryProcessServiceRequest serviceRequest = InventoryProcessServiceRequest.builder()
                 .requestId(dtoRequest.getRequestId())
@@ -84,7 +107,15 @@ public class InventoryOfAssetController {
 
     @PostMapping("/api/inventory/confirm")
     @ResponseBody
-    public ResponseEntity<?> confirm(@RequestBody InventoryConfirmDTORequest dtoRequest) {
+    public ResponseEntity<?> confirm(@RequestBody InventoryConfirmDTORequest dtoRequest, HttpSession session) {
+
+        Object userCode = session.getAttribute("USER_CODE");
+        if (userCode == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Session expired. Please login again.");
+        }
+
+        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.MANAGER,Roles.WAREHOUSE);
+
         // Mapping DTO sang ServiceRequest
         InventoryConfirmServiceRequest serviceRequest = InventoryConfirmServiceRequest.builder()
                 .detailId(dtoRequest.getDetailId())

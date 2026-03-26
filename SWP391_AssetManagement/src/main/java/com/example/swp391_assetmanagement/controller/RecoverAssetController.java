@@ -1,10 +1,12 @@
 package com.example.swp391_assetmanagement.controller;
 
+import com.example.swp391_assetmanagement.common.RoleChecker;
 import com.example.swp391_assetmanagement.dto.request.ViewAssetByUserDisabledDTORequest;
 import com.example.swp391_assetmanagement.dto.response.RecoverProcessDTOResponse;
 import com.example.swp391_assetmanagement.dto.response.ViewAssetByUserDisabledDTOResponse;
 import com.example.swp391_assetmanagement.enums.AssetType;
 import com.example.swp391_assetmanagement.enums.Location;
+import com.example.swp391_assetmanagement.enums.Roles;
 import com.example.swp391_assetmanagement.usecase.WarehouseRecoverUsecase;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +23,16 @@ import java.util.List;
 public class RecoverAssetController {
 
     private final WarehouseRecoverUsecase warehouseRecoverUsecase;
+    private final RoleChecker roleChecker;
 
     @GetMapping("/manager/recoverAsset")
     public String viewUser(@ModelAttribute ViewAssetByUserDisabledDTORequest request, HttpSession session, Model model) {
+
+        if (session.getAttribute("USER_CODE") == null) {
+            return "redirect:/login";
+        }
+
+        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.MANAGER);
 
         ViewAssetByUserDisabledDTOResponse response = warehouseRecoverUsecase.viewAssetDisabled(request,session);
         model.addAttribute("assets", response);
@@ -36,6 +45,12 @@ public class RecoverAssetController {
     @PostMapping("/manager/execute-recover")
     public String executeRecover(@RequestParam("selectedAssetCodes") List<String> assetCodes,
                                  HttpSession session, RedirectAttributes ra) {
+
+        if (session.getAttribute("USER_CODE") == null) {
+            return "redirect:/login";
+        }
+
+        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.MANAGER);
 
         String userCode = (String) session.getAttribute("USER_CODE");
         if (userCode == null) {
@@ -54,6 +69,13 @@ public class RecoverAssetController {
 
     @GetMapping("/warehouse/process")
     public String viewProcess(@RequestParam Long requestId, HttpSession session, Model model) {
+
+        if (session.getAttribute("USER_CODE") == null) {
+            return "redirect:/login";
+        }
+
+        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.MANAGER, Roles.WAREHOUSE);
+
         String role = (String) session.getAttribute("ROLE");
 
         if ("03".equals(role)) {
@@ -69,7 +91,14 @@ public class RecoverAssetController {
     @PostMapping("/warehouse/confirm-item")
     public String confirmItem(@RequestParam Long detailId,
                               @RequestParam Long requestId,
-                              RedirectAttributes ra) {
+                              RedirectAttributes ra, HttpSession session) {
+
+        if (session.getAttribute("USER_CODE") == null) {
+            return "redirect:/login";
+        }
+
+        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.MANAGER, Roles.WAREHOUSE);
+
         try {
             // Chỉ gọi UseCase xử lý nghiệp vụ thu hồi và đóng request
             warehouseRecoverUsecase.executeRecovery(detailId, requestId);

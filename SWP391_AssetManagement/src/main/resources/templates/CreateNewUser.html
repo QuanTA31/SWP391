@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/MainLayout}">
 <head>
@@ -16,18 +16,31 @@
         </div>
 
         <div class="form-container p-4 bg-light rounded shadow-sm overflow-auto">
+            <div th:if="${errorMessage}" class="alert alert-danger py-2 small" role="alert">
+                <span th:text="${errorMessage}"></span>
+            </div>
+
             <form th:action="@{/admin/createUser}" th:object="${userRequest}" method="post">
                 <div class="row g-3">
                     <div class="col-md-6">
                         <h6 class="text-primary border-bottom pb-2">Account Info</h6>
+
                         <div class="mb-3">
                             <label class="form-label small fw-bold">Username</label>
-                            <input type="text" th:field="*{username}" class="form-control form-control-sm" required>
+                            <input type="text" th:field="*{username}"
+                                   th:classappend="${#fields.hasErrors('username')} ? 'is-invalid' : ''"
+                                   class="form-control form-control-sm">
+                            <div class="text-danger small" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label small fw-bold">Password</label>
-                            <input type="password" th:field="*{password}" class="form-control form-control-sm" required>
+                            <input type="password" th:field="*{password}"
+                                   th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''"
+                                   class="form-control form-control-sm">
+                            <div class="text-danger small" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label small fw-bold">Role</label>
                             <select th:field="*{roleId}" class="form-select form-select-sm">
@@ -35,6 +48,7 @@
                                         th:value="${r.value}" th:text="${r.name}"></option>
                             </select>
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label small fw-bold">Status</label>
                             <select th:field="*{statusId}" class="form-select form-select-sm">
@@ -46,22 +60,40 @@
 
                     <div class="col-md-6">
                         <h6 class="text-primary border-bottom pb-2">Personal Detail</h6>
+
                         <div class="mb-3">
                             <label class="form-label small fw-bold">Full Name</label>
-                            <input type="text" th:field="*{name}" class="form-control form-control-sm" required>
+                            <input type="text" th:field="*{name}"
+                                   th:classappend="${#fields.hasErrors('name')} ? 'is-invalid' : ''"
+                                   class="form-control form-control-sm">
+                            <div class="text-danger small" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label small fw-bold">Email</label>
-                            <input type="email" th:field="*{email}" class="form-control form-control-sm" required>
+                            <input type="email" th:field="*{email}"
+                                   th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''"
+                                   class="form-control form-control-sm">
+                            <div class="text-danger small" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label small fw-bold">Phone</label>
-                            <input type="text" th:field="*{phone}" class="form-control form-control-sm">
+                            <input type="text" th:field="*{phone}"
+                                   th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid' : ''"
+                                   class="form-control form-control-sm">
+                            <div class="text-danger small" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label small fw-bold">Date of Birth</label>
-                            <input type="date" th:field="*{dateOfBirth}" class="form-control form-control-sm">
+                            <input type="date" th:field="*{dateOfBirth}"
+                                   th:classappend="${#fields.hasErrors('dateOfBirth') || ageError != null} ? 'is-invalid' : ''"
+                                   class="form-control form-control-sm">
+                            <div class="text-danger small" th:if="${#fields.hasErrors('dateOfBirth')}" th:errors="*{dateOfBirth}"></div>
+                            <div class="text-danger small" th:if="${ageError}" th:text="${ageError}"></div>
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label small fw-bold">Location</label>
                             <select th:field="*{locationId}" class="form-select form-select-sm">
@@ -73,7 +105,7 @@
                 </div>
 
                 <div class="mt-4 pt-3 border-top d-flex justify-content-end gap-2">
-                    <button type="button" class="btn btn-sm btn-secondary" onclick="history.back()">Cancel</button>
+                    <button type="reset" class="btn btn-sm btn-secondary" >Cancel</button>
                     <button type="submit" class="btn btn-sm btn-primary px-4"
                             style="background-color: #29b6f6; border: none;">
                         Save User
