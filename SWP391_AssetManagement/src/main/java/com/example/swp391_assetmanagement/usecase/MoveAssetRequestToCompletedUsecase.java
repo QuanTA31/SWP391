@@ -21,7 +21,7 @@ public class MoveAssetRequestToCompletedUsecase {
 
         if (updated == 0) {
             session.setAttribute("error",
-                    "Only IN_PROGRESS can move to COMPLETED");
+                    "Only RESEARCH_DONE can move to COMPLETED");
             return;
         }
 
