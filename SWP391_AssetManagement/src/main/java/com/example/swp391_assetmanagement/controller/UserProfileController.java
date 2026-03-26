@@ -2,8 +2,10 @@ package com.example.swp391_assetmanagement.controller;
 
 import com.example.swp391_assetmanagement.dto.request.UpdateProfileDTORequest;
 import com.example.swp391_assetmanagement.dto.response.ViewProfileDTOResponse;
+import com.example.swp391_assetmanagement.dto.request.ChangePasswordDTORequest;
 import com.example.swp391_assetmanagement.usecase.UpdateProfileUsecase;
 import com.example.swp391_assetmanagement.usecase.ViewProfileUsecase;
+import com.example.swp391_assetmanagement.usecase.ChangePasswordUsecase;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -21,6 +23,7 @@ public class UserProfileController {
 
     private final ViewProfileUsecase viewProfileUsecase;
     private final UpdateProfileUsecase updateProfileUsecase;
+    private final ChangePasswordUsecase changePasswordUsecase;
 
     @GetMapping
     public String viewProfile(HttpSession session, Model model) {
@@ -38,6 +41,7 @@ public class UserProfileController {
                 .dateOfBirth(response.getDateOfBirth())
                 .build();
         model.addAttribute("profileRequest", updateRequest);
+        model.addAttribute("changePasswordRequest", ChangePasswordDTORequest.builder().build());
         
         return "profile/Profile";
     }
@@ -51,6 +55,19 @@ public class UserProfileController {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "An error occurred: " + e.getMessage());
+        }
+        return "redirect:/profile";
+    }
+
+    @PostMapping("/change-password")
+    public String changePassword(@ModelAttribute("changePasswordRequest") ChangePasswordDTORequest request, HttpSession session, RedirectAttributes redirectAttributes) {
+        try {
+            changePasswordUsecase.execute(request, session);
+            redirectAttributes.addFlashAttribute("successMessage", "Đổi mật khẩu thành công!");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra: " + e.getMessage());
         }
         return "redirect:/profile";
     }
