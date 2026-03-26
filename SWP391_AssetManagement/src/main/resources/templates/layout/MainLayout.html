@@ -12,7 +12,7 @@
 <div class="app-wrapper">
     <div class="app-header">
         <span>Asset Tracker</span>
-        <span th:switch="${session.ROLE}">
+        <span th:switch="${session.ROLE}" style="flex-grow: 1; text-align: center;">
                     <span th:case="'01'">Admin Management System</span>
                     <span th:case="'05'">Department Management System</span>
                     <span th:case="'02'">Manager Management System</span>
@@ -20,6 +20,12 @@
                     <span th:case="'03'">Warehouse Management System</span>
                     <span th:case="*">Management System</span>
                 </span>
+        <div class="profile-icon ms-auto">
+            <a th:href="@{/profile}" class="text-decoration-none text-light" title="User Profile">
+                <i class="fas fa-user-circle fa-2x"></i>
+                <span class="ms-2 d-none d-md-inline" th:text="${session.USER_NAME}"></span>
+            </a>
+        </div>
     </div>
 
     <div class="app-content">
