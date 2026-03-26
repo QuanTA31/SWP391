@@ -23,4 +23,13 @@ public interface CreateUserDAO {
 
     @Insert
     int insertUserDetail(UserDetail detail);
+
+    @Select
+    boolean existsByUsername(String username);
+
+    @Select
+    boolean existsByEmail(String email);
+
+    @Select
+    boolean existsByPhone(String phone);
 }

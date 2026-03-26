@@ -80,24 +80,29 @@
 }
 
 .col-asset-tag {
-    width: 100px;
+    width: 130px;
+    white-space: nowrap;
 }
 
 /* .col-description { width: 280px; } */
 .col-location {
-    width: 140px;
+    width: 130px;
+    white-space: nowrap;
 }
 
 .col-price {
-    width: 100px;
+    width: 110px;
+    white-space: nowrap;
 }
 
 .col-used-by {
-    width: 120px;
+    width: 110px;
+    white-space: nowrap;
 }
 
 .col-item-type {
-    width: 120px;
+    width: 110px;
+    white-space: nowrap;
 }
 
 /* TEXT HANDLING */
@@ -111,6 +116,7 @@
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     overflow: hidden;
 }
 

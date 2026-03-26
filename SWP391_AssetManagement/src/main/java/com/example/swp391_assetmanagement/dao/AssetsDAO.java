@@ -1,8 +1,10 @@
 package com.example.swp391_assetmanagement.dao;
 
 import com.example.swp391_assetmanagement.entity.Assets;
+import com.example.swp391_assetmanagement.service.servicerequest.AssetLifecycleServiceRequest;
 import com.example.swp391_assetmanagement.service.servicerequest.AssetViewAllServiceRequest;
 import com.example.swp391_assetmanagement.service.servicerequest.LiquiAssetViewAllServiceRequest;
+import com.example.swp391_assetmanagement.service.serviceresponse.AssetLifecycleServiceResponse;
 import com.example.swp391_assetmanagement.service.serviceresponse.AssetLiquiServiceResponse;
 import com.example.swp391_assetmanagement.service.serviceresponse.AssetViewAllServiceResponse;
 import org.seasar.doma.*;
@@ -67,4 +69,10 @@ public interface AssetsDAO {
 
     @Update(sqlFile = true)
     int updateStatusByRequestId(Long requestId, String status);
+
+    @Select
+    List<AssetLifecycleServiceResponse> selectAssetLifecycle(AssetLifecycleServiceRequest request);
+
+    @Select
+    Assets selectByAssetCode(String assetCode);
 }

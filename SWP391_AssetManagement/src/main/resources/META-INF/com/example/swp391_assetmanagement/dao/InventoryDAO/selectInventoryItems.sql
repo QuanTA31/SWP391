@@ -5,9 +5,19 @@ SELECT
     ud.name as userFullName,
     d.is_done as isDone,
     a.id as assetId,
-    a.asset_status_id as statusId -- THÊM DÒNG NÀY
+    a.asset_status_id as statusId
 FROM asset_internal_request_detail d
 JOIN assets a ON d.asset_id = a.id
 LEFT JOIN user_detail ud ON d.from_user_id = ud.user_id
 WHERE d.asset_request_id = /* requestId */76
+
+/*%if assetTypeId != null && assetTypeId != "" */
+  AND a.asset_type_id = /* assetTypeId */'01'
+/*%end*/
+
+/*%if fullName != null && fullName != "" */
+  AND Lower(ud.name) LIKE Lower(CONCAT('%', /* fullName */'lap', '%'))
+
+/*%end*/
+
 ORDER BY d.is_done ASC, a.asset_code ASC

@@ -1,6 +1,7 @@
 package com.example.swp391_assetmanagement.usecase;
 
 import com.example.swp391_assetmanagement.dto.request.CreateUserDTORequest;
+import com.example.swp391_assetmanagement.dto.response.CreateUserDTOResponse;
 import com.example.swp391_assetmanagement.entity.UserDetail;
 import com.example.swp391_assetmanagement.entity.Users;
 import com.example.swp391_assetmanagement.enums.Location;
@@ -23,11 +24,8 @@ public class CreateUserUsecase {
     private final CreateUserService createUserService;
 
     @Transactional
-    public CreateUserDTORequest createUser(CreateUserDTORequest request, HttpSession session) {
-        // 1. Validate (Tương tự ViewAllUserUsecase)
-        validateCreateRequest(request, session);
+    public CreateUserDTOResponse createUser(CreateUserDTORequest request) {
 
-        // 2. Logic tạo User Code tự động
         long nextSeq = createUserService.countTotalUsers() + 1;
         String prefix = getPrefixByRole(request.getRoleId());
         String autoUserCode = String.format("%s%04d", prefix, nextSeq);
@@ -55,7 +53,7 @@ public class CreateUserUsecase {
         createUserService.saveUser(userEntity, detailEntity);
 
         // 6. Map to Response (Hàm map thủ công như đã giải thích)
-        return CreateUserDTORequest.builder()
+        return CreateUserDTOResponse.builder()
                 .userCode(userEntity.userCode)
                 .username(userEntity.username)
                 .name(detailEntity.name)
@@ -67,19 +65,6 @@ public class CreateUserUsecase {
                 .dateOfBirth(detailEntity.dateOfBirth)
                 .password(userEntity.password)
                 .build();
-    }
-
-    private void validateCreateRequest(CreateUserDTORequest request, HttpSession session) {
-        // Kiểm tra quyền (Chỉ ADMIN/MANAGER mới được tạo user)
-        String role = (String) session.getAttribute("ROLE");
-        if (!Roles.ADMIN.getValue().equals(role) && !Roles.MANAGER.getValue().equals(role)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền thực hiện thao tác này!");
-        }
-
-        // Validate Enums
-        if (!Location.hasValue(request.getLocationId())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Location invalid!");
-        }
     }
 
     public static String encryptSHA1(String input) {

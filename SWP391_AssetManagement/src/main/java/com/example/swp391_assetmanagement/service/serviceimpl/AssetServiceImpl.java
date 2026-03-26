@@ -4,8 +4,10 @@ import com.example.swp391_assetmanagement.dao.InventoryDAO;
 import com.example.swp391_assetmanagement.entity.Assets;
 import com.example.swp391_assetmanagement.enums.AssetStatus;
 import com.example.swp391_assetmanagement.service.AssetService;
+import com.example.swp391_assetmanagement.service.servicerequest.AssetLifecycleServiceRequest;
 import com.example.swp391_assetmanagement.service.servicerequest.AssetViewAllServiceRequest;
 import com.example.swp391_assetmanagement.service.servicerequest.LiquiAssetViewAllServiceRequest;
+import com.example.swp391_assetmanagement.service.serviceresponse.AssetLifecycleServiceResponse;
 import com.example.swp391_assetmanagement.service.serviceresponse.AssetLiquiServiceResponse;
 import com.example.swp391_assetmanagement.service.serviceresponse.AssetViewAllServiceResponse;
 import com.example.swp391_assetmanagement.dao.AssetsDAO;
@@ -100,5 +102,19 @@ public class AssetServiceImpl implements AssetService {
     @Override
     public Assets findByIdInventory(Long id) {
         return inventoryDAO.selectAssetById(id);
+    }
+
+    @Override
+    public List<AssetLifecycleServiceResponse> viewAssetLifecycle(AssetLifecycleServiceRequest request) {
+        List<AssetLifecycleServiceResponse> daoResponses = assetsDAO.selectAssetLifecycle(request);
+        if (daoResponses.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return daoResponses;
+    }
+
+    @Override
+    public Assets findByAssetCode(String assetCode) {
+        return assetsDAO.selectByAssetCode(assetCode);
     }
 }
