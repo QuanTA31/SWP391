@@ -7,6 +7,7 @@
     <th:block layout:fragment="additional-css">
         <link rel="stylesheet" th:href="@{/css/createPurchaseRequest.css}">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        <link rel="stylesheet" th:href="@{/css/createMaintainRequest.css}">
     </th:block>
 </head>
 
@@ -56,7 +57,7 @@
                         <div class="col-md-6">
                             <label class="form-label text-muted small mb-1">Asset Type</label>
                             <input type="text" class="form-control" readonly
-                                   th:value="${assetInfo != null ? assetInfo.assetTypeId : ''}">
+                                   th:value="${assetTypeName != null ? assetTypeName : (assetInfo != null ? assetInfo.assetTypeId : '')}">
                         </div>
                         <div class="col-md-12">
                             <label class="form-label text-muted small mb-1">Name / Configuration</label>

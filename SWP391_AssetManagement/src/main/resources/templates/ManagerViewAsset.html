@@ -103,7 +103,7 @@
                                 <td th:text="${#temporals.format(asset.receivedDate, 'yyyy-MM-dd')}"></td>
                                 <td th:text="${asset.locationName}"></td>
                                 <td th:text="${asset.assetStatusName}"></td>
-                                <td th:text="${asset.currentUserId}"></td>
+                                <td th:text="${asset.currentUserName}"></td>
                                 <td th:text="${asset.assetTypeName}"></td>
                                 <td th:if="${session.ROLE == '02'}" class="text-center">
                                     <a th:href="@{/viewAsset/lifecycle(assetCode=${asset.assetCode})}"

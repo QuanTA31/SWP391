@@ -14,7 +14,10 @@
     <main class="content-right p-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h5 class="fw-bold text-primary m-0">Inventory Detail: #<span th:text="${data.requestId}"></span></h5>
-            <span class="badge bg-primary px-3 py-2" th:text="${data.statusName}"></span>
+            <span class="badge bg-primary px-3 py-2"
+                  th:with="typeEnum=${T(com.example.swp391_assetmanagement.enums.RequestStatus).of(data.statusName)}"
+                  th:text="${typeEnum != null ? typeEnum.getName() : 'N/A'}">
+            </span>
         </div>
 
         <div class="filter-section mb-4 border">

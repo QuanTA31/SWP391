@@ -9,7 +9,7 @@ import org.seasar.doma.Entity;
 @Entity
 public class InventoryItemServiceResponse {
 
-    @Column(name = "id")
+    @Column(name = "detail_id")
     private Long detailId;
 
     @Column(name = "asset_code")
@@ -24,7 +24,7 @@ public class InventoryItemServiceResponse {
     @Column(name = "is_done")
     private Boolean isDone;
 
-    @Column(name = "id")
+    @Column(name = "asset_id")
     private Long assetId;
 
     @Column(name = "status_id")

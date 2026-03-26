@@ -26,5 +26,7 @@ public class AssetDTOResponse {
 
     private final Long currentUserId;
 
+    private final String currentUserName;
+
     private final String assetTypeName;
 }

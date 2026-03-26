@@ -177,9 +177,9 @@
                         <td class="cell-nowrap" th:text="${req.requestTypeName}"></td>
                         <td class="cell-nowrap" th:text="${req.requestStatusName}"></td>
                         <td class="cell-nowrap" th:text="${req.requestedDate != null ? #temporals.format(req.requestedDate, 'dd/MM/yyyy') : '—'}"></td>
-                        <td class="cell-nowrap" th:text="${req.requestedBy}"></td>
+                        <td class="cell-nowrap" th:text="${req.requestedByName}"></td>
                         <td class="cell-nowrap" th:text="${req.approvedDate != null ? #temporals.format(req.approvedDate, 'dd/MM/yyyy') : '—'}"></td>
-                        <td class="cell-nowrap" th:text="${req.approvedBy}"></td>
+                        <td class="cell-nowrap" th:text="${req.approvedByName}"></td>
                         <td class="cell-nowrap" th:text="${req.handoverDate != null ? #temporals.format(req.handoverDate, 'dd/MM/yyyy') : '—'}"></td>
                         <td class="col-lc-note">
                             <div class="cell-note" th:text="${req.note}" th:title="${req.note}"></div>

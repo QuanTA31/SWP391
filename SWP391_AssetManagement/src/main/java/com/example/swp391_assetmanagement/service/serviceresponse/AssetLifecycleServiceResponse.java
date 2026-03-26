@@ -25,11 +25,17 @@ public class AssetLifecycleServiceResponse {
     @Column(name = "requested_by")
     public Long requestedBy;
 
+    @Column(name = "requested_by_name")
+    public String requestedByName;
+
     @Column(name = "approved_date")
     public LocalDate approvedDate;
 
     @Column(name = "approved_by")
     public Long approvedBy;
+
+    @Column(name = "approved_by_name")
+    public String approvedByName;
 
     @Column(name = "handover_date")
     public LocalDate handoverDate;

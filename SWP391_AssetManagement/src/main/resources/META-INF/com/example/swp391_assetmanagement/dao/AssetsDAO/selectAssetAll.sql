@@ -1,27 +1,29 @@
-SELECT asset_code,
-       description,
-       original_price,
-       warranty_period,
-       received_date,
-       location_id,
-       asset_status_id,
-       current_user_id,
-       asset_type_id,
+SELECT a.asset_code,
+       a.description,
+       a.original_price,
+       a.warranty_period,
+       a.received_date,
+       a.location_id,
+       a.asset_status_id,
+       a.current_user_id,
+       ud.name AS current_user_name,
+       a.asset_type_id,
        COUNT(1) OVER() AS total_items
-FROM assets
+FROM assets as a
+         LEFT JOIN user_detail AS ud ON ud.user_id = a.current_user_id
 
-WHERE location_id IN /* request.locationIdList */()
+WHERE a.location_id IN /* request.locationIdList */()
 /*%if request.locationId != null && request.locationId != "" */
-  AND location_id = /* request.locationId */0
+  AND a.location_id = /* request.locationId */0
 /*%end */
 /*%if request.assetTypeId != null && request.assetTypeId != "" */
-  AND asset_type_id = /* request.assetTypeId */''
+  AND a.asset_type_id = /* request.assetTypeId */''
 /*%end */
 /*%if request.assetStatusId != null && request.assetStatusId != "" */
-  AND asset_status_id = /* request.assetStatusId */''
+  AND a.asset_status_id = /* request.assetStatusId */''
 /*%end */
 /*%if request.searchWord != null && request.searchWord != "" */
-  AND asset_code LIKE CONCAT('%', /* request.searchWord */'', '%')
+  AND a.asset_code LIKE CONCAT('%', /* request.searchWord */'', '%')
 /*%end */
 
 LIMIT /* request.pageSize */0

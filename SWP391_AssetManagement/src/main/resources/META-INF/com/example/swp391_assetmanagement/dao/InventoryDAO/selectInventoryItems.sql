@@ -1,11 +1,11 @@
 SELECT
-    d.id as detailId,
-    a.asset_code as assetCode,
-    a.asset_type_id as assetTypeId,
-    ud.name as userFullName,
-    d.is_done as isDone,
-    a.id as assetId,
-    a.asset_status_id as statusId
+    d.id as detail_id,
+    a.asset_code as asset_code,
+    a.asset_type_id as asset_type_id,
+    ud.name as name,
+    d.is_done as is_done,
+    a.id as asset_id,
+    a.asset_status_id as status_id
 FROM asset_internal_request_detail d
 JOIN assets a ON d.asset_id = a.id
 LEFT JOIN user_detail ud ON d.from_user_id = ud.user_id
