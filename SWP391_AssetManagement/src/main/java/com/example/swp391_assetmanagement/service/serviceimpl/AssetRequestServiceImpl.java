@@ -87,7 +87,7 @@ public class AssetRequestServiceImpl implements AssetRequestService {
 
     @Override
     public int moveCompleted(Long requestId) {
-        return assetRequestDAO.moveCompleted(requestId, RequestStatus.IN_PROGRESS.getValue(),
+        return assetRequestDAO.moveCompleted(requestId, RequestStatus.RESEARCH_DONE.getValue(),
                 RequestStatus.COMPLETED.getValue());
     }
 

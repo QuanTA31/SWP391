@@ -57,7 +57,7 @@ public interface AssetRequestDAO {
     int updateHandoverDate(Long id, LocalDate handoverDate);
 
     @Update(sqlFile = true)
-    int moveCompleted(Long id, String inProgress, String completed);
+    int moveCompleted(Long id, String research_done, String completed);
 
     @Update(sqlFile = true)
     int updateAssetsByRequestId(Long requestId, String status);
