@@ -57,7 +57,6 @@ public class ManageAssetRequestProcessUsecase {
 // MANAGER (02): xem tất cả request (trừ Draft)
         if (Objects.equals(role, "02")) {
             requestTypeIdList.addAll(List.of("01", "02", "03", "04", "05", "06"));
-            excludeStatusIdList.add("01"); // DRAFT
         }
 // WAREHOUSE
         else if (Objects.equals(role, Roles.WAREHOUSE.getValue())) {

@@ -39,6 +39,10 @@ public class CreatePurchaseRequestUsecase {
         Long userId = userService.getIdByUserCode(session.getAttribute("USER_CODE").toString());
         String role = (String) session.getAttribute("ROLE");
 
+        if (!com.example.swp391_assetmanagement.enums.Roles.MANAGER.getValue().equals(role)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only manager can create purchase request");
+        }
+
         // Check type request
         if (!ObjectUtils.isEmpty(request.getAssetRequestId())) {
             String assetRequestType = assetRequestService.findRequestTypeById(request.getAssetRequestId());
@@ -60,11 +64,9 @@ public class CreatePurchaseRequestUsecase {
 
             String statusId;
             if (request.getIsSubmitted()) {
-                if (Objects.equals(role, com.example.swp391_assetmanagement.enums.Roles.MANAGER.getValue())) {
-                    statusId = RequestStatus.APPROVED.getValue();
-                } else {
-                    statusId = RequestStatus.PENDING_APPROVAL.getValue();
-                }
+                statusId = RequestStatus.APPROVED.getValue();
+                assetRequest.setApprovedBy(userId);
+                assetRequest.setApprovedDate(LocalDate.now());
             } else {
                 statusId = RequestStatus.DRAFT.getValue();
             }
@@ -84,7 +86,8 @@ public class CreatePurchaseRequestUsecase {
 
                                 detail.setAssetRequestId(assetRequestId);
                                 detail.setAssetTypeId(AssetType.of(dto.getAssetTypeId()).getValue());
-                                detail.setExternalStatusId(ExternalStatus.DRAFT.getValue());
+                                detail.setExternalStatusId(request.getIsSubmitted()
+                                        ? ExternalStatus.IN_PROGRESS.getValue() : ExternalStatus.DRAFT.getValue());
                                 detail.setQuantity(dto.getQuantity());
                                 detail.setNote(dto.getNote());
 
@@ -147,7 +150,7 @@ public class CreatePurchaseRequestUsecase {
                             AssetExternalRequestDetail entity = new AssetExternalRequestDetail();
                             entity.setAssetRequestId(request.getAssetRequestId());
                             entity.setAssetTypeId(AssetType.of(dto.getAssetTypeId()).getValue());
-                            entity.setExternalStatusId(ExternalStatus.DRAFT.getValue());
+                            entity.setExternalStatusId(request.getIsSubmitted() ? ExternalStatus.IN_PROGRESS.getValue() : ExternalStatus.DRAFT.getValue());
                             entity.setNote(dto.getNote());
                             entity.setQuantity(dto.getQuantity());
                             return entity;
@@ -163,7 +166,7 @@ public class CreatePurchaseRequestUsecase {
                             entity.setId(dto.getAssetExternalRequestDetailId());
                             entity.setAssetRequestId(request.getAssetRequestId());
                             entity.setAssetTypeId(AssetType.of(dto.getAssetTypeId()).getValue());
-                            entity.setExternalStatusId(ExternalStatus.DRAFT.getValue());
+                            entity.setExternalStatusId(request.getIsSubmitted() ? ExternalStatus.IN_PROGRESS.getValue() : ExternalStatus.DRAFT.getValue());
                             entity.setNote(dto.getNote());
                             entity.setQuantity(dto.getQuantity());
                             return entity;
@@ -175,13 +178,13 @@ public class CreatePurchaseRequestUsecase {
             assetRequestService.findAssetRequestByIdForUpdate(request.getAssetRequestId()).ifPresent(
                     assetRequest -> {
                         if (request.getIsSubmitted()) {
-                            if (Objects.equals(role, com.example.swp391_assetmanagement.enums.Roles.MANAGER.getValue())) {
-                                assetRequest.setRequestStatusId(RequestStatus.APPROVED.getValue());
-                            } else {
-                                assetRequest.setRequestStatusId(RequestStatus.PENDING_APPROVAL.getValue());
-                            }
-                            assetRequestService.updatePurchaseRequestStatus(assetRequest);
+                            assetRequest.setRequestStatusId(RequestStatus.APPROVED.getValue());
+                            assetRequest.setApprovedBy(userId);
+                            assetRequest.setApprovedDate(LocalDate.now());
+                        } else {
+                            assetRequest.setRequestStatusId(RequestStatus.DRAFT.getValue());
                         }
+                        assetRequestService.updatePurchaseRequest(assetRequest);
                     }
             );
         }

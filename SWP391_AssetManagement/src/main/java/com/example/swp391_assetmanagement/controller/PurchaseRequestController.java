@@ -44,7 +44,8 @@ public class PurchaseRequestController {
     public String viewPurchaseRequestForm(
             @RequestParam(required = false) Long assetRequestId, Model model, HttpSession session) {
 
-        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.WAREHOUSE, Roles.MANAGER, Roles.PURCHASING);
+        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(),
+                Roles.MANAGER, Roles.PURCHASING, Roles.WAREHOUSE);
 
         CreatePurchaseRequestDTORequest createPurchaseRequestDTORequest =
                 getPurchaseRequestWarehouseUsecase.execute(assetRequestId);
