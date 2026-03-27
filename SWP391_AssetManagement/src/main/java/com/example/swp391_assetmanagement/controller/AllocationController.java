@@ -8,8 +8,8 @@ import com.example.swp391_assetmanagement.entity.Assets;
 import com.example.swp391_assetmanagement.enums.AssetType;
 import com.example.swp391_assetmanagement.enums.Location;
 import com.example.swp391_assetmanagement.enums.RequestStatus;
-import com.example.swp391_assetmanagement.enums.Location;
-import com.example.swp391_assetmanagement.enums.RequestStatus;
+import com.example.swp391_assetmanagement.enums.Roles;
+import com.example.swp391_assetmanagement.common.RoleChecker;
 import com.example.swp391_assetmanagement.service.AllocationService;
 import com.example.swp391_assetmanagement.service.AssetService;
 import com.example.swp391_assetmanagement.service.UserService;
@@ -42,11 +42,12 @@ public class AllocationController {
     private final ProcessAllocationAssignmentUsecase processAllocationAssignmentUsecase;
     private final ConfirmAllocationReceiptUsecase confirmAllocationReceiptUsecase;
     private final GetAllocationSummaryUsecase getAllocationSummaryUsecase;
+    private final RoleChecker roleChecker;
 
-    //1
-    //select 1 list từ bảng assetInternalDetail theo assetRequestID
+    //1. Create Allocaiton Request Form
     @GetMapping("/department/create")
     public String showCreateForm(Model model, HttpSession session) {
+        roleChecker.requireRole((String) session.getAttribute("USER_CODE"), Roles.DEPARTMENT_MANAGER);
         String locationId = (String) session.getAttribute("LOCATION_ID");
         AllocationDTORequest dto = AllocationDTORequest.builder()
                 .locationId(locationId)
@@ -73,9 +74,77 @@ public class AllocationController {
         return "NewAllocationRequest";
     }
 
-    //3 : manager approval
+
+    //2 : draf, submit
+    @PostMapping("/department/create")
+    public String createAllocationRequest(
+            @RequestParam(required = false) Long assetRequestId,
+            @RequestParam(required = false) String assetTypeId,
+            @RequestParam(required = false) Long assetId,
+            @RequestParam(required = false) String locationId,
+            @RequestParam(required = false) Integer quantity,
+            @RequestParam(required = false) String reason,
+            @RequestParam(required = false) Long toUserId,
+            @RequestParam String action,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        roleChecker.requireRole((String) session.getAttribute("USER_CODE"), Roles.DEPARTMENT_MANAGER );
+
+        AllocationDTORequest dto = AllocationDTORequest.builder()
+                .assetRequestId(assetRequestId)
+                .assetTypeId(assetTypeId)
+                .assetId(assetId)
+                .locationId(locationId)
+                .quantity(quantity)
+                .reason(reason)
+                .action(action)
+                .toUserId(toUserId)
+                .build();
+
+        try {
+            createAllocationRequestUsecase.execute(dto, session);
+            String msg = "draft".equalsIgnoreCase(dto.getAction())
+                    ? "Allocation request saved as draft."
+                    : "Allocation request submitted for approval.";
+            redirectAttributes.addFlashAttribute("successMessage", msg);
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error: " + e.getMessage());
+            return dto.getAssetRequestId() == null
+                    ? "redirect:/allocation/department/create"
+                    : "redirect:/allocation/department/edit?id=" + dto.getAssetRequestId();
+        }
+        return "redirect:/viewRequest";
+    }
+
+    //3: manager approval, cancael
+    @PostMapping("/manager/approve")
+    public String approveRequest(@RequestParam("id") Long id, HttpSession session, RedirectAttributes redirectAttributes) {
+        roleChecker.requireRole((String) session.getAttribute("USER_CODE"), Roles.MANAGER );
+        try {
+            approveAllocationRequestUsecase.approve(id, session);
+            redirectAttributes.addFlashAttribute("successMessage", "Allocation request approved.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error approving request: " + e.getMessage());
+        }
+        return "redirect:/viewRequest";
+    }
+
+    @PostMapping("/manager/reject")
+    public String rejectRequest(@RequestParam("id") Long id, HttpSession session, RedirectAttributes redirectAttributes) {
+        roleChecker.requireRole((String) session.getAttribute("USER_CODE"), Roles.MANAGER );
+        try {
+            approveAllocationRequestUsecase.reject(id, session);
+            redirectAttributes.addFlashAttribute("successMessage", "Allocation request rejected.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error rejecting request: " + e.getMessage());
+        }
+        return "redirect:/viewRequest";
+    }
+
+    //4 : manager approval
     @GetMapping("/department/edit")
     public String showEditForm(@RequestParam Long id, Model model, HttpSession session) {
+        roleChecker.requireRole((String) session.getAttribute("USER_CODE"), Roles.DEPARTMENT_MANAGER, Roles.MANAGER );
         AssetRequest req = allocationService.getAssetRequestById(id).orElse(null);
         if (req == null) return "redirect:/viewRequest";
 
@@ -162,72 +231,10 @@ public class AllocationController {
         return "NewAllocationRequest";
     }
 
-    //2 : draf, submit
-    @PostMapping("/department/create")
-    public String createAllocationRequest(
-            @RequestParam(required = false) Long assetRequestId,
-            @RequestParam(required = false) String assetTypeId,
-            @RequestParam(required = false) Long assetId,
-            @RequestParam(required = false) String locationId,
-            @RequestParam(required = false) Integer quantity,
-            @RequestParam(required = false) String reason,
-            @RequestParam(required = false) Long toUserId,
-            @RequestParam String action,
-            HttpSession session,
-            RedirectAttributes redirectAttributes) {
-
-        AllocationDTORequest dto = AllocationDTORequest.builder()
-                .assetRequestId(assetRequestId)
-                .assetTypeId(assetTypeId)
-                .assetId(assetId)
-                .locationId(locationId)
-                .quantity(quantity)
-                .reason(reason)
-                .action(action)
-                .toUserId(toUserId)
-                .build();
-
-        try {
-            createAllocationRequestUsecase.execute(dto, session);
-            String msg = "draft".equalsIgnoreCase(dto.getAction())
-                    ? "Allocation request saved as draft."
-                    : "Allocation request submitted for approval.";
-            redirectAttributes.addFlashAttribute("successMessage", msg);
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Error: " + e.getMessage());
-            return dto.getAssetRequestId() == null
-                    ? "redirect:/allocation/department/create"
-                    : "redirect:/allocation/department/edit?id=" + dto.getAssetRequestId();
-        }
-        return "redirect:/viewRequest";
-    }
-
-    //4: manager approval, cancael
-    @PostMapping("/manager/approve")
-    public String approveRequest(@RequestParam("id") Long id, HttpSession session, RedirectAttributes redirectAttributes) {
-        try {
-            approveAllocationRequestUsecase.approve(id, session);
-            redirectAttributes.addFlashAttribute("successMessage", "Allocation request approved.");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Error approving request: " + e.getMessage());
-        }
-        return "redirect:/viewRequest";
-    }
-
-    @PostMapping("/manager/reject")
-    public String rejectRequest(@RequestParam("id") Long id, HttpSession session, RedirectAttributes redirectAttributes) {
-        try {
-            approveAllocationRequestUsecase.reject(id, session);
-            redirectAttributes.addFlashAttribute("successMessage", "Allocation request rejected.");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Error rejecting request: " + e.getMessage());
-        }
-        return "redirect:/viewRequest";
-    }
-
     // 6: view tài sản để cấp phát
     @GetMapping("/process")
     public String showProcessForm(@RequestParam("id") Long id, Model model, HttpSession session) {
+        roleChecker.requireRole((String) session.getAttribute("USER_CODE"), Roles.MANAGER);
         String role = (String) session.getAttribute("ROLE");
         if (role == null) return "redirect:/viewRequest";
         int roleInt = Integer.parseInt(role);
@@ -308,7 +315,9 @@ public class AllocationController {
     @PostMapping("/process")
     public String processAllocation(@RequestParam Long requestId,
                                     @RequestParam List<Long> selectedAssetIds,
+                                    HttpSession session,
                                     RedirectAttributes redirectAttributes) {
+        roleChecker.requireRole((String) session.getAttribute("USER_CODE"), Roles.MANAGER);
         try {
             processAllocationAssignmentUsecase.execute(requestId, selectedAssetIds);
             redirectAttributes.addFlashAttribute("successMessage", "Asset allocated successfully!");
@@ -321,6 +330,7 @@ public class AllocationController {
     //11 : get ra thông tin asset để xác nhận
     @GetMapping("/department/receipt")
     public String showReceiptPage(@RequestParam Long requestId, Model model, HttpSession session) {
+        roleChecker.requireRole((String) session.getAttribute("USER_CODE"), Roles.DEPARTMENT_MANAGER );
         AssetRequest req = allocationService.getAssetRequestById(requestId).orElse(null);
         if (req == null) return "redirect:/viewRequest";
 
@@ -365,7 +375,9 @@ public class AllocationController {
     // 13: confirm đã nhận
     @PostMapping("/department/confirm-receipt")
     public String confirmReceipt(@RequestParam Long requestId,
+                                 HttpSession session,
                                  RedirectAttributes redirectAttributes) {
+        roleChecker.requireRole((String) session.getAttribute("USER_CODE"), Roles.DEPARTMENT_MANAGER );
         try {
             confirmAllocationReceiptUsecase.execute(requestId);
             redirectAttributes.addFlashAttribute("successMessage", "Asset receipt confirmed successfully!");
@@ -378,7 +390,8 @@ public class AllocationController {
     // ===== WAREHOUSE ENDPOINTS =====
     // 8: kho cấp phát theo detail id
     @GetMapping("/warehouse/view")
-    public String showWarehouseView(@RequestParam Long requestId, Model model) {
+    public String showWarehouseView(@RequestParam Long requestId, Model model, HttpSession session) {
+        roleChecker.requireRole((String) session.getAttribute("USER_CODE"), Roles.WAREHOUSE );
         AssetRequest req = allocationService.getAssetRequestById(requestId).orElse(null);
         if (req == null) return "redirect:/viewRequest";
 
@@ -422,7 +435,9 @@ public class AllocationController {
     // 9: kho cấp phất tài sản
     @PostMapping("/warehouse/dispatch")
     public String warehouseDispatch(@RequestParam Long requestId,
+                                    HttpSession session,
                                     RedirectAttributes redirectAttributes) {
+        roleChecker.requireRole((String) session.getAttribute("USER_CODE"), Roles.WAREHOUSE );
         try {
             List<AssetInternalRequestDetail> details = allocationService.getInternalDetailsByRequestId(requestId);
             if (details.isEmpty()) throw new RuntimeException("Request detail not found.");
@@ -457,6 +472,7 @@ public class AllocationController {
 
     @GetMapping("/department/summary")
     public String showSummary(Model model, HttpSession session) {
+        roleChecker.requireRole((String) session.getAttribute("USER_CODE"), Roles.DEPARTMENT_MANAGER );
         AllocationSummaryResponse summary = getAllocationSummaryUsecase.execute(session);
         model.addAttribute("summary", summary);
         return "AllocationSummary";

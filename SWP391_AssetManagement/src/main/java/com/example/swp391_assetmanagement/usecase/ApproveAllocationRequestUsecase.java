@@ -30,6 +30,13 @@ public class ApproveAllocationRequestUsecase {
         updateStatus(requestId, RequestStatus.CANCELLED, session);
     }
 
+//    Hàm `updateStatus`:
+//            1.  Lấy thông tin `AssetRequest` từ DB.
+//            2.  Lấy ID của Quản lý từ Session (`USER_CODE`).
+//            3.  Cập nhật trạng thái mới (`APPROVED` - 03 hoặc `CANCELLED` - 07).
+//            4.  Gán `approvedBy` là ID của Quản lý và `approvedDate` là ngày hiện tại.
+//            5.  Gọi `allocationService.updateAssetRequest` để lưu thay đổi.
+
     private void updateStatus(Long requestId, RequestStatus newStatus, HttpSession session) {
         Optional<AssetRequest> assetRequest = allocationService.getAssetRequestById(requestId);
         if (assetRequest.isEmpty()) {
