@@ -101,19 +101,16 @@
                                 </form>
                             </th:block>
 
-                            <th:block th:if="${item.requestTypeName == 'LIQUIDATION' and session.ROLE == '04'}">
-                                <!-- <form th:if="${item.requestStatusName == 'RESEARCH_DONE'}"
-                                      th:action="@{/liquidate/purchasing/progress}" method="post"
-                                      style="display:inline">
-                                    <input type="hidden" name="requestId" th:value="${item.id}"/>
-                                    <button type="submit" class="btn btn-sm btn-success">To Progress</button>
-                                </form> -->
-                                <form th:if="${item.requestStatusName == 'RESEARCH_DONE'}"
-                                      th:action="@{/liquidate/purchasing/complete}" method="post"
-                                      style="display:inline">
-                                    <input type="hidden" name="requestId" th:value="${item.id}"/>
-                                    <button type="submit" class="btn btn-sm btn-success">To Completed</button>
-                                </form>
+                            <th:block th:if="${item.requestTypeName == 'LIQUIDATION'}">
+                                <!-- Purchasing: Show if Research Done (to complete) or already Completed -->
+                                <a th:if="${session.ROLE == '04' and (item.requestStatusName == 'RESEARCH_DONE' or item.requestStatusName == 'COMPLETED')}"
+                                   th:href="@{/liquidate/viewLiquidationAsset(assetRequestId=${item.id})}"
+                                   class="btn btn-sm btn-primary text-white">View Order</a>
+                                
+                                <!-- Manager: Show ONLY if COMPLETED -->
+                                <a th:if="${session.ROLE == '02' and item.requestStatusName == 'COMPLETED'}"
+                                   th:href="@{/liquidate/viewLiquidationAsset(assetRequestId=${item.id})}"
+                                   class="btn btn-sm btn-info text-white">View Order</a>
                             </th:block>
 
                             <a th:if="${item.requestTypeName == 'ALLOCATION' and session.ROLE == '02' and (item.requestStatusId == '03' or (item.requestStatusId == '05' and item.assignedQuantity < item.quantity))}"

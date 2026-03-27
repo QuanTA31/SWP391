@@ -1,5 +1,6 @@
 package com.example.swp391_assetmanagement.dao;
 
+import com.example.swp391_assetmanagement.dto.response.LiquidationAssetDTOResponse;
 import com.example.swp391_assetmanagement.entity.Assets;
 import com.example.swp391_assetmanagement.service.servicerequest.AssetLifecycleServiceRequest;
 import com.example.swp391_assetmanagement.service.servicerequest.AssetViewAllServiceRequest;
@@ -15,6 +16,7 @@ import org.seasar.doma.Dao;
 import org.seasar.doma.Select;
 import org.seasar.doma.boot.ConfigAutowireable;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Dao
@@ -78,4 +80,22 @@ public interface AssetsDAO {
 
     @Select
     int countInvalidAssetsInList(List<Long> assetIds, List<String> invalidStatuses);
+
+    @Select
+    List<LiquidationAssetDTOResponse> findLiquidationAssetsByRequestId(
+            Long requestId,
+            String assetTypeId,
+            String searchWord,
+            long offset,
+            int limit
+    );
+    @Select
+    int countLiquidationAssetsByRequestId(
+            Long requestId,
+            String assetTypeId,
+            String searchWord
+    );
+
+    @Select
+    BigDecimal sumLiquidationAmountByRequestId(Long requestId);
 }

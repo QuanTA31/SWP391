@@ -48,23 +48,21 @@ public class ApproveLiquidationOptionUsecase {
             throw new ValidationException("Invalid request type");
         }
 
-        //Check role
+        // Check role
         String role = (String) session.getAttribute("ROLE");
 
         if (!Roles.MANAGER.getValue().equals(role)) {
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
-                    "Only manager can approve option detail"
-            );
+                    "Only manager can approve option detail");
         }
 
-        //Lấy option
+        // Lấy option
         OptionDetail plan = optionDetailService
                 .getById(optionId)
-                .orElseThrow(() ->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                "Option detail not found"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Option detail not found"));
         if (Objects.nonNull(plan.isSelected)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
@@ -79,13 +77,12 @@ public class ApproveLiquidationOptionUsecase {
 
         if (selected) {
 
-            //Lấy asset_request
-            AssetRequest assetRequest =
-                    assetRequestService.findByUpdate(requestId);
+            // Lấy asset_request
+            AssetRequest assetRequest = assetRequestService.findByUpdate(requestId);
 
             Integer countBySelected = optionDetailService.countByIdAndIsSelected(requestDetailId, assetRequest.id);
 
-            //Check status nếu status kphai là research thì báo lỗi
+            // Check status nếu status kphai là research thì báo lỗi
             if (!Objects.equals(RequestStatus.RESEARCH.getValue(), assetRequest.requestStatusId)) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
             }
@@ -93,23 +90,22 @@ public class ApproveLiquidationOptionUsecase {
             // Update external_status_id = 03
             assetExternalRequestDetailService.updateExternalStatusId(
                     requestDetailId,
-                    ExternalStatus.DONE.getValue()
-            );
+                    ExternalStatus.DONE.getValue());
 
             if (countBySelected == 0) {
                 Boolean isValidRequest = optionDetailService.checkValidRequest(requestDetailId, assetRequest.id);
                 assetRequest.setRequestStatusId(isValidRequest
-                        ? RequestStatus.RESEARCH_DONE.getValue() : RequestStatus.APPROVED.getValue());
+                        ? RequestStatus.RESEARCH_DONE.getValue()
+                        : RequestStatus.APPROVED.getValue());
                 assetRequestService.updatePurchaseRequestStatus(assetRequest);
             }
-
 
             optionDetailService.resetAllByRequestDetailId(requestDetailId, userId);
 
             plan.setIsSelected(true);
 
         }
-        //Update option
+        // Update option
         optionDetailService.update(plan);
     }
 }
