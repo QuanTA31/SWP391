@@ -75,4 +75,7 @@ public interface AssetsDAO {
 
     @Select
     Assets selectByAssetCode(String assetCode);
+
+    @Select
+    int countInvalidAssetsInList(List<Long> assetIds, List<String> invalidStatuses);
 }
