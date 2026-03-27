@@ -51,7 +51,7 @@ public interface InventoryDAO {
     List<Assets> selectAssetsByLocationAndStatus(String locationId, String status);
 
     @Select
-    List<Assets> selectAssetsByLocation(String locationId);
+    List<Assets> selectAssetsByLocationAndStatuses(String locationId, List<String> statusIds);
 
     @Select
     AssetInternalRequestDetail selectDetailById(Long id);

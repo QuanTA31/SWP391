@@ -40,8 +40,8 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public List<Assets> findByLocation(String locationId) {
-        return inventoryDAO.selectAssetsByLocation(locationId);
+    public List<Assets> findByLocationAndStatuses(String locationId, java.util.List<String> statusIds) {
+        return inventoryDAO.selectAssetsByLocationAndStatuses(locationId, statusIds);
     }
 
     @Override

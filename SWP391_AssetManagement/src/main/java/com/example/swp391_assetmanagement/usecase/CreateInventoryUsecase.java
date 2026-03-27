@@ -55,8 +55,9 @@ public class CreateInventoryUsecase {
 
         List<Assets> assets;
         if ("05".equals(serviceRequest.getLocationId())) {
-            // WAREHOUSE: include ALL assets in this location
-            assets = inventoryService.findByLocation(serviceRequest.getLocationId());
+            // WAREHOUSE: include NEW('01'), STOCKED('08'), BROKEN('05')
+            java.util.List<String> statusIds = java.util.Arrays.asList("01", "08", "05");
+            assets = inventoryService.findByLocationAndStatuses(serviceRequest.getLocationId(), statusIds);
         } else {
             // OTHER: only include ASSIGNED assets
             assets = assetService.findByLocationAndStatus(serviceRequest.getLocationId(), "02");

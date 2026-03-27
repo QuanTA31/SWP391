@@ -14,7 +14,7 @@ public interface InventoryService {
     Long insertRequest(AssetRequest entity);
     int insertDetail(AssetInternalRequestDetail entity);
     List<InventoryItemServiceResponse> selectItems(InventoryProcessServiceRequest request);
-    List<Assets> findByLocation(String locationId);
+    List<Assets> findByLocationAndStatuses(String locationId, java.util.List<String> statusIds);
     int countUnfinishedItems(InventoryActionServiceRequest request);
     int updateRequest(AssetRequest entity);
     int updateDetail(AssetInternalRequestDetail entity);

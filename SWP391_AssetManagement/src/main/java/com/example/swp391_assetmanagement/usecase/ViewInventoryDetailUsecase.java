@@ -1,11 +1,13 @@
 package com.example.swp391_assetmanagement.usecase;
 
 import com.example.swp391_assetmanagement.dto.request.InventoryProcessDTORequest;
+import com.example.swp391_assetmanagement.dto.response.FiltersDTOResponse;
 import com.example.swp391_assetmanagement.dto.response.InventoryItemDTOResponse;
 import com.example.swp391_assetmanagement.dto.response.InventoryProcessDTOResponse;
 import com.example.swp391_assetmanagement.entity.AssetRequest;
 import com.example.swp391_assetmanagement.enums.AssetStatus;
 import com.example.swp391_assetmanagement.enums.AssetType;
+import com.example.swp391_assetmanagement.enums.Location;
 import com.example.swp391_assetmanagement.service.AssetRequestService;
 import com.example.swp391_assetmanagement.service.InventoryService;
 import com.example.swp391_assetmanagement.service.servicerequest.InventoryProcessServiceRequest;
@@ -45,12 +47,12 @@ public class ViewInventoryDetailUsecase {
                                 .isDone(item.getIsDone())
                                 .statusId(item.getStatusId())
                                 .dbStatusName(item.getDbStatusId() != null ? AssetStatus.of(item.getDbStatusId()).getName() : null)
-                                .locationName(item.getLocationId() != null ? com.example.swp391_assetmanagement.enums.Location.of(item.getLocationId()).getName() : null)
+                                .locationName(item.getLocationId() != null ? Location.of(item.getLocationId()).getName() : null)
                                 .warrantyPeriod(item.getWarrantyPeriod())
                                 .note(item.getNote())
                                 .build()
                 ).toList())
-                .filters(com.example.swp391_assetmanagement.dto.response.FiltersDTOResponse.builder()
+                .filters(FiltersDTOResponse.builder()
                         .assetTypeId(dtoRequest.getAssetTypeId())
                         .searchWord(dtoRequest.getFullName())
                         .build())
