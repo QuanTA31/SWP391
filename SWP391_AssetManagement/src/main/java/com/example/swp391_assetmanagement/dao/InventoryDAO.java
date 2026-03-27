@@ -27,10 +27,7 @@ public interface InventoryDAO {
     int insertInventoryDetail(AssetInternalRequestDetail entity);
 
     @Select
-    List<InventoryItemServiceResponse> selectInventoryItems(InventoryProcessServiceRequest request, org.seasar.doma.jdbc.SelectOptions options);
-
-    @Select
-    int countInventoryItems(InventoryProcessServiceRequest request);
+    List<InventoryItemServiceResponse> selectInventoryItems(InventoryProcessServiceRequest request);
 
     @Select
     int countUnfinishedInventoryItems(InventoryActionServiceRequest request);

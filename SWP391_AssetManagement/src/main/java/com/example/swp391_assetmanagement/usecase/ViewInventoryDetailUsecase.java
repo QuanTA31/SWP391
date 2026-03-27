@@ -16,38 +16,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import org.seasar.doma.jdbc.SelectOptions;
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class ViewInventoryDetailUsecase {
     private final InventoryService inventoryService;
     private final AssetRequestService assetRequestService;
-    private final Integer PAGE_SIZE = 10;
 
     @Transactional
     public InventoryProcessDTOResponse execute(InventoryProcessDTORequest dtoRequest) {
-        int pageIndex = (dtoRequest.getPageIndex() != null && dtoRequest.getPageIndex() != 0) ? dtoRequest.getPageIndex() : 1;
-        long offset = (long) (pageIndex - 1) * PAGE_SIZE;
-
         InventoryProcessServiceRequest serviceRequest = InventoryProcessServiceRequest.builder()
                 .requestId(dtoRequest.getRequestId())
                 .assetTypeId(dtoRequest.getAssetTypeId())
                 .fullName(dtoRequest.getFullName())
-                .offset(offset)
-                .pageSize(PAGE_SIZE)
                 .build();
 
         AssetRequest header = assetRequestService.findById(serviceRequest.getRequestId());
-        
-        int totalItems = inventoryService.countItems(serviceRequest);
-        int totalPages = (int) Math.ceil((double) totalItems / PAGE_SIZE);
-        boolean hasNext = pageIndex < totalPages;
-        boolean hasPrevious = pageIndex > 1;
-
-        SelectOptions options = SelectOptions.get().offset((int) offset).limit(PAGE_SIZE);
-        List<InventoryItemServiceResponse> items = inventoryService.selectItems(serviceRequest, options);
+        List<InventoryItemServiceResponse> items = inventoryService.selectItems(serviceRequest);
 
         return InventoryProcessDTOResponse.builder()
                 .requestId(header.id)
@@ -69,12 +53,6 @@ public class ViewInventoryDetailUsecase {
                 .filters(com.example.swp391_assetmanagement.dto.response.FiltersDTOResponse.builder()
                         .assetTypeId(dtoRequest.getAssetTypeId())
                         .searchWord(dtoRequest.getFullName())
-                        .page(pageIndex)
-                        .pageSize(PAGE_SIZE)
-                        .totalItems(totalItems)
-                        .totalPages(totalPages)
-                        .hasNextPage(hasNext)
-                        .hasPreviousPage(hasPrevious)
                         .build())
                 .build();
     }

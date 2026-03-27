@@ -12,6 +12,4 @@ public class InventoryProcessDTORequest {
     private String assetTypeId;
 
     private String fullName;
-
-    private Integer pageIndex;
 }

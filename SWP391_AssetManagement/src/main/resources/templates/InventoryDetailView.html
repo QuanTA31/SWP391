@@ -111,49 +111,6 @@
             </div>
         </div>
 
-        <!-- Pagination Section -->
-        <div class="d-flex justify-content-between align-items-center mt-3" th:if="${data.filters.totalPages > 1}">
-            <div class="pagination-info small text-muted">
-                Showing 
-                <strong th:text="${(data.filters.page - 1) * data.filters.pageSize + 1}">1</strong>
-                –
-                <strong th:text="${(data.filters.page - 1) * data.filters.pageSize + data.items.size()}">10</strong>
-                of 
-                <strong th:text="${data.filters.totalItems}">100</strong>
-            </div>
-
-            <ul class="pagination pagination-sm mb-0">
-                <li class="page-item" th:classappend="${!data.filters.hasPreviousPage} ? 'disabled'">
-                    <a class="page-link" th:href="@{/inventory/process(
-                        requestId=${data.requestId},
-                        pageIndex=${data.filters.page - 1},
-                        assetTypeId=${data.filters.assetTypeId},
-                        fullName=${data.filters.searchWord}
-                    )}">«</a>
-                </li>
-
-                <th:block th:if="${data.filters.totalPages != null}">
-                    <li class="page-item" th:each="i : ${#numbers.sequence(0, data.filters.totalPages - 1)}"
-                        th:classappend="${i + 1 == data.filters.page} ? 'active'">
-                        <a class="page-link" th:text="${i + 1}" th:href="@{/inventory/process(
-                            requestId=${data.requestId},
-                            pageIndex=${i + 1},
-                            assetTypeId=${data.filters.assetTypeId},
-                            fullName=${data.filters.searchWord}
-                        )}"></a>
-                    </li>
-                </th:block>
-
-                <li class="page-item" th:classappend="${!data.filters.hasNextPage} ? 'disabled'">
-                    <a class="page-link" th:href="@{/inventory/process(
-                        requestId=${data.requestId},
-                        pageIndex=${data.filters.page + 1},
-                        assetTypeId=${data.filters.assetTypeId},
-                        fullName=${data.filters.searchWord}
-                    )}">»</a>
-                </li>
-            </ul>
-        </div>
 
         <div class="d-flex justify-content-between align-items-center mt-4">
             <a th:href="@{/viewRequest}" class="btn btn-outline-secondary btn-sm px-4">&laquo; Back</a>

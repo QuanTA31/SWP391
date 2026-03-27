@@ -13,8 +13,7 @@ import java.util.List;
 public interface InventoryService {
     Long insertRequest(AssetRequest entity);
     int insertDetail(AssetInternalRequestDetail entity);
-    List<InventoryItemServiceResponse> selectItems(InventoryProcessServiceRequest request, org.seasar.doma.jdbc.SelectOptions options);
-    int countItems(InventoryProcessServiceRequest request);
+    List<InventoryItemServiceResponse> selectItems(InventoryProcessServiceRequest request);
     List<Assets> findByLocation(String locationId);
     int countUnfinishedItems(InventoryActionServiceRequest request);
     int updateRequest(AssetRequest entity);

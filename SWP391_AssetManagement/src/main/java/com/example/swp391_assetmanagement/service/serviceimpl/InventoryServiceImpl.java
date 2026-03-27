@@ -35,13 +35,8 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public List<InventoryItemServiceResponse> selectItems(InventoryProcessServiceRequest request, org.seasar.doma.jdbc.SelectOptions options) {
-        return inventoryDAO.selectInventoryItems(request, options);
-    }
-
-    @Override
-    public int countItems(InventoryProcessServiceRequest request) {
-        return inventoryDAO.countInventoryItems(request);
+    public List<InventoryItemServiceResponse> selectItems(InventoryProcessServiceRequest request) {
+        return inventoryDAO.selectInventoryItems(request);
     }
 
     @Override
