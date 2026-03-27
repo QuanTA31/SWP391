@@ -1,15 +1,5 @@
 SELECT
-    d.id as detail_id,
-    a.asset_code as asset_code,
-    a.asset_type_id as asset_type_id,
-    ud.name as name,
-    d.is_done as is_done,
-    a.id as asset_id,
-    a.asset_status_id as status_id,
-    a.asset_status_id as db_status_id,
-    a.location_id as location_id,
-    a.warranty_period as warranty_period,
-    d.note as note
+    COUNT(*)
 FROM asset_internal_request_detail d
 JOIN assets a ON d.asset_id = a.id
 LEFT JOIN user_detail ud ON d.from_user_id = ud.user_id
@@ -21,7 +11,4 @@ WHERE d.asset_request_id = /* request.requestId */76
 
 /*%if request.fullName != null && request.fullName != "" */
   AND Lower(ud.name) LIKE Lower(CONCAT('%', /* request.fullName */'lap', '%'))
-
 /*%end*/
-
-ORDER BY d.is_done ASC, a.asset_code ASC

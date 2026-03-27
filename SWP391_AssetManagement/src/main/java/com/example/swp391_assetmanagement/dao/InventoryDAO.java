@@ -5,6 +5,9 @@ import com.example.swp391_assetmanagement.entity.AssetRequest;
 import com.example.swp391_assetmanagement.entity.Assets;
 import com.example.swp391_assetmanagement.entity.Location;
 import com.example.swp391_assetmanagement.service.serviceresponse.InventoryItemServiceResponse;
+import com.example.swp391_assetmanagement.service.servicerequest.InventoryProcessServiceRequest;
+import com.example.swp391_assetmanagement.service.servicerequest.InventoryActionServiceRequest;
+import com.example.swp391_assetmanagement.service.serviceresponse.AssetInternalRequestDetailServiceResponse;
 import org.seasar.doma.Dao;
 import org.seasar.doma.Insert;
 import org.seasar.doma.Select;
@@ -24,10 +27,13 @@ public interface InventoryDAO {
     int insertInventoryDetail(AssetInternalRequestDetail entity);
 
     @Select
-    List<InventoryItemServiceResponse> selectInventoryItems(Long requestId, String assetTypeId, String fullName);
+    List<InventoryItemServiceResponse> selectInventoryItems(InventoryProcessServiceRequest request, org.seasar.doma.jdbc.SelectOptions options);
 
     @Select
-    int countUnfinishedInventoryItems(Long requestId);
+    int countInventoryItems(InventoryProcessServiceRequest request);
+
+    @Select
+    int countUnfinishedInventoryItems(InventoryActionServiceRequest request);
 
     @Update(sqlFile = true)
     int updateInventoryRequest(AssetRequest entity);
@@ -38,8 +44,17 @@ public interface InventoryDAO {
     @Update(sqlFile = true)
     int updateAssetStatus(Assets assets);
 
+    @Update(sqlFile = true)
+    int updateAssetStatusAndNote(Assets assets);
+
+    @Select
+    List<AssetInternalRequestDetailServiceResponse> selectAllDetailsByRequestId(InventoryActionServiceRequest request);
+
     @Select
     List<Assets> selectAssetsByLocationAndStatus(String locationId, String status);
+
+    @Select
+    List<Assets> selectAssetsByLocation(String locationId);
 
     @Select
     AssetInternalRequestDetail selectDetailById(Long id);

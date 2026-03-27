@@ -1,17 +1,14 @@
 package com.example.swp391_assetmanagement.dto.request;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
-public class InventoryProcessDTORequest {
-
+@NoArgsConstructor
+@AllArgsConstructor
+public class InventoryActionDTORequest {
     private Long requestId;
-
-    private String assetTypeId;
-
-    private String fullName;
-
-    private Integer pageIndex;
 }
