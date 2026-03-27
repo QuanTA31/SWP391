@@ -117,4 +117,13 @@ public class AssetServiceImpl implements AssetService {
     public Assets findByAssetCode(String assetCode) {
         return assetsDAO.selectByAssetCode(assetCode);
     }
+
+    @Override
+    public int checkAssetStatusForPurchase(List<Long> assetIds) {
+        if (assetIds == null || assetIds.isEmpty()) {
+            return 0;
+        }
+        List<String> invalidStatuses = List.of(AssetStatus.LOST.getValue(), AssetStatus.IN_PROGRESS.getValue());
+        return assetsDAO.countInvalidAssetsInList(assetIds, invalidStatuses);
+    }
 }

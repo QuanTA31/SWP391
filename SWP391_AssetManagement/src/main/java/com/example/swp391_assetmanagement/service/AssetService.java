@@ -43,4 +43,6 @@ public interface AssetService {
     List<AssetLifecycleServiceResponse> viewAssetLifecycle(AssetLifecycleServiceRequest request);
 
     Assets findByAssetCode(String assetCode);
+
+    int checkAssetStatusForPurchase(List<Long> assetIds);
 }
