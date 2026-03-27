@@ -9,11 +9,12 @@ SELECT a.asset_code,
        ud.name,
        u.status_id,
        COUNT(1) OVER() AS total_items
-FROM users AS u
-INNER JOIN assets AS a ON u.id = a.current_user_id
-INNER JOIN user_detail AS ud ON u.id = ud.user_id
-WHERE u.status_id IN ('03','02')
-   AND a.asset_status_id = /* request.assetStatusId */'02'
+FROM assets AS a
+LEFT JOIN users AS u ON u.id = a.current_user_id
+LEFT JOIN user_detail AS ud ON u.id = ud.user_id
+WHERE
+    a.location_id != '05'
+  AND a.asset_status_id IN ('01','02')
   /*%if @isNotEmpty(request.locationId) */
   AND a.location_id = /* request.locationId */'01'
   /*%end*/

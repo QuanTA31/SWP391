@@ -1,19 +1,17 @@
 package com.example.swp391_assetmanagement.usecase;
 
 import com.example.swp391_assetmanagement.dto.request.ViewAssetByUserDisabledDTORequest;
-import com.example.swp391_assetmanagement.dto.response.RecoverItemDetailDTO;
-import com.example.swp391_assetmanagement.dto.response.RecoverProcessDTOResponse;
-import com.example.swp391_assetmanagement.dto.response.ViewAssetByUserDisabledDTOResponse;
+import com.example.swp391_assetmanagement.dto.response.*;
 import com.example.swp391_assetmanagement.entity.AssetInternalRequestDetail;
 import com.example.swp391_assetmanagement.entity.AssetRequest;
 import com.example.swp391_assetmanagement.entity.Assets;
 import com.example.swp391_assetmanagement.enums.*;
 import com.example.swp391_assetmanagement.service.AssetRequestService;
 import com.example.swp391_assetmanagement.service.CreateRequestRecoverService;
-import com.example.swp391_assetmanagement.service.ViewAssetByUserDisabledService;
+import com.example.swp391_assetmanagement.service.ViewAssetToRetrievalService;
 import com.example.swp391_assetmanagement.service.servicerequest.RecoverServiceRequest;
-import com.example.swp391_assetmanagement.service.servicerequest.ViewAssetByUserDisabledServiceRequest;
-import com.example.swp391_assetmanagement.service.serviceresponse.ViewAssetByUserDisabledServiceResponse;
+import com.example.swp391_assetmanagement.service.servicerequest.ViewAssetToRetrievalServiceRequest;
+import com.example.swp391_assetmanagement.service.serviceresponse.ViewAssetToRetrievalServiceResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -33,7 +31,7 @@ public class WarehouseRecoverUsecase {
     private final AssetRequestService assetRequestService;
     private final CreateRequestRecoverService recoverService;
     private final Integer PAGE_SIZE = 15;
-    private final ViewAssetByUserDisabledService service;
+    private final ViewAssetToRetrievalService service;
 
     //get request to show in request detail
     public AssetRequest getRequestInfo(Long requestId) {
@@ -105,15 +103,15 @@ public class WarehouseRecoverUsecase {
 
     //View assets to retrival
     @Transactional(readOnly = true)
-    public ViewAssetByUserDisabledDTOResponse viewAssetDisabled(ViewAssetByUserDisabledDTORequest request, HttpSession session) {
+    public ViewAssetToRetrievalDTOResponse viewAssetToRetrieVal(ViewAssetByUserDisabledDTORequest request, HttpSession session) {
         // 1. Validate quyền truy cập (Admin/Manager mới được xem chẳng hạn)
         validateAccess(session);
 
         int pageIndex = (request.getPageIndex() != null && request.getPageIndex() > 0) ? request.getPageIndex() : 1;
 
         // 2. Map request sang ServiceRequest
-        ViewAssetByUserDisabledServiceRequest serviceRequest = ViewAssetByUserDisabledServiceRequest.builder()
-                .assetStatusId("02") //Trạng thái đang sử dụng
+        ViewAssetToRetrievalServiceRequest serviceRequest = ViewAssetToRetrievalServiceRequest.builder()
+//                .assetStatusId("02") //Trạng thái đang sử dụng
                 .assetCode(request.getAssetCode())
                 .locationId(request.getLocationId())
                 .assetTypeId(request.getAssetTypeId())
@@ -121,12 +119,12 @@ public class WarehouseRecoverUsecase {
                 .pageSize(PAGE_SIZE)
                 .build();
 
-        List<ViewAssetByUserDisabledServiceResponse> serviceResponses = service.selectAllAssetByUserDisable(serviceRequest);
+        List<ViewAssetToRetrievalServiceResponse> serviceResponses = service.selectAllAssetToRetrieval(serviceRequest);
 
         if (serviceResponses.isEmpty()) {
-            return ViewAssetByUserDisabledDTOResponse.builder()
+            return ViewAssetToRetrievalDTOResponse.builder()
                     .assets(Collections.emptyList())
-                    .filters(ViewAssetByUserDisabledDTOResponse.FilterUserDTOResponse.builder() // ĐỪNG QUÊN DÒNG NÀY
+                    .filters(FilterAssetDTOResponse.builder() // ĐỪNG QUÊN DÒNG NÀY
                             .assetCode(request.getAssetCode())
                             .locationId(request.getLocationId())
                             .assetTypeId(request.getAssetTypeId())
@@ -141,12 +139,12 @@ public class WarehouseRecoverUsecase {
 
         // 4. Map Response (Lưu ý: Bạn nên tạo một List bên trong ViewAssetByUserDisabledDTOResponse)
         // Trong hàm viewAssetDisabled của ViewAssetByUserDisabledUsecase
-        return ViewAssetByUserDisabledDTOResponse.builder()
+        return ViewAssetToRetrievalDTOResponse.builder()
                 .assets(serviceResponses.stream()
                         .map(this::mapToItemResponse)
                         .toList())
                 // THÊM ĐOẠN NÀY ĐỂ GIỮ FILTER
-                .filters(ViewAssetByUserDisabledDTOResponse.FilterUserDTOResponse.builder()
+                .filters(FilterAssetDTOResponse.builder()
                         .assetCode(request.getAssetCode())
                         .locationId(request.getLocationId())
                         .assetTypeId(request.getAssetTypeId())
@@ -168,8 +166,8 @@ public class WarehouseRecoverUsecase {
         }
     }
     //map to set in view
-    private ViewAssetByUserDisabledDTOResponse.AssetDetailResponse mapToItemResponse(ViewAssetByUserDisabledServiceResponse entity) {
-        return ViewAssetByUserDisabledDTOResponse.AssetDetailResponse.builder()
+    private AssetDetailDTOResponse mapToItemResponse(ViewAssetToRetrievalServiceResponse entity) {
+        return AssetDetailDTOResponse.builder()
                 .assetCode(entity.getAssetCode())
                 .description(entity.getDescription())
                 .receivedDate(entity.getReceivedDate())

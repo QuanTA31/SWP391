@@ -3,7 +3,7 @@ package com.example.swp391_assetmanagement.controller;
 import com.example.swp391_assetmanagement.common.RoleChecker;
 import com.example.swp391_assetmanagement.dto.request.ViewAssetByUserDisabledDTORequest;
 import com.example.swp391_assetmanagement.dto.response.RecoverProcessDTOResponse;
-import com.example.swp391_assetmanagement.dto.response.ViewAssetByUserDisabledDTOResponse;
+import com.example.swp391_assetmanagement.dto.response.ViewAssetToRetrievalDTOResponse;
 import com.example.swp391_assetmanagement.enums.AssetType;
 import com.example.swp391_assetmanagement.enums.Location;
 import com.example.swp391_assetmanagement.enums.Roles;
@@ -34,7 +34,7 @@ public class RecoverAssetController {
 
         roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.MANAGER);
 
-        ViewAssetByUserDisabledDTOResponse response = warehouseRecoverUsecase.viewAssetDisabled(request,session);
+        ViewAssetToRetrievalDTOResponse response = warehouseRecoverUsecase.viewAssetToRetrieVal(request,session);
         model.addAttribute("assets", response);
         model.addAttribute("locations", Location.values());
         model.addAttribute("assetTypes", AssetType.values());

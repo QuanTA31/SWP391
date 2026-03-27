@@ -4,12 +4,11 @@ import lombok.Getter;
 import org.seasar.doma.Column;
 import org.seasar.doma.Entity;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
 @Getter
-public class ViewAssetByUserDisabledServiceResponse {
+public class ViewAssetToRetrievalServiceResponse {
     @Column(name = "asset_code")
     public String assetCode;
 

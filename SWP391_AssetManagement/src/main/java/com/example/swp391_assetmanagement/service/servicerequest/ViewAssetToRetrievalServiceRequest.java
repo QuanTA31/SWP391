@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ViewAssetByUserDisabledServiceRequest {
+public class ViewAssetToRetrievalServiceRequest {
 
     private String assetCode;
 
