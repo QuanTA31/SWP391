@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/MainLayout}">
 <head>
@@ -7,6 +7,8 @@
     <style>
         .filter-section { background: #f8f9fa; border-radius: 8px; padding: 15px; }
         .is-done-row { background-color: #f0fff4 !important; color: #6c757d; }
+        .lost-row { background-color: #fff0f0 !important; color: #dc3545; }
+        .table th, .table td { vertical-align: middle; }
     </style>
 </head>
 <body>
@@ -41,44 +43,67 @@
             </form>
         </div>
 
-        <div class="card shadow-sm border-0">
+        <div class="card shadow-sm border-0 mb-4">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
+                <table class="table table-hover table-bordered align-middle mb-0">
+                    <thead class="table-light text-center">
+                    <tr>
+                        <th colspan="5">Asset Information</th>
+                        <th colspan="2" class="bg-warning bg-opacity-10">Warehouse Inventory</th>
+                        <th class="bg-info bg-opacity-10">Database Status</th>
+                    </tr>
                     <tr>
                         <th>Asset Code</th>
                         <th>Type</th>
-                        <th>Current User</th>
-                        <th class="text-center">New Status</th>
-                        <th class="text-center">Action</th>
+                        <th>Location</th>
+                        <th>User</th>
+                        <th>Warranty Exp</th>
+                        
+                        <!-- Warehouse -->
+                        <th class="bg-warning bg-opacity-10">Status (Found/Lost)</th>
+                        <th class="bg-warning bg-opacity-10">Note</th>
+                        
+                        <!-- DB -->
+                        <th class="bg-info bg-opacity-10">Status</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="item : ${data.items}" th:classappend="${item.isDone} ? 'is-done-row' : ''">
+                    <tr th:each="item : ${data.items}" 
+                        th:classappend="${item.isDone != null ? (item.isDone ? 'is-done-row' : 'lost-row') : ''}">
                         <td class="fw-bold" th:text="${item.assetCode}"></td>
                         <td th:text="${item.assetTypeName}"></td>
+                        <td th:text="${item.locationName}"></td>
                         <td th:text="${item.userFullName}"></td>
-                        <td class="text-center" style="width: 200px;">
-                            <select th:id="'status-' + ${item.detailId}" class="form-select form-select-sm"
-                                    th:disabled="${session.ROLE != '03' or item.isDone}">
-
-                                <option value="02" th:selected="${item.statusId == '02'}">ASSIGNED</option>
-                                <option value="07" th:selected="${item.statusId == '07'}">LOST</option>
-
-                            </select>
+                        <td th:text="${item.warrantyPeriod != null ? #temporals.format(item.warrantyPeriod, 'dd/MM/yyyy') : 'N/A'}"></td>
+                        
+                        <!-- Warehouse Inputs -->
+                        <td class="text-center" style="width: 150px;">
+                            <th:block th:if="${session.ROLE == '03' and data.statusName == '03'}">
+                                <select th:id="'isdone-' + ${item.detailId}" class="form-select form-select-sm">
+                                    <option value="true" th:selected="${item.isDone == true}">Found</option>
+                                    <option value="false" th:selected="${item.isDone == false}">Lost</option>
+                                </select>
+                            </th:block>
+                            <th:block th:unless="${session.ROLE == '03' and data.statusName == '03'}">
+                                <span th:if="${item.isDone == true}" class="badge bg-success">Found</span>
+                                <span th:if="${item.isDone == false}" class="badge bg-danger">Lost</span>
+                                <span th:if="${item.isDone == null}" class="badge bg-secondary">N/A</span>
+                            </th:block>
                         </td>
+                        <td>
+                            <th:block th:if="${session.ROLE == '03' and data.statusName == '03'}">
+                                <input type="text" th:id="'note-' + ${item.detailId}" class="form-control form-control-sm" 
+                                       th:value="${item.note}" placeholder="Enter note...">
+                            </th:block>
+                            <th:block th:unless="${session.ROLE == '03' and data.statusName == '03'}">
+                                <span th:text="${item.note}"></span>
+                            </th:block>
+                        </td>
+
+
+                        <!-- Database Status Readonly -->
                         <td class="text-center">
-                            <button th:if="${session.ROLE == '03' and !item.isDone}"
-                                    class="btn btn-sm btn-success px-3"
-                                    th:onclick="'confirmInventoryItem(' + ${item.detailId} + ')'">
-                                Confirm
-                            </button>
-                            <span th:if="${item.isDone}" class="text-success fw-bold small">
-                                <i class="fas fa-check-circle"></i> Checked
-                            </span>
-                            <span th:if="${session.ROLE != '03' and !item.isDone}" class="text-muted small">
-                                Waiting...
-                            </span>
+                            <span class="badge bg-secondary" th:text="${item.dbStatusName}"></span>
                         </td>
                     </tr>
                     </tbody>
@@ -86,32 +111,148 @@
             </div>
         </div>
 
-        <div class="mt-4">
+        <!-- Pagination Section -->
+        <div class="d-flex justify-content-between align-items-center mt-3" th:if="${data.filters.totalPages > 1}">
+            <div class="pagination-info small text-muted">
+                Showing 
+                <strong th:text="${(data.filters.page - 1) * data.filters.pageSize + 1}">1</strong>
+                –
+                <strong th:text="${(data.filters.page - 1) * data.filters.pageSize + data.items.size()}">10</strong>
+                of 
+                <strong th:text="${data.filters.totalItems}">100</strong>
+            </div>
+
+            <ul class="pagination pagination-sm mb-0">
+                <li class="page-item" th:classappend="${!data.filters.hasPreviousPage} ? 'disabled'">
+                    <a class="page-link" th:href="@{/inventory/process(
+                        requestId=${data.requestId},
+                        pageIndex=${data.filters.page - 1},
+                        assetTypeId=${data.filters.assetTypeId},
+                        fullName=${data.filters.searchWord}
+                    )}">«</a>
+                </li>
+
+                <th:block th:if="${data.filters.totalPages != null}">
+                    <li class="page-item" th:each="i : ${#numbers.sequence(0, data.filters.totalPages - 1)}"
+                        th:classappend="${i + 1 == data.filters.page} ? 'active'">
+                        <a class="page-link" th:text="${i + 1}" th:href="@{/inventory/process(
+                            requestId=${data.requestId},
+                            pageIndex=${i + 1},
+                            assetTypeId=${data.filters.assetTypeId},
+                            fullName=${data.filters.searchWord}
+                        )}"></a>
+                    </li>
+                </th:block>
+
+                <li class="page-item" th:classappend="${!data.filters.hasNextPage} ? 'disabled'">
+                    <a class="page-link" th:href="@{/inventory/process(
+                        requestId=${data.requestId},
+                        pageIndex=${data.filters.page + 1},
+                        assetTypeId=${data.filters.assetTypeId},
+                        fullName=${data.filters.searchWord}
+                    )}">»</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mt-4">
             <a th:href="@{/viewRequest}" class="btn btn-outline-secondary btn-sm px-4">&laquo; Back</a>
+            
+            <div class="actions">
+                <!-- Nút cho Warehouse hoàn tất -->
+                <button th:if="${session.ROLE == '03' and data.statusName == '03'}" 
+                        class="btn btn-primary" onclick="completeInventory()">
+                    Complete Inventory
+                </button>
+
+                <!-- Nút cho Manager cập nhật Asset trong DB khi ở IN_PROGRESS -->
+                <button th:if="${session.ROLE == '02' and data.statusName == '05'}" 
+                        class="btn btn-warning" onclick="updateAssets()">
+                    <i class="fas fa-sync-alt"></i> Update Asset Statuses
+                </button>
+            </div>
         </div>
     </main>
 </th:block>
 
 <th:block layout:fragment="additional-scripts">
     <script>
-        function confirmInventoryItem(detailId) {
-            const selectedStatus = document.getElementById('status-' + detailId).value;
+        const requestId = [[${data.requestId}]];
 
-            if (!confirm('Confirm that status for asset?')) return;
+        function confirmInventoryItem(detailId) {
+            const isDoneStr = document.getElementById('isdone-' + detailId).value;
+            const isDone = isDoneStr === 'true';
+            const note = document.getElementById('note-' + detailId).value;
+
+            if (!confirm('Save inventory result for this asset?')) return;
 
             fetch('/api/inventory/confirm', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     detailId: detailId,
-                    selectedStatus: selectedStatus
+                    isDone: isDone,
+                    note: note
                 })
             }).then(response => {
                 if (response.ok) {
-                    alert('Updated inventory!');
                     location.reload();
                 } else {
-                    alert('Error, Please try again.');
+                    alert('Error saving data. Please try again.');
+                }
+            });
+        }
+
+        function completeInventory() {
+            if (!confirm('Are you sure you have finished checking ALL assets? This will update records and send to Manager.')) return;
+
+            const items = [];
+            const rows = document.querySelectorAll('select[id^="isdone-"]');
+            rows.forEach(select => {
+                const detailId = select.id.replace('isdone-', '');
+                const isDoneStr = select.value;
+                if(isDoneStr === '') return; // Skip if somehow unselected (unlikely initially)
+                const isDone = isDoneStr === 'true';
+                const noteInput = document.getElementById('note-' + detailId);
+                const note = noteInput ? noteInput.value : '';
+                
+                items.push({
+                    detailId: parseInt(detailId),
+                    isDone: isDone,
+                    note: note
+                });
+            });
+
+            fetch('/api/inventory/complete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    requestId: requestId, 
+                    items: items 
+                })
+            }).then(response => {
+                if (response.ok) {
+                    alert('Inventory completed and sent to Manager!');
+                    location.reload();
+                } else {
+                    alert('Error completing inventory.');
+                }
+            });
+        }
+
+        function updateAssets() {
+            if (!confirm('Are you sure you want to update Asset statuses based on Warehouse check (Marking missing assets as LOST)? This will complete the request.')) return;
+
+            fetch('/api/inventory/update-assets', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ requestId: requestId })
+            }).then(response => {
+                if (response.ok) {
+                    alert('Assets updated successfully! Request marked as COMPLETED.');
+                    location.reload();
+                } else {
+                    alert('Error updating assets.');
                 }
             });
         }

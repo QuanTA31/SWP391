@@ -35,6 +35,12 @@ public class CreateLiquidationRequestUsecase {
 
         Long userId = userService.getIdByUserCode(session.getAttribute("USER_CODE").toString());
 
+        // Check asset status (Not IN_PROGRESS or LOST)
+        int invalidCount = assetService.checkAssetStatusInvalid(assetIds);
+        if (invalidCount > 0) {
+            throw new IllegalArgumentException("Selected assets contain invalid status (IN_PROGRESS or LOST)");
+        }
+
         AssetRequest assetRequest = new AssetRequest();
 
         assetRequest.setRequestTypeId(RequestType.LIQUIDATION.getValue());

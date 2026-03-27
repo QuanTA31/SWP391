@@ -128,7 +128,7 @@ public class ViewAssetLifecycleUsecase {
 
     private void validateRequest(ViewAssetLifecycleDTORequest request, HttpSession session) {
         // Chỉ MANAGER mới được xem lifecycle
-        if (!Objects.equals(session.getAttribute("ROLE"), Roles.MANAGER.getValue())) {
+        if (Objects.equals(session.getAttribute("ROLE"), Roles.PURCHASING.getValue())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền truy cập vào trang này !");
         }
 

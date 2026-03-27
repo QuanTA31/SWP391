@@ -6,6 +6,9 @@ import com.example.swp391_assetmanagement.entity.AssetInternalRequestDetail;
 import com.example.swp391_assetmanagement.entity.AssetRequest;
 import com.example.swp391_assetmanagement.entity.Assets;
 import com.example.swp391_assetmanagement.service.InventoryService;
+import com.example.swp391_assetmanagement.service.servicerequest.InventoryProcessServiceRequest;
+import com.example.swp391_assetmanagement.service.servicerequest.InventoryActionServiceRequest;
+import com.example.swp391_assetmanagement.service.serviceresponse.AssetInternalRequestDetailServiceResponse;
 import com.example.swp391_assetmanagement.service.serviceresponse.InventoryItemServiceResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,13 +35,23 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public List<InventoryItemServiceResponse> selectItems(Long requestId, String assetTypeId, String fullName) {
-        return inventoryDAO.selectInventoryItems(requestId, assetTypeId, fullName);
+    public List<InventoryItemServiceResponse> selectItems(InventoryProcessServiceRequest request, org.seasar.doma.jdbc.SelectOptions options) {
+        return inventoryDAO.selectInventoryItems(request, options);
     }
 
     @Override
-    public int countUnfinishedItems(Long requestId) {
-        return inventoryDAO.countUnfinishedInventoryItems(requestId);
+    public int countItems(InventoryProcessServiceRequest request) {
+        return inventoryDAO.countInventoryItems(request);
+    }
+
+    @Override
+    public List<Assets> findByLocation(String locationId) {
+        return inventoryDAO.selectAssetsByLocation(locationId);
+    }
+
+    @Override
+    public int countUnfinishedItems(InventoryActionServiceRequest request) {
+        return inventoryDAO.countUnfinishedInventoryItems(request);
     }
 
     @Override
@@ -54,5 +67,15 @@ public class InventoryServiceImpl implements InventoryService {
     @Override
     public int updateAssetStatus(Assets assets) {
         return inventoryDAO.updateAssetStatus(assets);
+    }
+
+    @Override
+    public int updateAssetStatusAndNote(Assets assets) {
+        return inventoryDAO.updateAssetStatusAndNote(assets);
+    }
+
+    @Override
+    public List<AssetInternalRequestDetailServiceResponse> selectAllDetails(InventoryActionServiceRequest request) {
+        return inventoryDAO.selectAllDetailsByRequestId(request);
     }
 }

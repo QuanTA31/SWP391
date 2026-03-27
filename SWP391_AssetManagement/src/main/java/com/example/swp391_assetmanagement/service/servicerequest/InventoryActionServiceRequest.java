@@ -5,8 +5,6 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class InventoryConfirmServiceRequest {
-    private Long detailId;
-    private Boolean isDone;
-    private String note;
+public class InventoryActionServiceRequest {
+    private Long requestId;
 }

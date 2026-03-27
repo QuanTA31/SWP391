@@ -11,4 +11,5 @@ public class InventoryProcessDTOResponse {
     private Long requestId;
     private String statusName;
     private List<InventoryItemDTOResponse> items;
+    private FiltersDTOResponse filters;
 }

@@ -35,6 +35,7 @@ public class PurchaseRequestController {
     private final ApprovePurchaseOptionUsecase approveUseCase;
     private final DeletePurchaseOptionUsecase deleteUseCase;
     private final GetPurchaseOptionListUsecase getPurchaseOptionListUseCase;
+    private final GetPurchaseOrderUsecase getPurchaseOrderUsecase;
 
     private final RoleChecker roleChecker;
 
@@ -297,4 +298,19 @@ public class PurchaseRequestController {
 
         return "redirect:/viewRequest";
     }
+
+    // View purchase order (approved option details) for a request
+    // Accessible by Manager, Purchasing, Warehouse
+    @GetMapping("/purchase-order/view")
+    public String viewPurchaseOrder(@RequestParam Long assetRequestId,
+                                    HttpSession session, Model model) {
+
+        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(),
+                Roles.MANAGER, Roles.PURCHASING, Roles.WAREHOUSE);
+
+        getPurchaseOrderUsecase.execute(assetRequestId, session, model);
+
+        return "purchaseOrder";
+    }
 }
+

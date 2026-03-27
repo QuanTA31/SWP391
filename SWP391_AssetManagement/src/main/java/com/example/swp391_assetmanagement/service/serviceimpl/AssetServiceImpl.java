@@ -119,7 +119,7 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
-    public int checkAssetStatusForPurchase(List<Long> assetIds) {
+    public int checkAssetStatusInvalid(java.util.List<java.lang.Long> assetIds) {
         if (assetIds == null || assetIds.isEmpty()) {
             return 0;
         }

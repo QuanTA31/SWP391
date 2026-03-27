@@ -105,7 +105,7 @@
                                 <td th:text="${asset.assetStatusName}"></td>
                                 <td th:text="${asset.currentUserName}"></td>
                                 <td th:text="${asset.assetTypeName}"></td>
-                                <td th:if="${session.ROLE == '02'}" class="text-center">
+                                <td th:if="${session.ROLE != '04'}" class="text-center">
                                     <a th:href="@{/viewAsset/lifecycle(assetCode=${asset.assetCode})}"
                                         class="btn btn-sm btn-outline-primary"
                                         title="View Asset Lifecycle">Lifecycle</a>
