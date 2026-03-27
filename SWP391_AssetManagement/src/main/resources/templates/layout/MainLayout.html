@@ -71,7 +71,7 @@
                 <a th:href="@{/maintenance-requests/create}" class="menu-item">Create Maintain Request</a>
             </th:block>
 
-            <a th:if="${session.ROLE == '03'}"
+            <a th:if="${session.ROLE == '02'}"
                th:href="@{/purchase-requests/warehouse/view}" class="menu-item"
                th:classappend="${activePage == 'createPurchase'} ? 'active' : ''">Create Purchase Request
             </a>

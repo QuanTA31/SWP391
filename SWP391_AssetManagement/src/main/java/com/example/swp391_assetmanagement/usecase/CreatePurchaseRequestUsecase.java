@@ -37,6 +37,7 @@ public class CreatePurchaseRequestUsecase {
     public void execute(CreatePurchaseRequestDTORequest request, HttpSession session) {
 
         Long userId = userService.getIdByUserCode(session.getAttribute("USER_CODE").toString());
+        String role = (String) session.getAttribute("ROLE");
 
         // Check type request
         if (!ObjectUtils.isEmpty(request.getAssetRequestId())) {
@@ -56,11 +57,18 @@ public class CreatePurchaseRequestUsecase {
             assetRequest.setRequestTypeId(RequestType.PROCUREMENT.getValue());
             assetRequest.setRequestedBy(userId);
             assetRequest.setRequestedDate(LocalDate.now());
-            assetRequest.setRequestStatusId(
-                    request.getIsSubmitted()
-                            ? RequestStatus.PENDING_APPROVAL.getValue()
-                            : RequestStatus.DRAFT.getValue()
-            );
+
+            String statusId;
+            if (request.getIsSubmitted()) {
+                if (Objects.equals(role, com.example.swp391_assetmanagement.enums.Roles.MANAGER.getValue())) {
+                    statusId = RequestStatus.APPROVED.getValue();
+                } else {
+                    statusId = RequestStatus.PENDING_APPROVAL.getValue();
+                }
+            } else {
+                statusId = RequestStatus.DRAFT.getValue();
+            }
+            assetRequest.setRequestStatusId(statusId);
 
             // Insert to AssetRequest
             Long assetRequestId =
@@ -117,10 +125,6 @@ public class CreatePurchaseRequestUsecase {
 
                 updateDTOs = partitioned.get(true);
                 insertDTOs = partitioned.get(false);
-
-                Set<Long> requestUpdateIds = updateDTOs.stream()
-                        .map(CreatePurchaseRequestDetailDTORequest::getAssetExternalRequestDetailId)
-                        .collect(Collectors.toSet());
             }
 
             Set<Long> requestUpdateIds = updateDTOs.stream()
@@ -171,7 +175,11 @@ public class CreatePurchaseRequestUsecase {
             assetRequestService.findAssetRequestByIdForUpdate(request.getAssetRequestId()).ifPresent(
                     assetRequest -> {
                         if (request.getIsSubmitted()) {
-                            assetRequest.setRequestStatusId(RequestStatus.PENDING_APPROVAL.getValue());
+                            if (Objects.equals(role, com.example.swp391_assetmanagement.enums.Roles.MANAGER.getValue())) {
+                                assetRequest.setRequestStatusId(RequestStatus.APPROVED.getValue());
+                            } else {
+                                assetRequest.setRequestStatusId(RequestStatus.PENDING_APPROVAL.getValue());
+                            }
                             assetRequestService.updatePurchaseRequestStatus(assetRequest);
                         }
                     }

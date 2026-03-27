@@ -44,7 +44,7 @@ public class PurchaseRequestController {
     public String viewPurchaseRequestForm(
             @RequestParam(required = false) Long assetRequestId, Model model, HttpSession session) {
 
-        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.WAREHOUSE);
+        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.WAREHOUSE, Roles.MANAGER, Roles.PURCHASING);
 
         CreatePurchaseRequestDTORequest createPurchaseRequestDTORequest =
                 getPurchaseRequestWarehouseUsecase.execute(assetRequestId);
@@ -64,13 +64,13 @@ public class PurchaseRequestController {
         return "createPurchaseRequest";
     }
 
-    // Warehouse create request
+    // Manager create request
     // Author : QuanTA
-    @PostMapping("/warehouse/create")
+    @PostMapping("/manager/create")
     public String createPurchaseRequestForm(
             @ModelAttribute CreatePurchaseRequestDTORequest request, HttpSession session, Model model) {
 
-        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.WAREHOUSE);
+        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.MANAGER);
 
         createPurchaseRequestUsecase.execute(request, session);
 

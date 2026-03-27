@@ -33,7 +33,7 @@
                   th:if="${purchaseRequest.requestStatus == '07'}">Cancelled</span>
         </div>
 
-        <form th:action="@{/purchase-requests/warehouse/create}"
+        <form th:action="@{/purchase-requests/manager/create}"
               th:object="${purchaseRequest}"
               method="post"
               id="purchaseForm">
@@ -78,7 +78,7 @@
                             <th>Asset Type</th>
                             <th style="width:120px">Quantity</th>
                             <th>Note</th>
-                            <th th:if="${role == '03' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null)}"
+                            <th th:if="${role == '02' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null)}"
                                 style="width:50px"></th>
                             <th th:if="${role == '04' and purchaseRequest.requestStatus == '03'}"
                                 style="width:200px">Actions
@@ -95,10 +95,10 @@
                             </td>
                             <td class="row-index" th:text="${stat.index + 1}">1</td>
                             <td>
-                            <span th:if="${!(role == '03' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null))}"
+                            <span th:if="${!(role == '02' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null))}"
                                   class="readonly-cell"
                                   th:text="${detail.assetTypeName}">—</span>
-                                <select th:if="${role == '03' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null)}"
+                                <select th:if="${role == '02' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null)}"
                                         class="asset-type-select"
                                         th:name="'createPurchaseRequestDetailDTORequestList[' + ${stat.index} + '].assetTypeId'">
                                     <option value="">-- Asset Type --</option>
@@ -110,31 +110,31 @@
                                 </select>
                             </td>
                             <td>
-                            <span th:if="${!(role == '03' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null))}"
+                            <span th:if="${!(role == '02' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null))}"
                                   class="readonly-cell"
                                   th:text="${detail.quantity}">—</span>
-                                <input th:if="${role == '03' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null)}"
+                                <input th:if="${role == '02' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null)}"
                                        class="quantity-input" type="number" min="1"
                                        th:name="'createPurchaseRequestDetailDTORequestList[' + ${stat.index} + '].quantity'"
                                        th:value="${detail.quantity}" placeholder="0"/>
                             </td>
                             <td>
-                            <span th:if="${!(role == '03' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null))}"
+                            <span th:if="${!(role == '02' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null))}"
                                   class="readonly-cell"
                                   th:text="${detail.note}">—</span>
                                 <textarea
-                                        th:if="${role == '03' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null)}"
+                                        th:if="${role == '02' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null)}"
                                         class="note-input"
                                         th:name="'createPurchaseRequestDetailDTORequestList[' + ${stat.index} + '].note'"
                                         rows="1" placeholder="Note..."
                                         th:text="${detail.note}"></textarea>
                             </td>
-                            <td th:if="${role == '03' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null)}">
+                            <td th:if="${role == '02' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null)}">
                                 <button type="button" class="btn btn-ghost"
                                         onclick="removeRow(this)">✕
                                 </button>
                             </td>
-                            <td th:if="${(role == '04' or role == '02') and (detail.externalStatusId == '02' or detail.externalStatusId == '03')}">
+                            <td th:if="${(role == '04' or role == '02') and (detail.externalStatusId == '01' or detail.externalStatusId == '02' or detail.externalStatusId == '03')}">
                                 <a th:href="@{/purchase-requests/option-detail/list(asset_external_request_detail_id=${detail.assetExternalRequestDetailId})}"
                                    class="btn btn-outline btn-sm">
                                     🔍 Options
@@ -146,12 +146,12 @@
                 </div>
 
                 <div class="add-row-area"
-                     th:if="${role == '03' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null)}">
+                     th:if="${role == '02' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null)}">
                     <button type="button" class="btn btn-outline" onclick="addRow()">+ Add Row</button>
                 </div>
 
                 <div class="form-footer"
-                     th:if="${role == '03' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null)}">
+                     th:if="${role == '02' and (purchaseRequest.requestStatus == '01' or purchaseRequest.requestStatus == null)}">
                     <button type="button" class="btn btn-sm btn-secondary" onclick="history.back()">Cancel</button>
                     <button type="button" class="btn btn-outline" onclick="saveDraft()">💾 Save Draft</button>
                     <button type="button" class="btn btn-primary" onclick="submitForm()">📤 Submit</button>
