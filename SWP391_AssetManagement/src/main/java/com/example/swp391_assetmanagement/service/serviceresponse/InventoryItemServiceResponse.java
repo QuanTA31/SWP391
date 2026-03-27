@@ -29,4 +29,16 @@ public class InventoryItemServiceResponse {
 
     @Column(name = "status_id")
     private String statusId;
+
+    @Column(name = "db_status_id")
+    private String dbStatusId;
+
+    @Column(name = "location_id")
+    private String locationId;
+
+    @Column(name = "warranty_period")
+    private java.time.LocalDate warrantyPeriod;
+
+    @Column(name = "note")
+    private String note;
 }

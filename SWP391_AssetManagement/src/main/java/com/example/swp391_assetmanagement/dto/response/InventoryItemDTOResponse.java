@@ -18,4 +18,12 @@ public class InventoryItemDTOResponse {
     private Boolean isDone;
 
     private String statusId;
+
+    private String dbStatusName;
+
+    private String locationName;
+
+    private java.time.LocalDate warrantyPeriod;
+
+    private String note;
 }

@@ -12,4 +12,8 @@ public class InventoryProcessServiceRequest {
     private String assetTypeId;
 
     private String fullName;
+
+    private long offset;
+
+    private int pageSize;
 }

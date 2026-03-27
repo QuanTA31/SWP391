@@ -7,5 +7,6 @@ import lombok.Getter;
 @Builder
 public class InventoryConfirmDTORequest {
     private Long detailId;
-    private String selectedStatus;
+    private Boolean isDone;
+    private String note;
 }
