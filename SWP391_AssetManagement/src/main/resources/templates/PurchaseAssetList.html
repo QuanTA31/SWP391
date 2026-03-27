@@ -71,7 +71,7 @@
             </div>
 
             <div class="form-footer d-flex justify-content-between align-items-center">
-                <div class="action-left">
+                <div class="action-left d-flex gap-2">
                     <form th:action="@{/purchase-requests/warehouse/complete}" method="post">
                         <input type="hidden" name="assetRequestId"
                                th:value="${purchaseAsset.filterPurchaseAssetDTOResponse.assetRequestId}"/>
@@ -80,6 +80,11 @@
                             ✅ Complete Request
                         </button>
                     </form>
+
+                    <a th:href="@{/purchase-requests/purchase-order/view(assetRequestId=${purchaseAsset.filterPurchaseAssetDTOResponse.assetRequestId})}"
+                       class="btn btn-primary">
+                        🛒 View Purchase Order
+                    </a>
                 </div>
 
                 <div class="pagination-area d-flex align-items-center gap-3">

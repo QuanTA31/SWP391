@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/MainLayout}">
+<head>
+    <title>Purchase Order</title>
+    <th:block layout:fragment="additional-css">
+        <link rel="stylesheet" th:href="@{/css/createPurchaseRequest.css}">
+        <style>
+            .po-card { background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,.08); margin-bottom: 24px; overflow: hidden; }
+            .po-card-header { display: flex; align-items: center; gap: 10px; padding: 16px 24px; background: linear-gradient(135deg, #1a73e8, #0d47a1); color: #fff; font-weight: 600; font-size: 1rem; }
+            .po-card-header .icon { font-size: 1.2rem; }
+            .po-info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px 24px; padding: 20px 24px; }
+            .po-info-item label { display: block; font-size: .75rem; color: #777; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
+            .po-info-item span { font-weight: 600; color: #1a1a2e; font-size: .95rem; }
+            .po-table-wrapper { overflow-x: auto; padding: 0 16px 16px; }
+            .po-table { width: 100%; border-collapse: collapse; font-size: .875rem; }
+            .po-table thead tr { background: #f0f4ff; }
+            .po-table th { padding: 10px 12px; text-align: left; font-weight: 600; color: #444; border-bottom: 2px solid #e0e6f0; white-space: nowrap; }
+            .po-table td { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
+            .po-table tbody tr:hover { background: #f8faff; }
+            .po-table .col-number { text-align: right; }
+            .po-grand-total { display: flex; justify-content: flex-end; align-items: center; gap: 12px; padding: 14px 24px; border-top: 2px solid #e0e6f0; font-size: 1rem; font-weight: 700; color: #1a73e8; }
+            .badge-status { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: .75rem; font-weight: 600; }
+            .badge-04 { background: #e3f2fd; color: #1565c0; }
+            .badge-05 { background: #e8f5e9; color: #2e7d32; }
+            .badge-06 { background: #c8e6c9; color: #1b5e20; }
+            .btn-back { display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; border-radius: 8px; background: #f0f4ff; color: #1a73e8; font-weight: 600; text-decoration: none; border: 1px solid #c5d8fb; transition: background .2s; }
+            .btn-back:hover { background: #dce8ff; }
+            .empty-state { text-align: center; padding: 40px 20px; color: #999; }
+            .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+        </style>
+    </th:block>
+</head>
+<body>
+<th:block layout:fragment="content">
+    <div class="page-wrapper">
+
+        <!-- Page Header -->
+        <div class="page-header" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <div class="page-title">🛒 Purchase Order</div>
+                <span th:if="${assetRequest != null}">
+                    <span class="badge-status badge-04"
+                          th:if="${assetRequest.requestStatusId == '04'}">Research Done</span>
+                    <span class="badge-status badge-05"
+                          th:if="${assetRequest.requestStatusId == '05'}">In Progress</span>
+                    <span class="badge-status badge-06"
+                          th:if="${assetRequest.requestStatusId == '06'}">Completed</span>
+                </span>
+            </div>
+            <button class="btn-back" onclick="window.history.back()">Back</button>
+
+        </div>
+
+        <!-- Request Info Card -->
+        <div class="po-card" th:if="${assetRequest != null}">
+            <div class="po-card-header">
+                <div class="icon">📄</div>
+                Request Information
+            </div>
+            <div class="po-info-grid">
+                <div class="po-info-item">
+                    <label>Request ID</label>
+                    <span th:text="'#' + ${assetRequestId}">—</span>
+                </div>
+                <div class="po-info-item">
+                    <label>Request Type</label>
+                    <span>Purchase</span>
+                </div>
+                <div class="po-info-item">
+                    <label>Total Items</label>
+                    <span th:text="${purchaseOrderItems != null ? purchaseOrderItems.size() : 0}">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Purchase Order Table -->
+        <div class="po-card">
+            <div class="po-card-header">
+                <div class="icon">📦</div>
+                Approved Option Details
+            </div>
+
+            <!-- Filter bar -->
+            <div style="display:flex; gap:12px; align-items:center; padding:14px 20px 0; flex-wrap:wrap;">
+                <select id="filterAssetType" onchange="filterTable()"
+                        class="form-select form-select-sm" style="width:180px;">
+                    <option value="">All Asset Types</option>
+                    <option th:each="type : ${T(com.example.swp391_assetmanagement.enums.AssetType).values()}"
+                            th:value="${type.name}"
+                            th:text="${type.name}"></option>
+                </select>
+
+                <input id="filterMerchant" type="text" onkeyup="filterTable()"
+                       class="form-control form-control-sm"
+                       placeholder="Search Merchant..." style="width:200px;">
+
+                <button type="button" class="btn btn-sm btn-outline-secondary"
+                        onclick="clearFilters()">✕ Clear</button>
+
+                <span id="filterCount" class="text-muted small" style="margin-left:auto;"></span>
+            </div>
+
+            <div th:if="${purchaseOrderItems == null || purchaseOrderItems.isEmpty()}" class="empty-state">
+                <div class="icon">📭</div>
+                <p>No approved options found for this request.</p>
+            </div>
+
+            <div class="po-table-wrapper" th:if="${purchaseOrderItems != null && !purchaseOrderItems.isEmpty()}">
+                <table class="po-table">
+                    <thead>
+                    <tr>
+                        <th style="width:40px">#</th>
+                        <th>Asset Type</th>
+                        <th class="col-number">Quantity</th>
+                        <th>Note</th>
+                        <th>Merchant</th>
+                        <th>Description</th>
+                        <th class="col-number">Unit Price</th>
+                        <th class="col-number">Total Price</th>
+                        <th>Warranty Period</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="po-data-row"
+                        th:each="item, stat : ${purchaseOrderItems}"
+                        th:attr="data-assettype=${item.assetTypeName}, data-merchant=${item.merchant}">
+                        <td class="row-num" th:text="${stat.index + 1}">1</td>
+                        <td th:text="${item.assetTypeName}">—</td>
+                        <td class="col-number" th:text="${item.quantity}">0</td>
+                        <td th:text="${item.note}">—</td>
+                        <td th:text="${item.merchant}">—</td>
+                        <td th:text="${item.description}">—</td>
+                        <td class="col-number"
+                            th:attr="data-unit=${item.unitPrice}"
+                            th:text="${#numbers.formatDecimal(item.unitPrice, 1, 'COMMA', 0, 'POINT')}">0 $</td>
+                        <td class="col-number col-total"
+                            th:attr="data-total=${item.totalPrice}"
+                            th:text="${#numbers.formatDecimal(item.totalPrice, 1, 'COMMA', 0, 'POINT')}">0</td>
+                        <td th:text="${item.warrantyPeriod != null ? #temporals.format(item.warrantyPeriod, 'yyyy-MM-dd') : '—'}">—</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="po-grand-total">
+                    <span>Grand Total:</span>
+                    <span th:text="${#numbers.formatDecimal(grandTotal, 1, 'COMMA', 0, 'POINT')}">0 $</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</th:block>
+<th:block layout:fragment="additional-scripts">
+    <script th:src="@{/js/Template.js}"></script>
+    <script>
+        function filterTable() {
+            var typeFilter = document.getElementById('filterAssetType').value.toLowerCase();
+            var merchantFilter = document.getElementById('filterMerchant').value.toLowerCase().trim();
+            var rows = document.querySelectorAll('.po-data-row');
+            var visibleCount = 0;
+            var grandTotal = 0;
+
+            rows.forEach(function(tr, i) {
+                var assetType = (tr.getAttribute('data-assettype') || '').toLowerCase();
+                var merchant  = (tr.getAttribute('data-merchant')  || '').toLowerCase();
+                var matchType     = !typeFilter     || assetType.indexOf(typeFilter) !== -1;
+                var matchMerchant = !merchantFilter || merchant.indexOf(merchantFilter) !== -1;
+                var show = matchType && matchMerchant;
+                tr.style.display = show ? '' : 'none';
+                if (show) {
+                    visibleCount++;
+                    var totalCell = tr.querySelector('.col-total');
+                    if (totalCell) {
+                        var val = parseFloat(totalCell.getAttribute('data-total')) || 0;
+                        grandTotal += val;
+                    }
+                    var numCell = tr.querySelector('.row-num');
+                    if (numCell) numCell.textContent = visibleCount;
+                }
+            });
+
+            // update counter
+            var counter = document.getElementById('filterCount');
+            if (counter) {
+                counter.textContent = visibleCount + ' item(s) shown';
+            }
+
+            // update grand total display
+            var grandTotalEl = document.querySelector('.po-grand-total span:last-child');
+            if (grandTotalEl) {
+                grandTotalEl.textContent = grandTotal.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+            }
+        }
+
+        function clearFilters() {
+            document.getElementById('filterAssetType').value = '';
+            document.getElementById('filterMerchant').value = '';
+            filterTable();
+        }
+    </script>
+</th:block>
+</body>
+</html>

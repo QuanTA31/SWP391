@@ -2,6 +2,7 @@ package com.example.swp391_assetmanagement.dao;
 
 import com.example.swp391_assetmanagement.entity.AssetExternalRequestDetail;
 import com.example.swp391_assetmanagement.service.serviceresponse.AssetExternalRequestDetailServiceResponse;
+import com.example.swp391_assetmanagement.service.serviceresponse.PurchaseOrderItemResponse;
 import org.seasar.doma.*;
 import org.seasar.doma.boot.ConfigAutowireable;
 
@@ -51,4 +52,7 @@ public interface AssetExternalRequestDetailDAO {
 
     @Select
     Long getLastId();
+
+    @Select
+    List<PurchaseOrderItemResponse> findPurchaseOrderItems(Long assetRequestId);
 }
