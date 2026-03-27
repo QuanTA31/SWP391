@@ -2,9 +2,7 @@ package com.example.swp391_assetmanagement.controller;
 
 import com.example.swp391_assetmanagement.common.RoleChecker;
 import com.example.swp391_assetmanagement.dto.request.*;
-import com.example.swp391_assetmanagement.dto.response.CreateLiquidationDTOResponse;
-import com.example.swp391_assetmanagement.dto.response.GetLiquidationManagerDTOResponse;
-import com.example.swp391_assetmanagement.dto.response.LiquiDateCreateDTOResponse;
+import com.example.swp391_assetmanagement.dto.response.*;
 import com.example.swp391_assetmanagement.enums.AssetType;
 import com.example.swp391_assetmanagement.enums.Roles;
 import com.example.swp391_assetmanagement.usecase.*;
@@ -223,7 +221,23 @@ public class LiquidateController {
         return "redirect:/viewRequest";
     }
 
+    private final ViewLiquidationAssetAllUsecase viewLiquidationAssetAllUsecase;
+
     // ==================== COMPLETED ===============
+    @GetMapping("/viewLiquidationAsset")
+    public String viewLiquidationAsset(@ModelAttribute ViewLiquidationAssetDTORequest request,
+                                       HttpSession session, Model model) {
+
+        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.PURCHASING, Roles.MANAGER);
+
+        ViewLiquidationAssetAllDTOResponse response =
+                viewLiquidationAssetAllUsecase.execute(request, session);
+
+        model.addAttribute("liquidationAsset", response);
+
+        return "LiquidationAssetList";
+    }
+
     @PostMapping("/purchasing/complete")
     public String complete(@RequestParam Long requestId,
                            HttpSession session) {

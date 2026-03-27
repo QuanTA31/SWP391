@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/MainLayout}">
+<head>
+    <title>Liquidation Asset List</title>
+    <th:block layout:fragment="additional-css">
+        <link rel="stylesheet" th:href="@{/css/OptionDetail.css}">
+    </th:block>
+</head>
+<body>
+<th:block layout:fragment="content">
+    <div class="content-right">
+        <div class="page-header mb-4">
+            <div class="page-title">📦 Liquidation Asset List</div>
+
+            <form method="get" th:action="@{/liquidate/viewLiquidationAsset}" class="d-flex gap-2">
+                <input type="hidden" name="assetRequestId"
+                       th:value="${liquidationAsset.filter.assetRequestId}"/>
+
+                <select name="assetTypeId" class="form-select form-select-sm" style="width:180px">
+                    <option value="">All Asset Types</option>
+                    <option th:each="type : ${T(com.example.swp391_assetmanagement.enums.AssetType).values()}"
+                            th:value="${type.value}"
+                            th:text="${type.name}"
+                            th:selected="${type.value == liquidationAsset.filter.assetTypeId}">
+                    </option>
+                </select>
+
+                <input type="text" name="searchWord" class="form-control form-control-sm"
+                       placeholder="Search Asset Code..."
+                       th:value="${liquidationAsset.filter.searchWord}"
+                       style="width:200px">
+
+                <button type="submit" class="btn btn-sm btn-primary">Search</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="icon">📋</div>
+                Assets in Liquidation Request #<span
+                    th:text="${liquidationAsset.filter.assetRequestId}"></span>
+            </div>
+            <div class="table-wrapper">
+                <table class="table table-hover mb-0">
+                    <thead>
+                    <tr>
+                        <th>Asset Code</th>
+                        <th>Asset Type</th>
+                        <th>Merchant</th>
+                        <th>Unit Price</th>
+                        <th>Description</th>
+                        <th>Approval Date</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${liquidationAsset.liquidationAssets.isEmpty()}">
+                        <td colspan="6" class="text-center text-muted py-4">No assets found or no options selected yet.</td>
+                    </tr>
+                    <tr th:each="asset : ${liquidationAsset.liquidationAssets}">
+                        <td class="fw-bold" th:text="${asset.assetCode}"></td>
+                        <td th:text="${asset.assetTypeName}"></td>
+                        <td th:text="${asset.merchant}"></td>
+                        <td th:text="${#numbers.formatDecimal(asset.unitPrice,0,'COMMA',0,'POINT')}"></td>
+                        <td th:text="${asset.description}"></td>
+                        <td th:text="${#temporals.format(asset.approvedDate,'yyyy-MM-dd')}"></td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr class="table-light fw-bold">
+                        <td colspan="3" class="text-end">Total Items: <span th:text="${liquidationAsset.filter.totalItems}"></span></td>
+                        <td class="text-primary">
+                            Total: <span th:text="${#numbers.formatDecimal(liquidationAsset.totalAmount,0,'COMMA',0,'POINT')}"></span>
+                        </td>
+                        <td colspan="2"></td>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="form-footer d-flex justify-content-between align-items-center">
+                <!-- Action Buttons: Only for Purchasing and ONLY if status is RESEARCH_DONE -->
+                <div class="action-left" th:if="${session.ROLE == '04' and liquidationAsset.requestStatus == '08'}">
+                    <form th:action="@{/liquidate/purchasing/complete}" method="post">
+                        <input type="hidden" name="requestId"
+                               th:value="${liquidationAsset.filter.assetRequestId}"/>
+                        <button type="submit" class="btn btn-success"
+                                onclick="return confirm('Confirm completing the liquidation? Assets will be marked as COMPLETE.')">
+                            ✅ Complete Liquidation
+                        </button>
+                    </form>
+                </div>
+
+                <div class="pagination-area d-flex align-items-center gap-3">
+                    <div class="small text-muted">
+                        Showing <strong
+                            th:text="${liquidationAsset.filter.totalItems == 0 ? 0 : (liquidationAsset.filter.pageIndex - 1) * liquidationAsset.filter.pageSize + 1}"></strong>
+                        – <strong
+                            th:text="${(liquidationAsset.filter.pageIndex - 1) * liquidationAsset.filter.pageSize + liquidationAsset.liquidationAssets.size()}"></strong>
+                        of <strong th:text="${liquidationAsset.filter.totalItems}"></strong>
+                    </div>
+
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item"
+                            th:classappend="${!liquidationAsset.filter.hasPreviousPage} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/liquidate/viewLiquidationAsset(pageIndex=${liquidationAsset.filter.pageIndex - 1}, assetTypeId=${liquidationAsset.filter.assetTypeId}, searchWord=${liquidationAsset.filter.searchWord}, assetRequestId=${liquidationAsset.filter.assetRequestId})}">«</a>
+                        </li>
+                        <li class="page-item"
+                            th:each="i : ${#numbers.sequence(1, (liquidationAsset.filter.totalPages > 0 ? liquidationAsset.filter.totalPages : 1))}"
+                            th:classappend="${i == liquidationAsset.filter.pageIndex} ? 'active'">
+                            <a class="page-link" th:text="${i}"
+                               th:href="@{/liquidate/viewLiquidationAsset(pageIndex=${i}, assetTypeId=${liquidationAsset.filter.assetTypeId}, searchWord=${liquidationAsset.filter.searchWord}, assetRequestId=${liquidationAsset.filter.assetRequestId})}"></a>
+                        </li>
+                        <li class="page-item"
+                            th:classappend="${!liquidationAsset.filter.hasNextPage} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/liquidate/viewLiquidationAsset(pageIndex=${liquidationAsset.filter.pageIndex + 1}, assetTypeId=${liquidationAsset.filter.assetTypeId}, searchWord=${liquidationAsset.filter.searchWord}, assetRequestId=${liquidationAsset.filter.assetRequestId})}">»</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="mt-3 text-end p-3">
+                <button type="button" class="btn btn-secondary" onclick="history.back()">Back</button>
+            </div>
+        </div>
+    </div>
+</th:block>
+<th:block layout:fragment="additional-scripts">
+    <script th:src="@{/js/Template.js}"></script>
+</th:block>
+</body>
+</html>

@@ -44,5 +44,5 @@ public interface AssetService {
 
     Assets findByAssetCode(String assetCode);
 
-    int checkAssetStatusForPurchase(List<Long> assetIds);
+    int checkAssetStatusInvalid(java.util.List<java.lang.Long> assetIds);
 }
