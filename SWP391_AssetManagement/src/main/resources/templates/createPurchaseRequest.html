@@ -31,6 +31,17 @@
                   th:if="${purchaseRequest.requestStatus == '06'}">Completed</span>
             <span class="badge badge-danger"
                   th:if="${purchaseRequest.requestStatus == '07'}">Cancelled</span>
+
+            <!-- View Purchase Order button: visible for manager/purchasing/warehouse when there are approved options -->
+            <a th:if="${(role == '02' or role == '03' or role == '04')
+                        and (purchaseRequest.requestStatus == '04'
+                             or purchaseRequest.requestStatus == '05'
+                             or purchaseRequest.requestStatus == '06')
+                        and purchaseRequest.assetRequestId != null}"
+               th:href="@{/purchase-requests/purchase-order/view(assetRequestId=${purchaseRequest.assetRequestId})}"
+               class="btn btn-primary" style="margin-left:auto;">
+                🛒 View Purchase Order
+            </a>
         </div>
 
         <form th:action="@{/purchase-requests/manager/create}"
