@@ -1,151 +1,293 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/MainLayout}">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/MainLayout}">
+
 <head>
     <meta charset="utf-8">
     <title>User Profile</title>
     <!-- FontAwesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body>
 
-<div layout:fragment="content" class="container-fluid mt-4 w-75">
-    <div class="card shadow">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h4 class="mb-0"><i class="fas fa-user-edit me-2"></i> User Profile</h4>
-            <div class="d-flex gap-2">
-                <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
-                    <i class="fas fa-key"></i> Change Password
-                </button>
-                <button type="button" class="btn btn-light btn-sm" onclick="toggleEditMode()">
-                    <i class="fas fa-edit"></i> Edit Profile
-                </button>
+    <div layout:fragment="content" class="container-fluid mt-4 w-75">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0"><i class="fas fa-user-edit me-2"></i> User Profile</h4>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#changePasswordModal">
+                        <i class="fas fa-key"></i> Change Password
+                    </button>
+                    <button type="button" class="btn btn-light btn-sm" onclick="toggleEditMode()">
+                        <i class="fas fa-edit"></i> Edit Profile
+                    </button>
+                </div>
             </div>
-        </div>
-        <div class="card-body">
-            <!-- Alert message for success/error -->
-            <div th:if="${successMessage}" class="alert alert-success mt-2" th:text="${successMessage}"></div>
-            <div th:if="${errorMessage}" class="alert alert-danger mt-2" th:text="${errorMessage}"></div>
+            <div class="card-body">
+                <!-- Alert message for success/error -->
+                <div th:if="${successMessage}" class="alert alert-success mt-2" th:text="${successMessage}"></div>
+                <div th:if="${errorMessage}" class="alert alert-danger mt-2" th:text="${errorMessage}"></div>
 
-            <!-- Profile View & Form -->
-            <form th:action="@{/profile/edit}" th:object="${profileRequest}" method="post" id="profileForm">
-                
-                <div class="row mb-3">
-                    <div class="col-md-4 text-center">
-                        <!-- Profile Avatar placeholder -->
-                        <i class="fas fa-user-circle fa-10x text-secondary mb-3 mt-3"></i>
-                        <h5 th:text="${profileResponse.username}" class="fw-bold">Username</h5>
-                        
-                        <!-- Role display using the same switch as layout -->
-                        <span class="badge bg-info text-dark fs-6" th:switch="${session.ROLE}">
-                            <span th:case="'01'">Admin</span>
-                            <span th:case="'05'">Department Manager</span>
-                            <span th:case="'02'">Manager</span>
-                            <span th:case="'04'">Purchaser</span>
-                            <span th:case="'03'">Warehouse Employee</span>
-                            <span th:case="*">User</span>
-                        </span>
+                <!-- Profile View & Form -->
+                <form th:action="@{/profile/edit}" th:object="${profileRequest}" method="post" id="profileForm">
+
+                    <div class="row mb-3">
+                        <div class="col-md-4 text-center">
+                            <!-- Profile Avatar placeholder -->
+                            <i class="fas fa-user-circle fa-10x text-secondary mb-3 mt-3"></i>
+                            <h5 th:text="${profileResponse.username}" class="fw-bold">Username</h5>
+
+                            <!-- Role display using the same switch as layout -->
+                            <span class="badge bg-info text-dark fs-6" th:switch="${session.ROLE}">
+                                <span th:case="'01'">Admin</span>
+                                <span th:case="'05'">Department Manager</span>
+                                <span th:case="'02'">Manager</span>
+                                <span th:case="'04'">Purchaser</span>
+                                <span th:case="'03'">Warehouse Employee</span>
+                                <span th:case="*">User</span>
+                            </span>
+                        </div>
+
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label for="name" class="form-label fw-bold">Full Name <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="name" th:field="*{name}" readonly
+                                    minlength="2" maxlength="100">
+                                <div class="invalid-feedback" id="nameError"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="phone" class="form-label fw-bold">Phone Number <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="phone" th:field="*{phone}" readonly
+                                    maxlength="10" placeholder="0xxxxxxxxx">
+                                <div class="invalid-feedback" id="phoneError"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label fw-bold">Email Address <span
+                                        class="text-danger">*</span></label>
+                                <input type="email" class="form-control" id="email" th:field="*{email}" readonly>
+                                <div class="invalid-feedback" id="emailError"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="dob" class="form-label fw-bold">Date of Birth <span
+                                        class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="dob" th:field="*{dateOfBirth}" readonly>
+                                <div class="invalid-feedback" id="dobError"></div>
+                                <small class="text-muted" id="dobHint" style="display:none;">Bạn phải từ 18 tuổi trở
+                                    lên.</small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="locationId" class="form-label fw-bold">Location ID</label>
+                                <input type="text" class="form-control" id="locationId"
+                                    th:value="${profileResponse.locationId}" readonly disabled>
+                                <small class="text-muted">Location cannot be changed here.</small>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="col-md-8">
-                        <div class="mb-3">
-                            <label for="name" class="form-label fw-bold">Full Name</label>
-                            <input type="text" class="form-control" id="name" th:field="*{name}" readonly required>
+                    <div class="row pt-3 border-top" id="actionButtons" style="display: none;">
+                        <div class="col-12 text-end">
+                            <button type="button" class="btn btn-secondary me-2"
+                                onclick="toggleEditMode()">Cancel</button>
+                            <button type="submit" class="btn btn-success"><i class="fas fa-save me-1"></i> Save
+                                Changes</button>
                         </div>
-                        <div class="mb-3">
-                            <label for="phone" class="form-label fw-bold">Phone Number</label>
-                            <input type="text" class="form-control" id="phone" th:field="*{phone}" readonly>
-                        </div>
-                        <div class="mb-3">
-                            <label for="email" class="form-label fw-bold">Email Address</label>
-                            <input type="email" class="form-control" id="email" th:field="*{email}" readonly>
-                        </div>
-                        <div class="mb-3">
-                            <label for="dob" class="form-label fw-bold">Date of Birth</label>
-                            <input type="date" class="form-control" id="dob" th:field="*{dateOfBirth}" readonly required>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="locationId" class="form-label fw-bold">Location ID</label>
-                            <input type="text" class="form-control" id="locationId" th:value="${profileResponse.locationId}" readonly disabled>
-                            <small class="text-muted">Location cannot be changed here.</small>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row pt-3 border-top" id="actionButtons" style="display: none;">
-                    <div class="col-12 text-end">
-                        <button type="button" class="btn btn-secondary me-2" onclick="toggleEditMode()">Cancel</button>
-                        <button type="submit" class="btn btn-success"><i class="fas fa-save me-1"></i> Save Changes</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Change Password Modal -->
-    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form th:action="@{/profile/change-password}" th:object="${changePasswordRequest}" method="post">
-                    <div class="modal-header bg-warning">
-                        <h5 class="modal-title" id="changePasswordModalLabel"><i class="fas fa-key me-2"></i>Change Password</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="oldPassword" class="form-label">Old Password</label>
-                            <input type="password" class="form-control" id="oldPassword" th:field="*{oldPassword}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="newPassword" class="form-label">New Password</label>
-                            <input type="password" class="form-control" id="newPassword" th:field="*{newPassword}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="confirmPassword" class="form-label">Confirm New Password</label>
-                            <input type="password" class="form-control" id="confirmPassword" th:field="*{confirmPassword}" required>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                        <button type="submit" class="btn btn-warning">Change Password</button>
                     </div>
                 </form>
             </div>
         </div>
-    </div>
+
+        <!-- Change Password Modal -->
+        <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form th:action="@{/profile/change-password}" th:object="${changePasswordRequest}" method="post">
+                        <div class="modal-header bg-warning">
+                            <h5 class="modal-title" id="changePasswordModalLabel"><i class="fas fa-key me-2"></i>Change
+                                Password</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="oldPassword" class="form-label">Old Password</label>
+                                <input type="password" class="form-control" id="oldPassword" th:field="*{oldPassword}"
+                                    required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="newPassword" class="form-label">New Password</label>
+                                <input type="password" class="form-control" id="newPassword" th:field="*{newPassword}"
+                                    required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                                <input type="password" class="form-control" id="confirmPassword"
+                                    th:field="*{confirmPassword}" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                            <button type="submit" class="btn btn-warning">Change Password</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
 
     </div>
-</div>
+    </div>
 
-<th:block layout:fragment="additional-scripts">
-    <script>
-        function toggleEditMode() {
-            const form = document.getElementById('profileForm');
-            const inputs = form.querySelectorAll('input:not([type="hidden"]):not([disabled])');
-            const actionButtons = document.getElementById('actionButtons');
-            
-            let isReadonly = inputs[0].hasAttribute('readonly');
-            
-            inputs.forEach(input => {
+    <th:block layout:fragment="additional-scripts">
+        <script>
+            function toggleEditMode() {
+                const form = document.getElementById('profileForm');
+                const inputs = form.querySelectorAll('input:not([type="hidden"]):not([disabled])');
+                const actionButtons = document.getElementById('actionButtons');
+
+                let isReadonly = inputs[0].hasAttribute('readonly');
+
+                inputs.forEach(input => {
+                    if (isReadonly) {
+                        input.removeAttribute('readonly');
+                    } else {
+                        input.setAttribute('readonly', 'readonly');
+                        // Clear validation state when cancelling
+                        input.classList.remove('is-invalid', 'is-valid');
+                    }
+                });
+
                 if (isReadonly) {
-                    input.removeAttribute('readonly');
+                    actionButtons.style.display = 'block';
+                    document.getElementById('dobHint').style.display = 'inline';
+                    inputs[0].focus();
+                    // Set max date for DOB to today
+                    const today = new Date().toISOString().split('T')[0];
+                    document.getElementById('dob').setAttribute('max', today);
+                    // Attach live validation listeners
+                    attachValidationListeners();
                 } else {
-                    input.setAttribute('readonly', 'readonly');
+                    actionButtons.style.display = 'none';
+                    document.getElementById('dobHint').style.display = 'none';
+                    clearAllErrors();
+                }
+            }
+
+            function attachValidationListeners() {
+                document.getElementById('name').addEventListener('input', validateName);
+                document.getElementById('phone').addEventListener('input', validatePhone);
+                document.getElementById('email').addEventListener('input', validateEmail);
+                document.getElementById('dob').addEventListener('change', validateDob);
+            }
+
+            function validateName() {
+                const nameInput = document.getElementById('name');
+                const nameError = document.getElementById('nameError');
+                const val = nameInput.value.trim();
+                if (!val) {
+                    setError(nameInput, nameError, 'Name cannot be blank.');
+                    return false;
+                } else if (val.length < 2) {
+                    setError(nameInput, nameError, 'Name atleast 2 characters.');
+                    return false;
+                } else if (val.length > 100) {
+                    setError(nameInput, nameError, 'Name cannot exceed 100 characters.');
+                    return false;
+                }
+                setValid(nameInput, nameError);
+                return true;
+            }
+
+            function validatePhone() {
+                const phoneInput = document.getElementById('phone');
+                const phoneError = document.getElementById('phoneError');
+                const val = phoneInput.value.trim();
+                const phoneRegex = /^(0[3|5|7|8|9])([0-9]{8})$/;
+                if (!val) {
+                    setError(phoneInput, phoneError, 'Phone number cannot be blank.');
+                    return false;
+                } else if (!phoneRegex.test(val)) {
+                    setError(phoneInput, phoneError, 'Phone number is invalid. Must be 10 digits and start with 03, 05, 07, 08, or 09.');
+                    return false;
+                }
+                setValid(phoneInput, phoneError);
+                return true;
+            }
+
+            function validateEmail() {
+                const emailInput = document.getElementById('email');
+                const emailError = document.getElementById('emailError');
+                const val = emailInput.value.trim();
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!val) {
+                    setError(emailInput, emailError, 'Email cannot be blank.');
+                    return false;
+                } else if (!emailRegex.test(val)) {
+                    setError(emailInput, emailError, 'Email is invalid.');
+                    return false;
+                }
+                setValid(emailInput, emailError);
+                return true;
+            }
+
+            function validateDob() {
+                const dobInput = document.getElementById('dob');
+                const dobError = document.getElementById('dobError');
+                const val = dobInput.value;
+                if (!val) {
+                    setError(dobInput, dobError, 'Date of birth cannot be blank.');
+                    return false;
+                }
+                const dob = new Date(val);
+                const today = new Date();
+                const age = today.getFullYear() - dob.getFullYear()
+                    - (today < new Date(today.getFullYear(), dob.getMonth(), dob.getDate()) ? 1 : 0);
+                if (dob >= today) {
+                    setError(dobInput, dobError, 'Date of birth cannot be today or in the future.');
+                    return false;
+                } else if (age < 18) {
+                    setError(dobInput, dobError, 'You must be at least 18 years old.');
+                    return false;
+                }
+                setValid(dobInput, dobError);
+                return true;
+            }
+
+            function setError(input, errorEl, message) {
+                input.classList.remove('is-valid');
+                input.classList.add('is-invalid');
+                errorEl.textContent = message;
+            }
+
+            function setValid(input, errorEl) {
+                input.classList.remove('is-invalid');
+                input.classList.add('is-valid');
+                errorEl.textContent = '';
+            }
+
+            function clearAllErrors() {
+                ['name', 'phone', 'email', 'dob'].forEach(function (id) {
+                    const el = document.getElementById(id);
+                    el.classList.remove('is-invalid', 'is-valid');
+                });
+            }
+
+            // Validate on submit
+            document.getElementById('profileForm').addEventListener('submit', function (e) {
+                const isNameOk = validateName();
+                const isPhoneOk = validatePhone();
+                const isEmailOk = validateEmail();
+                const isDobOk = validateDob();
+                if (!isNameOk || !isPhoneOk || !isEmailOk || !isDobOk) {
+                    e.preventDefault();
                 }
             });
-            
-            if (isReadonly) {
-                actionButtons.style.display = 'block';
-                // Focus on first input
-                inputs[0].focus();
-            } else {
-                actionButtons.style.display = 'none';
-            }
-        }
-    </script>
-</th:block>
+        </script>
+    </th:block>
 
 </body>
+
 </html>
