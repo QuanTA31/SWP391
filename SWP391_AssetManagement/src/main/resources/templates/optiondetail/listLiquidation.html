@@ -113,40 +113,29 @@
                                     </form>
                                 </th:block>
 
-                                <div class="dropdown" th:if="${canManage}">
-                                    <button class="btn btn-sm btn-light p-1 border-0"
+                                <!-- PURCHASING -->
+                                <th:block th:if="${canManage}">
+                                    <!-- EDIT -->
+                                    <button class="btn btn-sm btn-outline-secondary py-1 px-2"
                                             type="button"
-                                            data-bs-toggle="dropdown">
-                                        ⋮
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#editOptionModal"
+                                            th:attr="data-id=${p.id},
+                         data-merchant=${p.merchant},
+                         data-description=${p.description},
+                         data-unit-price=${p.unitPrice}">
+                                        Edit
                                     </button>
-
-                                    <ul class="dropdown-menu dropdown-menu-end">
-                                        <!--PURCHASING-->
-                                        <li>
-                                            <button class="dropdown-item"
-                                                    type="button"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#editOptionModal"
-                                                    th:attr="data-id=${p.id},
-                                                        data-merchant=${p.merchant},
-                                                        data-description=${p.description},
-                                                        data-unit-price=${p.unitPrice}">
-                                                Edit
-                                            </button>
-                                        </li>
-
-                                        <li>
-                                            <button class="dropdown-item text-danger"
-                                                    type="button"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#deleteOptionModal"
-                                                    th:attr="data-id=${p.id},
-                                     data-request-detail-id=${asset_external_request_detail_id}">
-                                                Delete
-                                            </button>
-                                        </li>
-                                    </ul>
-                                </div>
+                                    <!-- DELETE -->
+                                    <button class="btn btn-sm btn-outline-danger py-1 px-2"
+                                            type="button"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#deleteOptionModal"
+                                            th:attr="data-id=${p.id},
+                         data-request-detail-id=${asset_external_request_detail_id}">
+                                        Delete
+                                    </button>
+                                </th:block>
                             </div>
                         </td>
                     </tr>
@@ -289,7 +278,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form id="edit-option-form" method="post" th:object="${editForm}"
-                      th:action="@{/option-detail/edit/{id}(id=${editForm.id})}">
+                      th:action="@{/liquidate/option-detail/edit}">
                     <div class="modal-body">
                         <div class="alert alert-danger"
                              th:if="${editErrorMessage}">
@@ -385,7 +374,7 @@
                 const merchant = button.getAttribute("data-merchant");
                 const description = button.getAttribute("data-description");
                 const unitPrice = button.getAttribute("data-unit-price");
-                editForm.action = "/liquidate/option-detail/edit/" + id;
+                editForm.action = "/liquidate/option-detail/edit";
                 const idInput = editForm.querySelector('input[name="id"]');
                 const merchantInput = editForm.querySelector('input[name="merchant"]');
                 const descriptionInput = editForm.querySelector('input[name="description"]');

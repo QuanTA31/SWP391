@@ -140,7 +140,7 @@ public class LiquidateController {
     }
 
     // ================= EDIT =================
-    @PostMapping("/option-detail/edit/{id}")
+    @PostMapping("/option-detail/edit")
     public String edit(@RequestParam("asset_external_request_detail_id") Long requestDetailId,
                        @ModelAttribute("editForm") OptionDetailFormDTORequest form,
                        HttpSession session,

@@ -11,16 +11,19 @@ import java.time.Period;
 public class CreateUserDTORequest {
 
     @NotBlank(message = "Username cannot be empty")
-    @Size(min = 7, message = "Username must be at least 7 characters long")
+    @Size(min = 7, max = 99, message = "Username must be at least 7 characters long")
     private String username;
 
     @NotBlank(message = "Password cannot be empty")
+    @Size(max = 99, message = "Invalid password")
     private String password;
 
     @NotBlank(message = "Name cannot be empty")
+    @Size(max = 99, message = "Invalid name")
     private String name;
 
     @NotBlank(message = "Email cannot be empty")
+    @Size(max = 99, message = "Invalid email")
     @Email(message = "Invalid email format")
     private String email;
 

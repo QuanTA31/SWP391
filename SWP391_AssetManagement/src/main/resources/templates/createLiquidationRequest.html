@@ -93,7 +93,7 @@
 
                     <button type="submit" id="btnSubmit" th:if="${!hasSelected}"
                             class="btn btn-sm btn-danger px-4"
-                            onclick="return confirm('Confirm creating a liquidation request?')">
+                            onclick="return validateSubmit()">
                         Submit liquidation request
                     </button>
                 </div>
@@ -198,6 +198,18 @@
             const checkedCount = document.querySelectorAll('.asset-checkbox:checked').length;
             const countElement = document.getElementById('selectedCount');
             if (countElement) countElement.innerText = checkedCount;
+        }
+    </script>
+    <script>
+        function validateSubmit() {
+            const checked = document.querySelectorAll('.asset-checkbox:checked');
+
+            if (checked.length === 0) {
+                alert("Please select at least one asset!");
+                return false; // chặn submit
+            }
+
+            return confirm("Confirm creating a liquidation request?");
         }
     </script>
 </th:block>
