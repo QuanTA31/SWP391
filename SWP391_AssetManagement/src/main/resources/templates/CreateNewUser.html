@@ -71,7 +71,7 @@
 
                         <div class="mb-3">
                             <label class="form-label small fw-bold">Email</label>
-                            <input type="email" th:field="*{email}"
+                            <input type="text" th:field="*{email}"
                                    th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''"
                                    class="form-control form-control-sm">
                             <div class="text-danger small" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
