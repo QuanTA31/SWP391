@@ -16,17 +16,30 @@
 
             <!-- ===== PAGE HEADER ===== -->
             <div class="page-header">
-                <div class="page-title">📋 Liquidation Request</div>
+                <div class="header-left" style="display: flex; align-items: center; gap: 10px;">
+                    <div class="page-title">📋 Liquidation Request</div>
+    
+                    <span class="badge badge-draft" th:if="${liquidationRequest.requestStatus == null}">New Request</span>
+                    <span class="badge badge-draft" th:if="${liquidationRequest.requestStatus == '01'}">Draft</span>
+                    <span class="badge badge-pending" th:if="${liquidationRequest.requestStatus == '02'}">Pending
+                        Approval</span>
+                    <span class="badge badge-view" th:if="${liquidationRequest.requestStatus == '03'}">Approved</span>
+                    <span class="badge badge-info" th:if="${liquidationRequest.requestStatus == '04'}">Research</span>
+                    <span class="badge badge-info" th:if="${liquidationRequest.requestStatus == '08'}">Research Done</span>
+                    <span class="badge badge-info" th:if="${liquidationRequest.requestStatus == '05'}">In Progress</span>
+                    <span class="badge badge-success" th:if="${liquidationRequest.requestStatus == '06'}">Completed</span>
+                    <span class="badge badge-danger" th:if="${liquidationRequest.requestStatus == '07'}">Cancelled</span>
+                </div>
 
-                <span class="badge badge-draft" th:if="${liquidationRequest.requestStatus == null}">New Request</span>
-                <span class="badge badge-draft" th:if="${liquidationRequest.requestStatus == '01'}">Draft</span>
-                <span class="badge badge-pending" th:if="${liquidationRequest.requestStatus == '02'}">Pending
-                    Approval</span>
-                <span class="badge badge-view" th:if="${liquidationRequest.requestStatus == '03'}">Approved</span>
-                <span class="badge badge-info" th:if="${liquidationRequest.requestStatus == '04'}">Research</span>
-                <span class="badge badge-info" th:if="${liquidationRequest.requestStatus == '05'}">In Progress</span>
-                <span class="badge badge-success" th:if="${liquidationRequest.requestStatus == '06'}">Completed</span>
-                <span class="badge badge-danger" th:if="${liquidationRequest.requestStatus == '07'}">Cancelled</span>
+                <div class="header-actions">
+                    <a th:if="${role == '04' and (liquidationRequest.requestStatus == '08' or liquidationRequest.requestStatus == '06')}"
+                       th:href="@{/liquidate/viewLiquidationAsset(assetRequestId=${liquidationRequest.assetRequestId})}"
+                       class="btn btn-sm btn-primary text-white">View Liquidation Order</a>
+
+                    <a th:if="${role == '02' and liquidationRequest.requestStatus == '06'}"
+                       th:href="@{/liquidate/viewLiquidationAsset(assetRequestId=${liquidationRequest.assetRequestId})}"
+                       class="btn btn-sm btn-info text-white">View Liquidation Order</a>
+                </div>
             </div>
 
             <!-- ===== MAIN FORM ===== -->

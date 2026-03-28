@@ -40,6 +40,7 @@ public class CreateAllocationRequestUsecase {
             }
         }
 
+        // Xác định trạng thái của request
         String statusId = "draft".equalsIgnoreCase(dto.getAction())
                 ? RequestStatus.DRAFT.getValue()
                 : RequestStatus.PENDING_APPROVAL.getValue();

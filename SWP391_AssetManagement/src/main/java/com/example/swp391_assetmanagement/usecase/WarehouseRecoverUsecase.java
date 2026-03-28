@@ -8,6 +8,7 @@ import com.example.swp391_assetmanagement.entity.Assets;
 import com.example.swp391_assetmanagement.enums.*;
 import com.example.swp391_assetmanagement.service.AssetRequestService;
 import com.example.swp391_assetmanagement.service.CreateRequestRecoverService;
+import com.example.swp391_assetmanagement.service.UserService;
 import com.example.swp391_assetmanagement.service.ViewAssetToRetrievalService;
 import com.example.swp391_assetmanagement.service.servicerequest.RecoverServiceRequest;
 import com.example.swp391_assetmanagement.service.servicerequest.ViewAssetToRetrievalServiceRequest;
@@ -30,6 +31,7 @@ public class WarehouseRecoverUsecase {
 
     private final AssetRequestService assetRequestService;
     private final CreateRequestRecoverService recoverService;
+    private final UserService userService;
     private final Integer PAGE_SIZE = 15;
     private final ViewAssetToRetrievalService service;
 
@@ -62,7 +64,7 @@ public class WarehouseRecoverUsecase {
                 .requestId(request.id)
                 .requestStatusId(request.requestStatusId)
                 // Bạn có thể xử lý hiển thị tên Status ở đây nếu cần
-                .requestedBy(String.valueOf(request.requestedBy))
+                .requestedBy(userService.getUserNameById(request.requestedBy))
                 .requestedDate(request.requestedDate != null ? request.requestedDate.toString() : "")
                 .note(request.note != null ? request.note : "N/A")
                 .items(details.stream().map(d -> RecoverItemDetailDTO.builder()
@@ -70,8 +72,7 @@ public class WarehouseRecoverUsecase {
                         .assetId(d.assetId)
                         .assetTypeName(AssetType.of(d.assetTypeId).getName())
                         .isDone(d.isDone)
-                        // Ở đây tạm thời để ID, nếu muốn hiện Name bạn cần Service Join bảng
-                        .fromUserName(String.valueOf(d.fromUserId))
+                        .fromUserName(userService.getUserNameById(d.fromUserId))
                         .fromLocationName(Location.of(d.fromLocationId).getName())
                         .build()).toList())
                 .build();

@@ -50,7 +50,7 @@ public class ApproveAllocationRequestUsecase {
         assetRequest.get().approvedBy = managerId;
         assetRequest.get().approvedDate = LocalDate.now();
 
-        //5.  Gọi `allocationService.updateAssetRequest` để lưu thay đổi.
+        //5. lưu thay đổi.
         allocationService.updateAssetRequest(assetRequest.orElse(null));
     }
 }

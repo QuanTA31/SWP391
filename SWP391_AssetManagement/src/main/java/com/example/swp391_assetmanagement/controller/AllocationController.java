@@ -49,6 +49,7 @@ public class AllocationController {
     public String showCreateForm(Model model, HttpSession session) {
         roleChecker.requireRole((String) session.getAttribute("USER_CODE"), Roles.DEPARTMENT_MANAGER);
         String locationId = (String) session.getAttribute("LOCATION_ID");
+
         AllocationDTORequest dto = AllocationDTORequest.builder()
                 .locationId(locationId)
                 .build();
@@ -58,6 +59,7 @@ public class AllocationController {
         model.addAttribute("requestStatusId", "01"); // DRAFT
         model.addAttribute("statusMessage", null);
 
+        //  Hiển thị tên địa điểm với người dùng.
         String locationName = "N/A";
         if (locationId != null && Location.hasValue(locationId)) {
             locationName = Location.of(locationId).getName();
@@ -90,6 +92,7 @@ public class AllocationController {
             RedirectAttributes redirectAttributes) {
         roleChecker.requireRole((String) session.getAttribute("USER_CODE"), Roles.DEPARTMENT_MANAGER );
 
+        // Đóng gói tất cả thông tin lẻ tẻ từ form vào một đối tượng duy nhất
         AllocationDTORequest dto = AllocationDTORequest.builder()
                 .assetRequestId(assetRequestId)
                 .assetTypeId(assetTypeId)
@@ -144,7 +147,7 @@ public class AllocationController {
         return "redirect:/viewRequest";
     }
 
-    //4 : department view
+    //4 : view detail request
     @GetMapping("/department/edit")
     public String showEditForm(@RequestParam Long id, Model model, HttpSession session) {
         roleChecker.requireRole((String) session.getAttribute("USER_CODE"), Roles.DEPARTMENT_MANAGER, Roles.MANAGER );
@@ -172,10 +175,11 @@ public class AllocationController {
 
         int quantity = details.size(); // 1 record per unit
 
+        //Receipt
         // Lọc danh sách Tài sản đã thực sự nhận
         List<Assets> assignedAssets = new ArrayList<>();
         for (AssetInternalRequestDetail d : details) {
-            // Only add to assignedAssets if department has confirmed receipt (isDone == true)
+            // Only add to assignedAssets if department has confirmed receipt
             // This prevents the department from seeing assets prematurely when the manager just selected them.
             if (d.assetId != null && Boolean.TRUE.equals(d.isDone)) {
                 Assets asset = assetService.findById(d.assetId);
@@ -213,7 +217,9 @@ public class AllocationController {
         }
         model.addAttribute("statusMessage", statusMessage);
 
+        // Phê duyệt
         // Kiểm tra xem Manager có quyền Duyệt đơn này không
+        // Nút duyệt chỉ hiện ra khi đồng thời: Manager và Pending
         boolean isPending = RequestStatus.PENDING_APPROVAL.getValue().equals(req.requestStatusId);
         model.addAttribute("canApprove", isManager && isPending);
         model.addAttribute("canAllocate", false);

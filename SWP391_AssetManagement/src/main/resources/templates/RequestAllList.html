@@ -101,17 +101,6 @@
                                 </form>
                             </th:block>
 
-                            <th:block th:if="${item.requestTypeName == 'LIQUIDATION'}">
-                                <!-- Purchasing: Show if Research Done (to complete) or already Completed -->
-                                <a th:if="${session.ROLE == '04' and (item.requestStatusName == 'RESEARCH_DONE' or item.requestStatusName == 'COMPLETED')}"
-                                   th:href="@{/liquidate/viewLiquidationAsset(assetRequestId=${item.id})}"
-                                   class="btn btn-sm btn-primary text-white">View Order</a>
-                                
-                                <!-- Manager: Show ONLY if COMPLETED -->
-                                <a th:if="${session.ROLE == '02' and item.requestStatusName == 'COMPLETED'}"
-                                   th:href="@{/liquidate/viewLiquidationAsset(assetRequestId=${item.id})}"
-                                   class="btn btn-sm btn-info text-white">View Order</a>
-                            </th:block>
 
                             <a th:if="${item.requestTypeName == 'ALLOCATION' and session.ROLE == '02' and (item.requestStatusId == '03' or (item.requestStatusId == '05' and item.assignedQuantity < item.quantity))}"
                                class="btn btn-sm btn-success text-white"
