@@ -102,7 +102,10 @@ public class AllocationController {
                 .build();
 
         try {
+
             createAllocationRequestUsecase.execute(dto, session);
+
+
             String msg = "draft".equalsIgnoreCase(dto.getAction())
                     ? "Allocation request saved as draft."
                     : "Allocation request submitted for approval.";
@@ -141,13 +144,14 @@ public class AllocationController {
         return "redirect:/viewRequest";
     }
 
-    //4 : manager approval
+    //4 : department view
     @GetMapping("/department/edit")
     public String showEditForm(@RequestParam Long id, Model model, HttpSession session) {
         roleChecker.requireRole((String) session.getAttribute("USER_CODE"), Roles.DEPARTMENT_MANAGER, Roles.MANAGER );
+
+        //Lấy thông tin chung của yêu cầu từ bảng asset_request
         AssetRequest req = allocationService.getAssetRequestById(id).orElse(null);
         if (req == null) return "redirect:/viewRequest";
-
         // Load ALL detail records for this request (N records = N units requested)
         List<AssetInternalRequestDetail> details = allocationService.getInternalDetailsByRequestId(id);
 
@@ -168,7 +172,7 @@ public class AllocationController {
 
         int quantity = details.size(); // 1 record per unit
 
-        // Collect assets already assigned and RECEIVED by department
+        // Lọc danh sách Tài sản đã thực sự nhận
         List<Assets> assignedAssets = new ArrayList<>();
         for (AssetInternalRequestDetail d : details) {
             // Only add to assignedAssets if department has confirmed receipt (isDone == true)
@@ -190,6 +194,7 @@ public class AllocationController {
                 .toUserId(toUserId)
                 .build();
 
+        // Nếu trạng thái khác DRAFT thì khóa các ô nhập liệu
         boolean isReadOnlyVal = !RequestStatus.DRAFT.getValue().equals(req.requestStatusId);
         model.addAttribute("isReadOnly", isReadOnlyVal);
 
@@ -197,6 +202,7 @@ public class AllocationController {
         int roleInt = (role != null) ? Integer.parseInt(role) : -1;
         boolean isManager = (roleInt == 2);
 
+        // Hiển thị thông báo tương ứng với trạng thái (APPROVED, CANCELLED, IN_PROGRESS)
         String statusMessage = null;
         if (RequestStatus.APPROVED.getValue().equals(req.requestStatusId)) {
             statusMessage = "This request has been approved.";
@@ -205,8 +211,9 @@ public class AllocationController {
         } else if (RequestStatus.IN_PROGRESS.getValue().equals(req.requestStatusId)) {
             statusMessage = "This request is currently being allocated.";
         }
-
         model.addAttribute("statusMessage", statusMessage);
+
+        // Kiểm tra xem Manager có quyền Duyệt đơn này không
         boolean isPending = RequestStatus.PENDING_APPROVAL.getValue().equals(req.requestStatusId);
         model.addAttribute("canApprove", isManager && isPending);
         model.addAttribute("canAllocate", false);
@@ -214,6 +221,7 @@ public class AllocationController {
         model.addAttribute("requestStatusId", req.requestStatusId);
         model.addAttribute("allocationRequest", dto);
 
+        // Lấy danh sách nhân viên thuộc phòng ban (Location) đó để hiện lên ô chọn "Người nhận" trên giao diện.
         String locId = toLocationId != null ? toLocationId : (String) session.getAttribute("LOCATION_ID");
         String locationName = "N/A";
         if (locId != null && Location.hasValue(locId)) {
@@ -231,7 +239,7 @@ public class AllocationController {
         return "NewAllocationRequest";
     }
 
-    // 6: view tài sản để cấp phát
+    // 5: view tài sản để cấp phát
     @GetMapping("/process")
     public String showProcessForm(@RequestParam("id") Long id, Model model, HttpSession session) {
         roleChecker.requireRole((String) session.getAttribute("USER_CODE"), Roles.MANAGER);
@@ -242,6 +250,7 @@ public class AllocationController {
             return "redirect:/viewRequest";
         }
 
+        // Lấy thông tin tổng thể của yêu cầu
         Optional<AssetRequest> req = allocationService.getAssetRequestById(id);
         if (req.isEmpty()) return "redirect:/viewRequest";
 
@@ -277,6 +286,7 @@ public class AllocationController {
 
         String requestNote = req.get().note;
 
+        // Lấy tên đầy đủ của người sẽ nhận tài sản
         Long toUserId = firstDetail.toUserId;
         String toUserName = "Not specified";
         if (toUserId != null) {
@@ -287,12 +297,12 @@ public class AllocationController {
         }
 
         // Fetch available assets
-        // Stock: status 01 (NEW) or 08 (STOCKED)
+        // Tài sản trong kho: Trạng thái 01 (Mới) hoặc 08 (Trong kho)
         List<Assets> stockAssets = new ArrayList<>(assetService.findStockByType(assetTypeId));
-        // Recovered: status 02 (ASSIGNED) but user is SUSPENDED(02) or DISABLED(03)
+        // Tài sản thu hồi: Trạng thái 02 (Đã cấp) nhưng User sở hữu đang bị SUSPENDED hoặc DISABLED
         List<Assets> recoveredAssets = new ArrayList<>(assetService.findRecoveredByType(assetTypeId));
 
-        // Put already-assigned assets at top of stock list so manager sees them (disabled)
+        //Những tài sản đã được gán trước đó sẽ được "đưa lên đầu" danh sách kho.
         for (Assets a : alreadyAssignedAssets) {
             stockAssets.add(0, a);
         }
@@ -311,7 +321,7 @@ public class AllocationController {
         return "ProcessingAllocation";
     }
 
-    // 7: tạo tài sản cấp phát
+    // 6: tạo tài sản cấp phát
     @PostMapping("/process")
     public String processAllocation(@RequestParam Long requestId,
                                     @RequestParam List<Long> selectedAssetIds,
@@ -327,74 +337,15 @@ public class AllocationController {
         return "redirect:/viewRequest";
     }
 
-    //11 : get ra thông tin asset để xác nhận
-    @GetMapping("/department/receipt")
-    public String showReceiptPage(@RequestParam Long requestId, Model model, HttpSession session) {
-        roleChecker.requireRole((String) session.getAttribute("USER_CODE"), Roles.DEPARTMENT_MANAGER );
-        AssetRequest req = allocationService.getAssetRequestById(requestId).orElse(null);
-        if (req == null) return "redirect:/viewRequest";
-
-        List<AssetInternalRequestDetail> details = allocationService.getInternalDetailsByRequestId(requestId);
-        if (details.isEmpty()) return "redirect:/viewRequest";
-
-        AssetInternalRequestDetail firstDetail = details.get(0);
-
-        // Guard: only show receipt page when Warehouse has dispatched (is_done = false explicitly)
-        // Check the first detail; in the N-records model all share the same dispatch state
-        if (firstDetail.isDone == null || Boolean.TRUE.equals(firstDetail.isDone)) {
-            return "redirect:/allocation/department/edit?id=" + requestId;
-        }
-
-        // Collect assigned assets from detail records (asset_id field)
-        List<Assets> assignedAssets = new java.util.ArrayList<>();
-        for (AssetInternalRequestDetail d : details) {
-            if (d.assetId != null) {
-                Assets asset = assetService.findById(d.assetId);
-                if (asset != null) assignedAssets.add(asset);
-            }
-        }
-
-        model.addAttribute("request", req);
-        model.addAttribute("detail", firstDetail);
-        model.addAttribute("requestedQty", details.size()); // total N units originally requested
-        model.addAttribute("assignedAssets", assignedAssets);
-
-        Long toUserId = firstDetail.toUserId;
-        String toUserName = "Not specified";
-        if (toUserId != null) {
-            String uName = userService.getUserNameById(toUserId);
-            if (uName != null) {
-                toUserName = uName;
-            }
-        }
-        model.addAttribute("toUserName", toUserName);
-
-        return "ConfirmAllocationReceipt";
-    }
-
-    // 13: confirm đã nhận
-    @PostMapping("/department/confirm-receipt")
-    public String confirmReceipt(@RequestParam Long requestId,
-                                 HttpSession session,
-                                 RedirectAttributes redirectAttributes) {
-        roleChecker.requireRole((String) session.getAttribute("USER_CODE"), Roles.DEPARTMENT_MANAGER );
-        try {
-            confirmAllocationReceiptUsecase.execute(requestId);
-            redirectAttributes.addFlashAttribute("successMessage", "Asset receipt confirmed successfully!");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Confirmation error: " + e.getMessage());
-        }
-        return "redirect:/viewRequest";
-    }
-
     // ===== WAREHOUSE ENDPOINTS =====
-    // 8: kho cấp phát theo detail id
+    // 7: kho cấp phát theo detail id
     @GetMapping("/warehouse/view")
     public String showWarehouseView(@RequestParam Long requestId, Model model, HttpSession session) {
         roleChecker.requireRole((String) session.getAttribute("USER_CODE"), Roles.WAREHOUSE );
+
+        // lấy thông tin đơn hàng và danh sách các dòng chi tiết
         AssetRequest req = allocationService.getAssetRequestById(requestId).orElse(null);
         if (req == null) return "redirect:/viewRequest";
-
         List<AssetInternalRequestDetail> details = allocationService.getInternalDetailsByRequestId(requestId);
         if (details.isEmpty()) return "redirect:/viewRequest";
 
@@ -419,6 +370,7 @@ public class AllocationController {
         model.addAttribute("warehouseAssets", warehouseAssets);
         model.addAttribute("canDispatch", canDispatch);
 
+        // Lấy tên đầy đủ của người sẽ nhận tài sản
         Long toUserId = firstDetail.toUserId;
         String toUserName = "Not specified";
         if (toUserId != null) {
@@ -432,13 +384,15 @@ public class AllocationController {
         return "WarehouseAllocationView";
     }
 
-    // 9: kho cấp phất tài sản
+    // 8: kho cấp phất tài sản
     @PostMapping("/warehouse/dispatch")
     public String warehouseDispatch(@RequestParam Long requestId,
                                     HttpSession session,
                                     RedirectAttributes redirectAttributes) {
         roleChecker.requireRole((String) session.getAttribute("USER_CODE"), Roles.WAREHOUSE );
+
         try {
+            // Lấy ra toàn bộ danh sách các thiết bị cụ thể thuộc đơn hàng này từ database.
             List<AssetInternalRequestDetail> details = allocationService.getInternalDetailsByRequestId(requestId);
             if (details.isEmpty()) throw new RuntimeException("Request detail not found.");
             // Mark all detail records as dispatched (is_done = false = warehouse has sent)
@@ -453,6 +407,7 @@ public class AllocationController {
         return "redirect:/viewRequest";
     }
 
+    //chuyển đổi dữ liệu từ các Enum (là các giá trị cố định trong code Java) thành danh sách các đối tượng DTO
     private void populateEnums(Model model) {
         model.addAttribute("assetTypes",
                 Arrays.stream(AssetType.values())
@@ -469,6 +424,69 @@ public class AllocationController {
                                 .build())
                         .toList());
     }
+
+    //9 : get ra thông tin asset để xác nhận
+    @GetMapping("/department/receipt")
+    public String showReceiptPage(@RequestParam Long requestId, Model model, HttpSession session) {
+        roleChecker.requireRole((String) session.getAttribute("USER_CODE"), Roles.DEPARTMENT_MANAGER );
+
+        // lấy thông tin đơn hàng và danh sách các dòng chi tiết
+        AssetRequest req = allocationService.getAssetRequestById(requestId).orElse(null);
+        if (req == null) return "redirect:/viewRequest";
+        List<AssetInternalRequestDetail> details = allocationService.getInternalDetailsByRequestId(requestId);
+        if (details.isEmpty()) return "redirect:/viewRequest";
+
+        AssetInternalRequestDetail firstDetail = details.get(0);
+
+        // Guard: only show receipt page when Warehouse has dispatched (is_done = false explicitly)
+        //Trang "Xác nhận nhận hàng" này chỉ được phép hiển thị khi hàng Đang trên đường giao.
+        if (firstDetail.isDone == null || Boolean.TRUE.equals(firstDetail.isDone)) {
+            return "redirect:/allocation/department/edit?id=" + requestId;
+        }
+
+        // Collect assigned assets from detail records (asset_id field)
+        List<Assets> assignedAssets = new java.util.ArrayList<>();
+        for (AssetInternalRequestDetail d : details) {
+            if (d.assetId != null) {
+                Assets asset = assetService.findById(d.assetId);
+                if (asset != null) assignedAssets.add(asset);
+            }
+        }
+
+        model.addAttribute("request", req);
+        model.addAttribute("detail", firstDetail);
+        model.addAttribute("requestedQty", details.size()); // total N units originally requested
+        model.addAttribute("assignedAssets", assignedAssets);
+
+        // Lấy tên đầy đủ của người sẽ nhận tài sản
+        Long toUserId = firstDetail.toUserId;
+        String toUserName = "Not specified";
+        if (toUserId != null) {
+            String uName = userService.getUserNameById(toUserId);
+            if (uName != null) {
+                toUserName = uName;
+            }
+        }
+        model.addAttribute("toUserName", toUserName);
+
+        return "ConfirmAllocationReceipt";
+    }
+
+    // 10: confirm đã nhận
+    @PostMapping("/department/confirm-receipt")
+    public String confirmReceipt(@RequestParam Long requestId,
+                                 HttpSession session,
+                                 RedirectAttributes redirectAttributes) {
+        roleChecker.requireRole((String) session.getAttribute("USER_CODE"), Roles.DEPARTMENT_MANAGER );
+        try {
+            confirmAllocationReceiptUsecase.execute(requestId);
+            redirectAttributes.addFlashAttribute("successMessage", "Asset receipt confirmed successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Confirmation error: " + e.getMessage());
+        }
+        return "redirect:/viewRequest";
+    }
+
 
     @GetMapping("/department/summary")
     public String showSummary(Model model, HttpSession session) {

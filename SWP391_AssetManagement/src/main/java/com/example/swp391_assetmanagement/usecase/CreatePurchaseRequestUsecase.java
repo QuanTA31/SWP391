@@ -43,7 +43,7 @@ public class CreatePurchaseRequestUsecase {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only manager can create purchase request");
         }
 
-        // Check type request
+        // Check type request:  kiểm tra xem bản ghi đó có thực sự là đơn hàng Mua sắm
         if (!ObjectUtils.isEmpty(request.getAssetRequestId())) {
             String assetRequestType = assetRequestService.findRequestTypeById(request.getAssetRequestId());
 
@@ -64,14 +64,13 @@ public class CreatePurchaseRequestUsecase {
 
             String statusId;
             if (request.getIsSubmitted()) {
-                statusId = RequestStatus.APPROVED.getValue();
+                statusId = RequestStatus.APPROVED.getValue(); // Tự động duyệt nếu MANAGER nhấn gửi
                 assetRequest.setApprovedBy(userId);
                 assetRequest.setApprovedDate(LocalDate.now());
             } else {
                 statusId = RequestStatus.DRAFT.getValue();
             }
             assetRequest.setRequestStatusId(statusId);
-
             // Insert to AssetRequest
             Long assetRequestId =
                     assetRequestService.createPurchaseRequestForm(assetRequest);
@@ -105,6 +104,7 @@ public class CreatePurchaseRequestUsecase {
             }
 
             // Get list assetExternalRequestDetail from DB
+            // lấy dữ liệu cũ trong DB ra để so sánh với dữ liệu mới gửi lên
             List<AssetExternalRequestDetail> dbDetails =
                     assetExternalRequestDetailService.getByAssetRequestIdForUpdate(request.getAssetRequestId());
 
@@ -112,8 +112,8 @@ public class CreatePurchaseRequestUsecase {
                     .map(detail -> detail.id)
                     .collect(Collectors.toSet());
 
-            List<CreatePurchaseRequestDetailDTORequest> updateDTOs = Collections.emptyList();
-            List<CreatePurchaseRequestDetailDTORequest> insertDTOs = Collections.emptyList();
+            List<CreatePurchaseRequestDetailDTORequest> updateDTOs = Collections.emptyList(); // những món đã có ID - cần sửa
+            List<CreatePurchaseRequestDetailDTORequest> insertDTOs = Collections.emptyList(); // những món chưa có ID - cần thêm mới
 
             if (!CollectionUtils.isEmpty(request.getCreatePurchaseRequestDetailDTORequestList())) {
                 Map<Boolean, List<CreatePurchaseRequestDetailDTORequest>> partitioned =
@@ -144,6 +144,7 @@ public class CreatePurchaseRequestUsecase {
             }
 
             // Insert to assetExternalRequestDetail if exist
+            // Thêm các dòng mới mà người dùng vừa nhập thêm vào bảng.
             if (!insertDTOs.isEmpty()) {
                 List<AssetExternalRequestDetail> toInsert = insertDTOs.stream()
                         .map(dto -> {
@@ -159,6 +160,7 @@ public class CreatePurchaseRequestUsecase {
             }
 
             // Update assetExternalRequestDetail if exist
+            // Cập nhật thông tin (số lượng, ghi chú) cho các dòng cũ đã có sẵn.
             if (!updateDTOs.isEmpty()) {
                 List<AssetExternalRequestDetail> toUpdate = updateDTOs.stream()
                         .map(dto -> {

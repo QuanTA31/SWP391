@@ -68,6 +68,7 @@ public class ApprovePurchaseOptionUsecase {
         if (Objects.nonNull(plan.isSelected)){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
+        // Kiểm tra đảm bảo chỉ được chọn 1
         Integer count = optionDetailService.countByIdAndStatus(requestDetailId, Boolean.TRUE);
 
         if (count > 0) {
@@ -91,12 +92,14 @@ public class ApprovePurchaseOptionUsecase {
             }
 
             // Update external_status_id = 03
+            // Cập nhật trạng thái Chi tiết yêu cầu
             assetExternalRequestDetailService.updateExternalStatusId(
                     requestDetailId,
                     ExternalStatus.DONE.getValue()
             );
 
             if (countBySelected == 0) {
+                // Kiểm tra trạng thái, nếu tát cả option được chọn sẽ chuyển research_done
                 Boolean isValidRequest = optionDetailService.checkValidRequest(requestDetailId, assetRequest.id);
                 assetRequest.setRequestStatusId(isValidRequest
                         ? RequestStatus.RESEARCH_DONE.getValue() : RequestStatus.APPROVED.getValue());
@@ -104,9 +107,9 @@ public class ApprovePurchaseOptionUsecase {
             }
 
 
-
+            // đặt tất cả lựa chọn khác về trạng thái không được chọn
             optionDetailService.resetAllByRequestDetailId(requestDetailId, userId);
-
+            // đánh dấu duy nhất 1 tài sản được chọn
             plan.setIsSelected(true);
 
         }

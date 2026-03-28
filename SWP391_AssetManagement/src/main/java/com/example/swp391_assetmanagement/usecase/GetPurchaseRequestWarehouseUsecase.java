@@ -33,10 +33,12 @@ public class GetPurchaseRequestWarehouseUsecase {
             return createPurchaseRequestDTORequest.build();
         }
 
+        //Lấy ra trạng thái hiện tại của đơn hàng
         assetRequestService.findAssetRequestByIdForUpdate(assetRequestId).ifPresent(assetRequest -> {
             createPurchaseRequestDTORequest.requestStatus(assetRequest.requestStatusId);
         });
 
+        //lấy danh sách các mặt hàng cần mua
         List<AssetExternalRequestDetail> details = assetExternalRequestDetailService.getByAssetRequestId(assetRequestId);
 
         List<CreatePurchaseRequestDetailDTORequest> detailDTOs = details.stream()

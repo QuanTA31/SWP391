@@ -69,6 +69,7 @@ public class GetPurchaseOptionListUsecase {
             );
         }
 
+        // Xử lý Phân trang và Lọc
         String selectedStatus = (status == null || status.isBlank()) ? "all" : status;
         int pageIndex = (page == null || page < 1) ? 1 : page;
         Boolean isSelected = parseSelectedStatus(selectedStatus);
@@ -80,13 +81,15 @@ public class GetPurchaseOptionListUsecase {
                 .pageSize(PAGE_SIZE)
                 .build();
 
+        // Lấy dữ liệu và Tính toán trang
         List<OptionDetailServiceResponse> plans = optionDetailService.getList(request);
         int totalItems = optionDetailService.count(request);
 
         int totalPages = Math.max(1,
                 (int) Math.ceil((double) totalItems / PAGE_SIZE));
 
-        boolean hasAnySelected =
+
+        boolean hasAnySelected =   // Kiểm tra xem món đồ đã được approve chưa
                 optionDetailService.countByRequestDetailId(requestDetailId, true) > 0;
 
         AssetRequest assetRequest =
@@ -112,7 +115,7 @@ public class GetPurchaseOptionListUsecase {
                 .totalPages(totalPages)
                 .hasPreviousPage(pageIndex > 1)
                 .hasNextPage(pageIndex < totalPages)
-                .canManage(isPurchasing && isApproved && !hasAnySelected)
+                .canManage(isPurchasing && isApproved && !hasAnySelected) //Nhân viên Mua sắm chỉ được quyền Thêm/Sửa/Xóa báo giá khi:
                 .canApprove(isManager)
                 .hasAnySelected(hasAnySelected)
                 .build();

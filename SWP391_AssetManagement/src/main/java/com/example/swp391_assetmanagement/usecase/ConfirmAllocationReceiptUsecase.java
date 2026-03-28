@@ -72,8 +72,8 @@ public class ConfirmAllocationReceiptUsecase {
         }
 
         // 5. Determine completion: assigned count vs total detail records
-        int assignedCount = assignedAssetIds.size();
-        int totalRequested = details.size(); // each record = 1 unit
+        int assignedCount = assignedAssetIds.size();        // Số máy đã bàn giao đợt này
+        int totalRequested = details.size();                // Tổng số máy yêu cầu ban đầu
 
         if (assignedCount >= totalRequested) {
             // Fully fulfilled → COMPLETED

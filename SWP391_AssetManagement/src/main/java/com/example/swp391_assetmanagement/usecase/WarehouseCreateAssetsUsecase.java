@@ -55,6 +55,7 @@ public class WarehouseCreateAssetsUsecase {
             for (AssetExternalRequestDetailServiceResponse request : externalRequestDetailServiceResponses) {
 
                 // Get asset_code
+                // Quản lý và Sinh mã tài sản tự động
                 AssetSequences assetSequences = assetSequencesService.findByIdToUpdate(
                         AssetType.hasValue(request.getAssetTypeId()) ? request.getAssetTypeId() : null);
 
@@ -65,11 +66,12 @@ public class WarehouseCreateAssetsUsecase {
                 // Update asset_code
 
                 assetSequences.setCurrentValue(newValue);
-                assetSequencesService.update(assetSequences);
+                assetSequencesService.update(assetSequences); // Cập nhật lại bộ đếm trong DB
 
                 List<Assets> assetsList = new ArrayList<>();
 
                 // Insert to assets
+                // Tạo các bản ghi Tài sản
                 for (Integer i = startValue; i < newValue; i++) {
                     Assets assets = new Assets();
                     assets.setAssetCode(String.format("%s-%05d", AssetType.of(request.getAssetTypeId()).getName(), i));
@@ -87,6 +89,7 @@ public class WarehouseCreateAssetsUsecase {
                 List<Assets> assets = assetService.findIdByStatus(AssetStatus.STOCK_IN.getValue());
 
                 // Insert to assets_asset_request_external
+                // Gắn kết Tài sản với Đơn mua hàng
                 List<AssetsAssetRequestExternal> assetRequestExternals = assets.stream().map(e -> {
                     AssetsAssetRequestExternal assetsAssetRequestExternal = new AssetsAssetRequestExternal();
                     assetsAssetRequestExternal.setAssetId(e.id);

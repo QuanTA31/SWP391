@@ -25,21 +25,22 @@ public class ProcessAllocationAssignmentUsecase {
 
     @Transactional
     public void execute(Long requestId, List<Long> selectedAssetIds) {
-        // 1. Fetch Request
+        // 1. Lấy thông tin assetRequest từ DB
         AssetRequest request = allocationService.getAssetRequestById(requestId).orElse(null);
         if (request == null) {
             throw new RuntimeException("Request not found: " + requestId);
         }
 
-        // 2. Load all detail records for this request (N records = N units)
+        // 2. Lấy các dòng chi tiết
         List<AssetInternalRequestDetail> details = allocationService.getInternalDetailsByRequestId(requestId);
         if (details.isEmpty()) {
             throw new RuntimeException("Request detail not found for ID: " + requestId);
         }
 
+        // 3. Ghép cặp(vòng lặp)
         if (!selectedAssetIds.isEmpty()) {
-            // Find unassigned detail records and pair them with selected asset IDs
-            // Each detail row (asset_id == null) gets assigned one asset from the selection
+            // Tìm các bản ghi chi tiết chưa được gán và ghép chúng với ID tài sản đã chọn
+            // Mỗi hàng chi tiết (asset_id == null) sẽ được gán một tài sản từ danh sách đã chọn
             List<AssetInternalRequestDetail> unassigned = new ArrayList<>();
             for (AssetInternalRequestDetail d : details) {
                 if (d.assetId == null) {
@@ -61,6 +62,7 @@ public class ProcessAllocationAssignmentUsecase {
                     detail.setFromUserId(asset.currentUserId);
                     // Reset is_done = null so Warehouse can dispatch this batch
                     detail.setIsDone(null);
+
                     allocationService.updateInternalDetail(detail);
 
                     // Mark asset as TRANSFERRING
@@ -73,7 +75,7 @@ public class ProcessAllocationAssignmentUsecase {
                     }
                 }
             }
-
+            // cập nhật hàng loạt trạng thái các tài sản đã chọn thành "03"
             if (!toLock.isEmpty()) {
                 allocationService.batchUpdateAllocation(toLock);
             }
