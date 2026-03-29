@@ -35,16 +35,17 @@ public class ManagerRejectAllLiquidationUsecase {
         Long assetRequestId = assetRequestService.findIdByAssetRequestDetailId(assetRequestDetailId);
         // Check type request
         String assetRequestType = assetRequestService.findRequestTypeById(assetRequestId);
-
+        // neu requestype khong phai liquidation (error)
         if (ObjectUtils.isEmpty(assetRequestType)
                 || !Objects.equals(RequestType.of(assetRequestType).getValue(), RequestType.LIQUIDATION.getValue())) {
             throw new ValidationException("Invalid request type");
         }
-
+        // lay userId tu session (nguoi approve/reject)
         Long userId = userService.getIdByUserCode(session.getAttribute("USER_CODE").toString());
 
         Integer count = optionDetailService.countByIdAndStatus(assetRequestDetailId, Boolean.TRUE);
 
+        //da co option dc chon → khong cho reject all
         if (count > 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
@@ -66,7 +67,11 @@ public class ManagerRejectAllLiquidationUsecase {
             Integer countBySelected = optionDetailService.countByIdAndIsSelected(assetRequestDetailId, assetRequestId);
             AssetRequest assetRequest = assetRequestService.findByUpdate(assetRequestId);
 
+            // khong co option nao duoc approve
+            // request ton tai
+            // dang o status RESEARCH
             if (countBySelected == 0 && !ObjectUtils.isEmpty(assetRequest) && Objects.equals(assetRequest.requestStatusId, RequestStatus.RESEARCH.getValue())){
+                // request -> APPROVED
                 assetRequest.setRequestStatusId(RequestStatus.APPROVED.getValue());
                 assetRequestService.updateIsSelected(assetRequest);
             }

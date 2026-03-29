@@ -203,7 +203,11 @@
                         <div class="approval-section">
                             <button type="button" class="btn btn-sm btn-secondary"
                                 onclick="history.back()">Cancel</button>
-                            <button type="button" class="btn btn-success" onclick="approveRequest()">✅ Approve</button>
+                            <!--<button type="button" class="btn btn-danger"
+                                    th:if="${role == '02' and liquidationRequest.requestStatus == '03'}"
+                                    onclick="rejectRequest()">
+                                ❌ Cancel After Approved
+                            </button>-->
                             <button type="button" class="btn btn-danger" onclick="rejectRequest()">❌ Reject</button>
                         </div>
                     </div>

@@ -32,12 +32,11 @@ public class LiquidateController {
 
 
     private final RoleChecker roleChecker;
-
     // Manager access to screen view asset can liquidate
     @GetMapping("/manager/viewAsset")
     public String viewAssets(@ModelAttribute LiquiDateCreateDTORequest liquiDateCreateDTORequest, HttpSession session, Model model) {
 
-//        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.MANAGER);
+        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.MANAGER);
 
         LiquiDateCreateDTOResponse assets = liquiAssetManagerUsecase.execute(liquiDateCreateDTORequest, session);
         model.addAttribute("liquidationRequest", assets);
@@ -49,10 +48,10 @@ public class LiquidateController {
     @PostMapping("/manager/create")
     public String createLiquidationRequestForm(
             @RequestParam(value = "selectedAssetIds", required = false) List<Long> requests, HttpSession session) {
+        //@RequestParam(value = "note", required = false) String note,
+        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.MANAGER);
 
-//        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.MANAGER);
-
-        createLiquidationRequestUsecase.execute(requests, session);
+        createLiquidationRequestUsecase.execute(requests, session); //(requests, note, session)
 
         return "redirect:/liquidate/manager/viewAsset";
     }
@@ -63,12 +62,17 @@ public class LiquidateController {
             @ModelAttribute LiquiDateCreateDTORequest liquiDateCreateDTORequest,
             Model model,
             HttpSession session) {
+        // lay: thong tin liquidation request tu DB theo assetRequestId
+        // du lieu: request info (status, danh sach detail)
         GetLiquidationManagerDTOResponse createLiquidationDTORequest =
                 getLiquidationManagerUsecase.execute(assetRequestId);
+        // lay: danh sach asset lien quan den request
+        // dua vao: request + session (co the filter theo user)
         LiquiDateCreateDTOResponse assets =
                 liquiAssetManagerUsecase.execute(liquiDateCreateDTORequest, session);
         model.addAttribute("assets", assets);
         model.addAttribute("liquidationRequest", createLiquidationDTORequest);
+        //Convert enum → List DTO để đẩy ra FE (dropdown)
         model.addAttribute("assetTypes",
                 Arrays.stream(AssetType.values())
                         .map(a -> AssetTypeDTORequest.builder()
@@ -76,6 +80,7 @@ public class LiquidateController {
                                 .label(a.getName())
                                 .build())
                         .toList());
+        // dung lam form approve (FE bind du lieu submit)
         model.addAttribute("approvalRequest",
                 ApprovalPurchaseRequestDTORequest.builder().build());
         model.addAttribute("role", session.getAttribute("ROLE"));

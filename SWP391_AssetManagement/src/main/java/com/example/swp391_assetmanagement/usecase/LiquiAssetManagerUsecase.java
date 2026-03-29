@@ -33,7 +33,7 @@ public class LiquiAssetManagerUsecase {
 
         int pageIndex = (request.getPageIndex() != null && request.getPageIndex() != 0) ? request.getPageIndex() : 1;
 
-        // Get data from database
+        // Get data from database (có limit assetStatus 01 08 05 new stocked broken)
         List<LiquiAssetViewAllServiceResponse> serviceResponses = assetService.liquiViewAllAsset(
                 LiquiAssetViewAllServiceRequest.builder()
                         .locationId(request.getLocationId())
@@ -63,8 +63,10 @@ public class LiquiAssetManagerUsecase {
                     .build();
         }
 
+        // lay total asset
         int totalItems = serviceResponses.stream().findFirst().get().getTotalItems();
 
+        // tinh tong so trang
         int totalPages = (int) Math.ceil((double) totalItems / PAGE_SIZE);
         boolean hasNext = pageIndex < totalPages;
         boolean hasPrevious = pageIndex > 1;
@@ -102,6 +104,7 @@ public class LiquiAssetManagerUsecase {
                 .build();
     }
 
+    // ===== VALIDATE ENUM =====
     private void validateAssetRequest(LiquiDateCreateDTORequest request) {
 
         //Check enums
