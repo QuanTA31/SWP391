@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
@@ -37,6 +38,7 @@ public class ViewLiquidationAssetAllUsecase {
         int pageSize = 10;
         long offset = (long) (pageIndex - 1) * pageSize;
 
+        //  Lấy danh sách tài sản cụ thể từ database.
         List<LiquidationAssetDTOResponse> assets = assetsDAO.findLiquidationAssetsByRequestId(
                 requestId,
                 request.getAssetTypeId(),
@@ -45,14 +47,14 @@ public class ViewLiquidationAssetAllUsecase {
                 pageSize
         );
 
+        //  Lấy các con số tổng quát để hiển thị lên giao diện.
         int totalItems = assetsDAO.countLiquidationAssetsByRequestId(
                 requestId,
                 request.getAssetTypeId(),
                 request.getSearchWord()
         );
-
-        java.math.BigDecimal totalAmount = assetsDAO.sumLiquidationAmountByRequestId(requestId);
-        if (totalAmount == null) totalAmount = java.math.BigDecimal.ZERO;
+        BigDecimal totalAmount = assetsDAO.sumLiquidationAmountByRequestId(requestId); //  Tổng số lượng tài sản
+        if (totalAmount == null) totalAmount = BigDecimal.ZERO;  // Tổng số tiền dự kiến thu về từ việc thanh lý lô hàng này.
 
         String requestStatus = assetRequestDAO.getStatusById(requestId);
         
@@ -65,6 +67,7 @@ public class ViewLiquidationAssetAllUsecase {
         request.setHasPreviousPage(pageIndex > 1);
         request.setHasNextPage(pageIndex < totalPages);
 
+        // Trả về một "gói dữ liệu" đầy đủ cho View.
         return ViewLiquidationAssetAllDTOResponse.builder()
                 .liquidationAssets(assets)
                 .filter(request)

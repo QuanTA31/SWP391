@@ -155,7 +155,7 @@ public class AllocationController {
         //Lấy thông tin chung của yêu cầu từ bảng asset_request
         AssetRequest req = allocationService.getAssetRequestById(id).orElse(null);
         if (req == null) return "redirect:/viewRequest";
-        // Load ALL detail records for this request (N records = N units requested)
+        // Lấy danh sách chi tiết để biết chính xác số lượng cần cấp phát và loại tài sản
         List<AssetInternalRequestDetail> details = allocationService.getInternalDetailsByRequestId(id);
 
         // Use the first record to get type/location info; quantity = number of records
@@ -260,7 +260,7 @@ public class AllocationController {
         Optional<AssetRequest> req = allocationService.getAssetRequestById(id);
         if (req.isEmpty()) return "redirect:/viewRequest";
 
-        // Load all N detail records for this request
+        // Lấy danh sách chi tiết
         List<AssetInternalRequestDetail> details = allocationService.getInternalDetailsByRequestId(id);
         if (details.isEmpty()) return "redirect:/viewRequest";
 
@@ -277,11 +277,11 @@ public class AllocationController {
         for (AssetInternalRequestDetail d : details) {
             if (d.assetId != null) {
                 alreadyAssignedIds.add(d.assetId);
-                Assets a = assetService.findById(d.assetId);
+                Assets a = assetService.findById(d.assetId); // lấy chi tiết tài sản
                 if (a != null) {
                     alreadyAssignedAssets.add(a);
-                    // Dùng cờ isDone == true để biết chính xác Department đã nhận thay vì check locationId
-                    // Vì nếu tài sản tình cờ đang ở cùng location đích thì nó sẽ bị dính lỗi hiển thị sớm.
+                    // theo dõi "Số lượng đã thực nhận"
+                    // theo dõi chính xác Department đã nhận
                     if (Boolean.TRUE.equals(d.isDone)) {
                         alreadyConfirmedCount++;
                         alreadyReceivedIds.add(d.assetId);
@@ -302,7 +302,7 @@ public class AllocationController {
             }
         }
 
-        // Fetch available assets
+        // tìm available assets
         // Tài sản trong kho: Trạng thái 01 (Mới) hoặc 08 (Trong kho)
         List<Assets> stockAssets = new ArrayList<>(assetService.findStockByType(assetTypeId));
         // Tài sản thu hồi: Trạng thái 02 (Đã cấp) nhưng User sở hữu đang bị SUSPENDED hoặc DISABLED
@@ -352,13 +352,14 @@ public class AllocationController {
         // lấy thông tin đơn hàng và danh sách các dòng chi tiết
         AssetRequest req = allocationService.getAssetRequestById(requestId).orElse(null);
         if (req == null) return "redirect:/viewRequest";
+        // Lấy danh sách chi tiết để biết chính xác số lượng cần cấp phát và loại tài sản
         List<AssetInternalRequestDetail> details = allocationService.getInternalDetailsByRequestId(requestId);
         if (details.isEmpty()) return "redirect:/viewRequest";
 
         AssetInternalRequestDetail firstDetail = details.get(0);
 
-        // Collect assigned assets from detail records (asset_id field)
-        List<Assets> warehouseAssets = new java.util.ArrayList<>();
+        // Tìm kiếm những tài sản đã được chỉ định
+        List<Assets> warehouseAssets = new ArrayList<>();
         for (AssetInternalRequestDetail d : details) {
             if (d.assetId != null) {
                 Assets asset = assetService.findById(d.assetId);
@@ -366,7 +367,7 @@ public class AllocationController {
             }
         }
 
-        // Show dispatch button if ANY newly-assigned detail (assetId set, not yet dispatched)
+        // Show dispatch button if đồng thời: có ít nhất 1 record được gán và tài sản đó chưa xasc nhận hoàn thành
         boolean canDispatch = details.stream()
                 .anyMatch(d -> d.assetId != null && d.isDone == null);
 
@@ -400,6 +401,7 @@ public class AllocationController {
         try {
             // Lấy ra toàn bộ danh sách các thiết bị cụ thể thuộc đơn hàng này từ database.
             List<AssetInternalRequestDetail> details = allocationService.getInternalDetailsByRequestId(requestId);
+
             if (details.isEmpty()) throw new RuntimeException("Request detail not found.");
             // Mark all detail records as dispatched (is_done = false = warehouse has sent)
             for (AssetInternalRequestDetail d : details) {
@@ -413,24 +415,6 @@ public class AllocationController {
         return "redirect:/viewRequest";
     }
 
-    //chuyển đổi dữ liệu từ các Enum (là các giá trị cố định trong code Java) thành danh sách các đối tượng DTO
-    private void populateEnums(Model model) {
-        model.addAttribute("assetTypes",
-                Arrays.stream(AssetType.values())
-                        .map(a -> AssetTypeDTORequest.builder()
-                                .value(a.getValue())
-                                .label(a.getName())
-                                .build())
-                        .toList());
-        model.addAttribute("locations",
-                Arrays.stream(Location.values())
-                        .map(l -> AssetTypeDTORequest.builder()
-                                .value(l.getValue())
-                                .label(l.getName())
-                                .build())
-                        .toList());
-    }
-
     //9 : get ra thông tin asset để xác nhận
     @GetMapping("/department/receipt")
     public String showReceiptPage(@RequestParam Long requestId, Model model, HttpSession session) {
@@ -439,6 +423,7 @@ public class AllocationController {
         // lấy thông tin đơn hàng và danh sách các dòng chi tiết
         AssetRequest req = allocationService.getAssetRequestById(requestId).orElse(null);
         if (req == null) return "redirect:/viewRequest";
+        // Lấy danh sách chi tiết để biết chính xác số lượng cần cấp phát và loại tài sản
         List<AssetInternalRequestDetail> details = allocationService.getInternalDetailsByRequestId(requestId);
         if (details.isEmpty()) return "redirect:/viewRequest";
 
@@ -491,6 +476,24 @@ public class AllocationController {
             redirectAttributes.addFlashAttribute("errorMessage", "Confirmation error: " + e.getMessage());
         }
         return "redirect:/viewRequest";
+    }
+
+    //chuyển đổi dữ liệu từ các Enum (là các giá trị cố định trong code Java) thành danh sách các đối tượng DTO
+    private void populateEnums(Model model) {
+        model.addAttribute("assetTypes",
+                Arrays.stream(AssetType.values())
+                        .map(a -> AssetTypeDTORequest.builder()
+                                .value(a.getValue())
+                                .label(a.getName())
+                                .build())
+                        .toList());
+        model.addAttribute("locations",
+                Arrays.stream(Location.values())
+                        .map(l -> AssetTypeDTORequest.builder()
+                                .value(l.getValue())
+                                .label(l.getName())
+                                .build())
+                        .toList());
     }
 
 
