@@ -21,7 +21,7 @@ WHERE 1 = 1
   AND status_id = /* request.userStatus */''
 /*%end */
 /*%if request.name != null && request.name != "" */
-  AND Lower(ud.name) LIKE Lower(/* request.name */'%a%')
+  AND Lower(ud.name) LIKE Lower(CONCAT('%', /* request.name */'lap', '%'))
 /*%end */
 
 LIMIT /* request.pageSize */0
