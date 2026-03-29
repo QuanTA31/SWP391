@@ -32,6 +32,7 @@ public class InventoryOfAssetController {
     private final UpdateAssetStatusInventoryUsecase updateAssetStatusInventoryUsecase;
     private final RoleChecker roleChecker;
 
+    // view Create request
     @GetMapping("/inventory/create")
     public String showCreateForm(Model model, HttpSession session) {
 
@@ -47,6 +48,7 @@ public class InventoryOfAssetController {
         return "CreateInventoryRequest";
     }
 
+    // Create request
     @PostMapping("/inventory/create")
     public String createInventory(@ModelAttribute InventoryCreateDTORequest dtoRequest, HttpSession session) {
 
@@ -61,6 +63,7 @@ public class InventoryOfAssetController {
         return "redirect:/viewRequest";
     }
 
+    // view process
     @GetMapping("/inventory/process")
     public String processInventory(@ModelAttribute InventoryProcessDTORequest dtoRequest, Model model, HttpSession session) {
 
@@ -76,21 +79,23 @@ public class InventoryOfAssetController {
         return "InventoryDetailView";
     }
 
-    @PostMapping("/api/inventory/confirm")
-    @ResponseBody
-    public ResponseEntity<?> confirm(@RequestBody InventoryConfirmDTORequest dtoRequest, HttpSession session) {
+//    // Warehouse confirm individual assets
+//    @PostMapping("/api/inventory/confirm")
+//    @ResponseBody
+//    public ResponseEntity<?> confirm(@RequestBody InventoryConfirmDTORequest dtoRequest, HttpSession session) {
+//
+//        Object userCode = session.getAttribute("USER_CODE");
+//        if (userCode == null) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Session expired. Please login again.");
+//        }
+//
+//        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.MANAGER,Roles.WAREHOUSE);
+//
+//        confirmInventoryItemUsecase.execute(dtoRequest);
+//        return ResponseEntity.ok().build();
+//    }
 
-        Object userCode = session.getAttribute("USER_CODE");
-        if (userCode == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Session expired. Please login again.");
-        }
-
-        roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.MANAGER,Roles.WAREHOUSE);
-
-        confirmInventoryItemUsecase.execute(dtoRequest);
-        return ResponseEntity.ok().build();
-    }
-
+    // Warehouse confirm done inventory
     @PostMapping("/api/inventory/complete")
     @ResponseBody
     public ResponseEntity<?> completeInventory(@RequestBody com.example.swp391_assetmanagement.dto.request.InventoryCompleteDTORequest payload, HttpSession session) {
@@ -104,6 +109,7 @@ public class InventoryOfAssetController {
         return ResponseEntity.ok().build();
     }
 
+    // Manager confirm and click butotn update status assets
     @PostMapping("/api/inventory/update-assets")
     @ResponseBody
     public ResponseEntity<?> updateAssets(@RequestBody java.util.Map<String, Long> payload, HttpSession session) {

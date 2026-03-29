@@ -206,7 +206,6 @@ public class PurchaseRequestController {
     }
 
     // Purchase done research option detail off request
-    // Author : LongNT
     @PostMapping("/purchasing/research")
     public String delete(@RequestParam Long assetRequestId, HttpSession session) {
 
@@ -233,7 +232,6 @@ public class PurchaseRequestController {
     }
 
     // Manager reject all option detail per 1 request detail
-    // Author : QuanTA
     @PostMapping("/manager/optionDetailRejectAll")
     public String managerOptionDetail(@RequestParam Long assetRequestDetailId, HttpSession session, Model model) {
 
@@ -244,6 +242,8 @@ public class PurchaseRequestController {
         return "redirect:/viewRequest";
     }
 
+    // ==================== IN_PROGRESS ===============
+    // Purchase update status progress
     @PostMapping("/purchasing/progress")
     public String progress(@RequestParam Long requestId,
                            HttpSession session) {
@@ -269,7 +269,6 @@ public class PurchaseRequestController {
 
     // ==================== STOCK_IN =====================
     // View assets from request
-    // Author : LongNT
     @GetMapping("/viewPurchaseAsset")
     public String viewPurchaseAsset(@ModelAttribute ViewPurchaseAssetDTORequest request,
                                     HttpSession session, Model model) {
