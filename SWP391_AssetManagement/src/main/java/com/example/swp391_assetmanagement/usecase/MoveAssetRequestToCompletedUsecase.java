@@ -18,13 +18,14 @@ public class MoveAssetRequestToCompletedUsecase {
     public void execute(Long requestId, HttpSession session) {
 
         int updated = assetRequestService.moveCompleted(requestId);
-
+        // neu khong update duoc (sai status RESEARCH_DONE)
         if (updated == 0) {
             session.setAttribute("error",
                     "Only RESEARCH_DONE can move to COMPLETED");
             return;
         }
-
+        // lay: tat ca asset thuoc request
+        // update asset status -> DISPOSED
         assetRequestService.updateAssetsToDisposed(requestId, AssetStatus.DISPOSED);
 
         session.setAttribute("success",

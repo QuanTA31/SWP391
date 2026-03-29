@@ -33,7 +33,7 @@ public class ManagerCreateLiquidationUsecase {
 
         // Check type request
         String assetRequestType = assetRequestService.findRequestTypeById(request.getAssetRequestId());
-
+        //kh phai Status thanh ly (error)
         if ((ObjectUtils.isEmpty(assetRequestType)
                 || !Objects.equals(RequestType.of(assetRequestType).getValue(), RequestType.LIQUIDATION.getValue()))) {
             throw new ValidationException();
@@ -44,6 +44,17 @@ public class ManagerCreateLiquidationUsecase {
         if (countRequest == 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request is invalid!");
         }
+        //cancel request manager
+        /*
+        Integer countApproved = assetRequestService.countById(
+        request.getAssetRequestId(),
+        RequestStatus.APPROVED.getValue()
+        );
+
+        if (countRequest == 0 && countApproved == 0) {
+           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request is invalid!");
+        }
+        */
 
         Long userId = userService.getIdByUserCode(session.getAttribute("USER_CODE").toString());
 

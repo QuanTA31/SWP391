@@ -18,4 +18,6 @@ public class LiquiDateCreateDTORequest {
     private Integer pageIndex;
 
     private Integer assetRequestId;
+
+    //private String note;
 }

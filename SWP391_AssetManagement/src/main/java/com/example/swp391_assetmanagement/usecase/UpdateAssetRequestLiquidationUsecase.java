@@ -35,14 +35,17 @@ public class UpdateAssetRequestLiquidationUsecase {
         }
 
         Integer count = assetExternalRequestDetailService.countOptionDetail(assetRequestId);
+        //phai tao option cho tat ca asset truoc khi submit
         if(count > 0){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request status is invalid !");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Some assets do not have liquidation options");
         }
 
         AssetRequest assetRequest = assetRequestService.findByUpdate(assetRequestId);
+        // neu request khong ton tai
         if (Objects.isNull(assetRequest)){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request status is invalid !");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request ID is invalid ");
         }
+        // request status -> RESEARCH
         assetRequest.setRequestStatusId(RequestStatus.RESEARCH.getValue());
         assetRequestService.updatePurchaseRequestStatus(assetRequest);
     }

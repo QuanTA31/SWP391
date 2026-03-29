@@ -57,23 +57,24 @@ public class CreateAllocationRequestUsecase {
             assetRequest.requestedDate = LocalDate.now();
             assetRequest.note = dto.getReason();
             assetRequest.createdAt = LocalDateTime.now();
-
-            Long assetRequestId = allocationService.createAssetRequest(assetRequest);
+            //  Lưu vào bảng asset_request
+            Long assetRequestId = allocationService.createAssetRequest(assetRequest); //tạo mới
 
             // Insert N records into asset_internal_request_detail (1 record per unit)
             List<AssetInternalRequestDetail> details = buildDetailRecords(dto, assetRequestId);
-            allocationService.batchCreateInternalDetails(details);
+            allocationService.batchCreateInternalDetails(details);                     //lưu chi tiết
 
         } else {
-            // == UPDATE EXISTING DRAFT ==
+            // == UPDATE EXISTING DRAFT == (Cập nhật bản nháp đã tồn tại)
             AssetRequest assetRequest = allocationService.getAssetRequestById(dto.getAssetRequestId()).orElse(null);
             if (assetRequest == null) throw new IllegalArgumentException("Request not found");
 
             assetRequest.requestStatusId = statusId;
             assetRequest.note = dto.getReason();
-            allocationService.updateAssetRequest(assetRequest);
 
-            // Delete old detail records and re-insert N records
+            allocationService.updateAssetRequest(assetRequest);                         // cập nhật
+
+            // Delete old detail records and re-insert N records (làm mới danh sách)
             allocationService.deleteInternalDetailsByRequestId(dto.getAssetRequestId());
             List<AssetInternalRequestDetail> details = buildDetailRecords(dto, dto.getAssetRequestId());
             allocationService.batchCreateInternalDetails(details);

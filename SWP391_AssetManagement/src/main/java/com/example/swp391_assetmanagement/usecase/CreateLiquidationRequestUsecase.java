@@ -27,8 +27,8 @@ public class CreateLiquidationRequestUsecase {
     private final UserService userService;
 
     @Transactional
-    public void execute(List<Long> assetIds, HttpSession session) {
-
+    public void execute(List<Long> assetIds, HttpSession session) { //String note
+        // no asset -> do nothing
         if (CollectionUtils.isEmpty(assetIds)) {
             return;
         }
@@ -40,15 +40,16 @@ public class CreateLiquidationRequestUsecase {
         if (invalidCount > 0) {
             throw new IllegalArgumentException("Selected assets contain invalid status (IN_PROGRESS or LOST)");
         }
-
+        // ===== TAO REQUEST =====
         AssetRequest assetRequest = new AssetRequest();
 
-        assetRequest.setRequestTypeId(RequestType.LIQUIDATION.getValue());
+        assetRequest.setRequestTypeId(RequestType.LIQUIDATION.getValue()); // request: thanh ly
         assetRequest.setRequestedBy(userId);
         assetRequest.setRequestedDate(LocalDate.now());
-        assetRequest.setRequestStatusId(RequestStatus.APPROVED.getValue());
+        assetRequest.setRequestStatusId(RequestStatus.APPROVED.getValue()); // manager create -> auto approve
         assetRequest.setApprovedBy(userId);
         assetRequest.setApprovedDate(LocalDate.now());
+        //assetRequest.setNote(note);
 
         // Insert to AssetRequest
         Long assetRequestId = assetRequestService.createPurchaseRequestForm(assetRequest);
@@ -56,6 +57,7 @@ public class CreateLiquidationRequestUsecase {
         // Get asset info
         List<AssetLiquiServiceResponse> assetLiquiServiceResponses = assetService.findByIdOfLiquidation(assetIds);
 
+        // gom asset theo assetTypeId (quantity trong assetRequest)
         Map<String, List<AssetLiquiServiceResponse>> assetMap = new HashMap<>();
         for (AssetLiquiServiceResponse asset : assetLiquiServiceResponses) {
             assetMap.computeIfAbsent(asset.getAssetTypeId(), k -> new ArrayList<>()).add(asset);
@@ -85,6 +87,7 @@ public class CreateLiquidationRequestUsecase {
             }).toList();
             assetsAssetRequestExternalService.batchInsert(assetRequestExternals);
         }
+        // chuyen asset sang trang thai liquidation
         assetService.updateStatusByIds(assetIds, AssetStatus.LIQUIDATION);
     }
 }

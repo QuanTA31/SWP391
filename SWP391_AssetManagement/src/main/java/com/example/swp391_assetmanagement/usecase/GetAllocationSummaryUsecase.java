@@ -27,8 +27,10 @@ public class GetAllocationSummaryUsecase {
         Long userId = userService.getIdByUserCode(userCode);
         if (userId == null) return null;
 
+        //  Lấy danh sách số lượng đơn theo từng trạng thái.
         List<Map<String, Object>> results = allocationSummaryDAO.countRequestStatusByUser(userId);
 
+        // Duyệt qua danh sách kết quả từ database và gán giá trị vào đúng biến tương ứng.
         int draft = 0, pending = 0, approved = 0, inProgress = 0, completed = 0, cancelled = 0, total = 0;
 
         for (Map<String, Object> map : results) {
@@ -45,6 +47,7 @@ public class GetAllocationSummaryUsecase {
             else if (RequestStatus.CANCELLED.getValue().equals(statusId)) cancelled = count;
         }
 
+        // Tạo ra một đối tượng kết quả duy nhất để gửi về phía giao diện
         return AllocationSummaryResponse.builder()
                 .draftCount(draft)
                 .pendingCount(pending)

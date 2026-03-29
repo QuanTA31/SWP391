@@ -25,7 +25,7 @@ public class ProcessAllocationAssignmentUsecase {
 
     @Transactional
     public void execute(Long requestId, List<Long> selectedAssetIds) {
-        // 1. Lấy thông tin assetRequest từ DB
+        // 1. Lấy thông tin assetRequest từ DB, đảm bảo đơn hàng tồn tại
         AssetRequest request = allocationService.getAssetRequestById(requestId).orElse(null);
         if (request == null) {
             throw new RuntimeException("Request not found: " + requestId);
@@ -49,8 +49,10 @@ public class ProcessAllocationAssignmentUsecase {
             }
 
             List<Assets> toLock = new ArrayList<>();
+            // Xác định số lượng khớp
             int pairCount = Math.min(selectedAssetIds.size(), unassigned.size());
 
+            // Lấy từng tài sản người dùng vừa chọn để điền vào các vị trí còn trống.
             for (int i = 0; i < pairCount; i++) {
                 Long assetId = selectedAssetIds.get(i);
                 AssetInternalRequestDetail detail = unassigned.get(i);
@@ -60,12 +62,13 @@ public class ProcessAllocationAssignmentUsecase {
                     detail.setAssetId(assetId);
                     detail.setFromLocationId(asset.locationId);
                     detail.setFromUserId(asset.currentUserId);
-                    // Reset is_done = null so Warehouse can dispatch this batch
                     detail.setIsDone(null);
 
+                    // Lưu thông tin dòng chi tiết
                     allocationService.updateInternalDetail(detail);
 
                     // Mark asset as TRANSFERRING
+                    // Nếu trạng thái là NEW/STOCKED/ASSIGNED sẽ chuyển sang status
                     if (AssetStatus.NEW.getValue().equals(asset.assetStatusId)
                          || AssetStatus.STOCK_IN.getValue().equals(asset.assetStatusId)
                          || AssetStatus.STOCKED.getValue().equals(asset.assetStatusId)
