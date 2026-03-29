@@ -59,6 +59,7 @@ public interface InventoryDAO {
     @Select
     Assets selectAssetById(Long id);
 
+    //select location when that location have asset and except warehouse (Inventory)
     @Select
     List<Location> selectLocationsWithAssets();
 }

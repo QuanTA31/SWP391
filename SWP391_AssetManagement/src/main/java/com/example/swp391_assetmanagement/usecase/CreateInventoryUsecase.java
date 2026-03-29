@@ -26,6 +26,7 @@ public class CreateInventoryUsecase {
     private final LocationService locationService;
     private final UserService userService;
 
+    //create inventory in where
     public List<com.example.swp391_assetmanagement.enums.Location> prepareData() {
         List<Location> locations = locationService.selectLocationsWithAssets();
         return locations.stream()

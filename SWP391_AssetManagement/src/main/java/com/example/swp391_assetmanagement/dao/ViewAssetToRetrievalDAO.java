@@ -11,6 +11,9 @@ import java.util.List;
 @Dao
 @ConfigAutowireable
 public interface ViewAssetToRetrievalDAO {
+
+    //select asset not in warehouse and asset type new and assign
+    //filter
     @Select
     List<ViewAssetToRetrievalServiceResponse> selectAssetToRetrieval(ViewAssetToRetrievalServiceRequest request);
 }

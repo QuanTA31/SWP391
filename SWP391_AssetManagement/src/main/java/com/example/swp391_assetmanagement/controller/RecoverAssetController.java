@@ -25,6 +25,7 @@ public class RecoverAssetController {
     private final WarehouseRecoverUsecase warehouseRecoverUsecase;
     private final RoleChecker roleChecker;
 
+    //Show list asset in all location except warehouse
     @GetMapping("/manager/recoverAsset")
     public String viewUser(@ModelAttribute ViewAssetByUserDisabledDTORequest request, HttpSession session, Model model) {
 
@@ -53,9 +54,6 @@ public class RecoverAssetController {
         roleChecker.requireRole(session.getAttribute("USER_CODE").toString(), Roles.MANAGER);
 
         String userCode = (String) session.getAttribute("USER_CODE");
-        if (userCode == null) {
-            return "redirect:/login";
-        }
 
         try {
             warehouseRecoverUsecase.execute(assetCodes, userCode);

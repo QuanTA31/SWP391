@@ -59,11 +59,6 @@
                             th:selected="${assets.filters != null && type.value == assets.filters.assetTypeId}"></option>
                 </select>
 
-                <select name="status" class="form-select form-select-sm filter-select">
-                    <option value="">Asset Status</option>
-                    <option value="03">DISABLED</option>
-                </select>
-
                 <input type="text" name="assetCode" class="form-control form-control-sm filter-input"
                        placeholder="Search Asset Code"
                        th:value="${assets.filters?.assetCode}">

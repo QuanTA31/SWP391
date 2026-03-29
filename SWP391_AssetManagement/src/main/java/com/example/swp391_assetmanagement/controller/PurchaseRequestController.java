@@ -244,9 +244,6 @@ public class PurchaseRequestController {
         return "redirect:/viewRequest";
     }
 
-    // ==================== IN_PROGRESS ===============
-    // Purchase update status progress
-    // Author : LongNT
     @PostMapping("/purchasing/progress")
     public String progress(@RequestParam Long requestId,
                            HttpSession session) {

@@ -51,6 +51,8 @@ public class WarehouseRecoverUsecase {
 //            assetRequestService.updateRequestStatus(requestId, "05"); // IN_PROGRESS
 //        }
 //    }
+
+    //View all Request detail Retrieval
     @Transactional(readOnly = true)
     public RecoverProcessDTOResponse getRecoverProcessData(Long requestId) {
         // 1. Lấy dữ liệu từ Service
@@ -106,13 +108,12 @@ public class WarehouseRecoverUsecase {
     @Transactional(readOnly = true)
     public ViewAssetToRetrievalDTOResponse viewAssetToRetrieVal(ViewAssetByUserDisabledDTORequest request, HttpSession session) {
         // 1. Validate quyền truy cập (Admin/Manager mới được xem chẳng hạn)
-        validateAccess(session);
+//        validateAccess(session);
 
         int pageIndex = (request.getPageIndex() != null && request.getPageIndex() > 0) ? request.getPageIndex() : 1;
 
         // 2. Map request sang ServiceRequest
         ViewAssetToRetrievalServiceRequest serviceRequest = ViewAssetToRetrievalServiceRequest.builder()
-//                .assetStatusId("02") //Trạng thái đang sử dụng
                 .assetCode(request.getAssetCode())
                 .locationId(request.getLocationId())
                 .assetTypeId(request.getAssetTypeId())
@@ -121,11 +122,11 @@ public class WarehouseRecoverUsecase {
                 .build();
 
         List<ViewAssetToRetrievalServiceResponse> serviceResponses = service.selectAllAssetToRetrieval(serviceRequest);
-
+        //set data empty to prepare error
         if (serviceResponses.isEmpty()) {
             return ViewAssetToRetrievalDTOResponse.builder()
                     .assets(Collections.emptyList())
-                    .filters(FilterAssetDTOResponse.builder() // ĐỪNG QUÊN DÒNG NÀY
+                    .filters(FilterAssetDTOResponse.builder()
                             .assetCode(request.getAssetCode())
                             .locationId(request.getLocationId())
                             .assetTypeId(request.getAssetTypeId())
@@ -159,13 +160,13 @@ public class WarehouseRecoverUsecase {
                 .build();
     }
     //block user
-    private void validateAccess(HttpSession session) {
-        String role = (String) session.getAttribute("ROLE");
-        // Nếu là Client hoặc các role thấp thì chặn
-        if (List.of("CLIENT", "WAREHOUSE").contains(role)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền!");
-        }
-    }
+//    private void validateAccess(HttpSession session) {
+//        String role = (String) session.getAttribute("ROLE");
+//        // Nếu là Client hoặc các role thấp thì chặn
+//        if (List.of("CLIENT", "WAREHOUSE").contains(role)) {
+//            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền!");
+//        }
+//    }
     //map to set in view
     private AssetDetailDTOResponse mapToItemResponse(ViewAssetToRetrievalServiceResponse entity) {
         return AssetDetailDTOResponse.builder()
